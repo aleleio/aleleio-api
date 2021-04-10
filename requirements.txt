@@ -1,0 +1,17 @@
+# web framework
+fastapi
+
+# template language
+jinja2
+
+# required for serving static files
+aiofiles
+
+# orm
+pony
+
+# ASGI service workers
+uvicorn
+
+# setting environment variables programatically
+python-dotenv
