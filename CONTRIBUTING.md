@@ -33,7 +33,7 @@ from your terminal:
 If you are using an IDE like [PyCharm](https://www.jetbrains.com/pycharm/) make sure to set a `DEVELOPMENT`
 environment variable in your run configuration before running `asgi.py`.
 
-![run-configuration-screenshot](contributing-1.png)
+![run-configuration-screenshot](docs/contributing-1.png)
 
 ## Workflow
 
