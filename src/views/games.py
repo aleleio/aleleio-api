@@ -1,13 +1,15 @@
 import fastapi
 from fastapi import Depends
 
-from src.models.validation import GameQuery
+from src.models.validation import GameQuery, GameType
 
 router = fastapi.APIRouter()
 
 
 @router.get('/games')
 def all_games_view(query: GameQuery = Depends()):
+    # http GET http://localhost:8000/games group_needs:='{"main": "name"}'
+    limit = query.limit
     if query.basic:
         return {
             "game_type": query.basic.game_type,
