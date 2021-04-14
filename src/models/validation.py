@@ -5,66 +5,96 @@ from pydantic import BaseModel
 
 
 class GameType(Enum):
-    ICE = ("ice", "Ice Breaker")
-    ENER = ("ener", "Energizer")
-    TRUST = ("trust", "Trust Game")
-    PROB = ("prob", "Problem Solver")
-    NAME = ("name", "Name Game")
-    BRAIN = ("brain", "Brainstorming Activity")
-    SONG = ("song", "Song")
-    RACE = ("race", "Race")
-    GTK = ("gtk", "Getting-to-Know Game")
+    ICE = "ice"
+    ENER = "ener"
+    TRUST = "trust"
+    PROB = "prob"
+    NAME = "name"
+    BRAIN = "brain"
+    SONG = "song"
+    RACE = "race"
+    GTK = "gtk"
 
-    def __init__(self, short, full):
-        self.short = short
-        self.full = full
+    @property
+    def full(self):
+        lookup = {
+            "ice": "Ice Breaker",
+            "ener": "Energizer",
+            "trust": "Trust Game",
+            "prob": "Problem Solver",
+            "name": "Name Game",
+            "brain": "Brainstorming Activity",
+            "song": "Song",
+            "race": "Race",
+            "gtk": "Getting-to-Know Game",
+        }
+        return lookup[self.value]
 
 
 class GameLength(Enum):
-    SHORT = ("short", "<10 minutes")
-    MEDIUM = ("medium", "10-30 minutes")
-    LONG = ("long", "30-120 minutes")
+    SHORT = "short"
+    MEDIUM = "medium"
+    LONG = "long"
 
-    def __init__(self, short, full):
-        self.short = short
-        self.full = full
+    @property
+    def full(self):
+        lookup = {
+            "short": "<10 minutes",
+            "medium": "10-30 minutes",
+            "long": "30-120 minutes",
+        }
+        return lookup[self.value]
 
 
 class GroupSize(Enum):
-    SMALL = ("small", "2-7 people")
-    LARGE = ("large", "13-16 people")
-    MULTIPLE = ("multiple", "15-40 people")
-    EVENT = ("event", "50-300 people")
+    SMALL = "small"
+    LARGE = "large"
+    MULTIPLE = "multiple"
+    EVENT = "event"
 
-    def __init__(self, short, full):
-        self.short = short
-        self.full = full
+    @property
+    def full(self):
+        lookup = {
+            "small": "2-7 people",
+            "large": "13-16 people",
+            "multiple": "15-40 people",
+            "event": "50-300 people",
+        }
+        return lookup[self.value]
 
 
 class GroupNeeds(Enum):
-    NAMES = ("names", "First Steps")
-    ENERGY = ("ener", "Group Energy")
-    HONESTY = ("hon", "Foster Honesty & Trust")
-    STRATEGY = ("strat", "Practice Strategy & Co-operation")
-    INSPIRATION = ("insp", "Inspiration")
-    WHY = ("why", "Team \'Why\'")
-    IDENTITY = ("id", "Group Identity")
+    NAMES = "names"
+    ENERGY = "ener"
+    HONESTY = "hon"
+    STRATEGY = "strat"
+    INSPIRATION = "insp"
+    IDENTITY = "id"
 
-    def __init__(self, short, full):
-        self.short = short
-        self.full = full
+    @property
+    def full(self):
+        lookup = {
+            "names": "First Steps",
+            "ener": "Group Energy",
+            "hon": "Foster Honesty & Trust",
+            "strat": "Practice Strategy & Co-operation",
+            "insp": "Inspiration",
+            "why": "Team \'Why\'",
+            "id": "Group Identity",
+        }
+        return lookup[self.value]
 
 
 class BasicFilter(BaseModel):
-    game_type: Optional[str]
-    group_size: Optional[str]
-    game_length: Optional[str]
+    game_type: Optional[GameType]
+    group_size: Optional[GroupSize]
+    game_length: Optional[GameLength]
 
 
 class GroupNeedsFilter(BaseModel):
-    main: Optional[str]
-    aux1: Optional[str]
-    aux2: Optional[str]
+    main: Optional[GroupNeeds]
+    aux1: Optional[GroupNeeds]
+    aux2: Optional[GroupNeeds]
 
 
 class GameQuery(BaseModel):
