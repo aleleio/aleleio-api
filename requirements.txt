@@ -15,3 +15,7 @@ uvicorn
 
 # setting environment variables programatically
 python-dotenv
+
+# testing
+pytest
+requests

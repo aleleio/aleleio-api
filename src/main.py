@@ -23,7 +23,8 @@ def configure_routing():
     """Set all routes
     FastAPI's routers are similar to Flask Blueprints
     """
-    static_path = Path('src', 'static').resolve()
+    project_root = Path(__file__).parent.parent
+    static_path = project_root.joinpath('src', 'static')
     api.mount('/static', StaticFiles(directory=static_path), name='static')
 
     api.include_router(home.router)
