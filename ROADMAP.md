@@ -30,30 +30,50 @@
 
 # The Road Ahead
 
-### 0.6 - Rewrite in FastAPI
-- \* 0.6.0 move from gitlab to github
-- 0.6.1 CRUD working
-- 0.6.2 Basic validation working
-- 0.6.3 Caching
-- 0.6.4 Porting Functionality
-- ...
+### 0.6 Rewrite in FastAPI
+- [x] 0.6.0 move from gitlab to github
+- [ ] 0.6.1 ORM working
+  - [x] transfer and update legacy models
+  - [x] create diagram on editor.ponyorm.com
+  - [ ] get pony.orm to run locally
+  - [ ] provide development data
+- [ ] 0.6.2 Basic validation working
+  - [x] set up pydantic correctly
+  - [ ] ...
+- [ ] 0.6.3 Testing from the start
+  - [x] basic setup with pytest working
+  - [ ] testing with orm working
+  - [ ] ...
+- [ ] 0.6.4 User Authentication working
+  - [ ] ...
+- [ ] 0.6.5 Core Logic working
+  - [ ] filtering games
+  - [ ] READ game working
+  - [ ] CREATE game working
+  - [ ] UPDATE game working
+  - [ ] DELETE game working
+  - [ ] ...
+- [ ] 0.6.5 Statistics working
+  - [ ] ...
 
 > Note: Careful before updating old version. Review backup_script: user & game_meta 
 > and test with web:master first, v0.5 might not be stable!
 
-### 0.7 revise auth
-- maybe oauth?
-- collections of games
-- complete enum implementation
-        
-### 0.8 basic documentation (for code, api doc for users)
-- sphinx 
-- caching
-- code audit
-- jsonschema: better error messages for e.g. game creation
+### 0.7 Document and Deploy
+- docstrings complete
+- good enough test coverage
+- logging and sentry.io
+- auto-generate readme with swagger
+- shut down legacy-api v0.5
 
-### 0.9 pytest
-- tests: unittest, integration test
+### 0.8 Improve and Speedup
+- versions working again
+- revise auth: maybe oauth?
+- caching / async speed up
+  
+### 0.9 New Toys
+- collections of games
+- complete enum implementation (?)
 
 
 

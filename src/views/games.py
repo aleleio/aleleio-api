@@ -1,7 +1,7 @@
 import fastapi
 from fastapi import Depends
 
-from src.models.validation import GameQuery, GameType
+from src.models import GameQuery
 
 router = fastapi.APIRouter()
 
