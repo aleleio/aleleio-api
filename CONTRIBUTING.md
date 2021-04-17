@@ -30,6 +30,10 @@ the requirements:
     
 Deactivate the virtual environment at any time with `deactivate`.
 
+**Configuration**
+Copy the provided [.env_template](.env_template) and rename it to `.env`, to set up the neccessary environment variables
+(envars) for development. 
+
 **Web Server**
 FastAPI uses [uvicorn](https://www.uvicorn.org/) as an ASGI server. In the virtual environment, you can run it
 from your terminal:
@@ -39,10 +43,6 @@ from your terminal:
     (venv)[kita@bonga]$ INFO: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
     (venv)[kita@bonga]$
 
-If you are using an IDE like [PyCharm](https://www.jetbrains.com/pycharm/) make sure to set a `DEVELOPMENT`
-environment variable in your run configuration before running `asgi.py`.
-
-![run-configuration-screenshot](docs/contributing-1.png)
 
 ## Workflow
 
