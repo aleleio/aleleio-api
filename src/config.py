@@ -9,7 +9,3 @@ class Settings(BaseSettings):
     version: str = '0.0.0'
     secret_key: str = 'set-a-secret-key!'
 
-    class Config:
-        """Configure pydantic
-        """
-        env_file = '.env'

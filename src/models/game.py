@@ -23,7 +23,6 @@ class Game(db_games.Entity):
 
     statistic = Optional(lambda: db_games.GameStatistic, cascade_delete=True)
 
-
     prior_prep = Optional(LongStr)
     exhausting = Optional(bool)
     touching = Optional(bool)
