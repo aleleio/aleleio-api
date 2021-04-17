@@ -14,8 +14,9 @@ pymysql
 # ASGI service workers
 uvicorn
 
-# setting environment variables programatically
+# pydantic
 python-dotenv
+email-validator
 
 # testing
 pytest
