@@ -17,4 +17,4 @@ class User(db_users.Entity):
     api_key = Required(str, default=lambda: str(uuid.uuid4()), unique=True)
     role = Required(str, default=UserRoleEnum.USER)
     status = Required(str, default=UserStatusEnum.PENDING)
-    protected = Required(int, default=0)
+    protected = Required(bool, default=False)
