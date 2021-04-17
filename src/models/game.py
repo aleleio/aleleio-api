@@ -4,8 +4,6 @@ SQL
 
 from pony.orm import *
 
-from src.models import GameMeta, Source, Collection, GameStatistic, Version
-
 db_games = Database()
 
 
@@ -18,12 +16,12 @@ class Game(db_games.Entity):
     group_sizes = Set(lambda: GroupSize)
     group_need_scores = Set(lambda: GroupNeedScore)
 
-    meta = Optional(lambda: GameMeta, cascade_delete=True)
-    sources = Set(lambda: Source)
-    collections = Set(lambda: Collection)
-    versions = Set(lambda: Version)
+    meta = Optional(lambda: db_games.GameMeta, cascade_delete=True)
+    sources = Set(lambda: db_games.Source)
+    collections = Set(lambda: db_games.Collection)
+    versions = Set(lambda: db_games.Version)
 
-    statistic = Optional(lambda: GameStatistic, cascade_delete=True)
+    statistic = Optional(lambda: db_games.GameStatistic, cascade_delete=True)
 
 
     prior_prep = Optional(LongStr)

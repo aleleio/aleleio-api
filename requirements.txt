@@ -9,6 +9,7 @@ aiofiles
 
 # orm
 pony
+pymysql
 
 # ASGI service workers
 uvicorn

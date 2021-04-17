@@ -35,7 +35,8 @@
 - [ ] 0.6.1 ORM working
   - [x] transfer and update legacy models
   - [x] create diagram on editor.ponyorm.com
-  - [ ] get pony.orm to run locally
+  - [x] get pony.orm to run locally
+  - [ ] set up configuration correctly
   - [ ] provide development data
 - [ ] 0.6.2 Basic validation working
   - [x] set up pydantic correctly
