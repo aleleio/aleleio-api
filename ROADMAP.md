@@ -36,10 +36,11 @@
   - [x] transfer and update legacy models
   - [x] create diagram on editor.ponyorm.com
   - [x] get pony.orm to run locally
-  - [ ] set up configuration correctly
+  - [x] set up configuration correctly
   - [ ] provide development data
 - [ ] 0.6.2 Basic validation working
   - [x] set up pydantic correctly
+  - [x] use pydantic to validate settings
   - [ ] ...
 - [ ] 0.6.3 Testing from the start
   - [x] basic setup with pytest working

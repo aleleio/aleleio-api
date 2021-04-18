@@ -26,12 +26,14 @@ def configure():
 
 
 def init_database():
-    db_games.bind(provider='sqlite', filename='db_games.sqlite', create_db=True)
-    # db_games.bind(provider='mysql', host='', user='', passwd='', db='')
+    """Bind ORM to database
+    Settings are prepared in pydantic Settings class (/src/config.py)
+    Different database settings, depending on whether envar 'DEVELOPMENT' is set
+    """
+    db_games.bind(**settings.database_games)
     db_games.generate_mapping(create_tables=True)
 
-    db_users.bind(provider='sqlite', filename='db_users.sqlite', create_db=True)
-    # db_users.bind(provider='mysql', host='', user='', passwd='', db='')
+    db_users.bind(**settings.database_users)
     db_users.generate_mapping(create_tables=True)
 
     set_sql_debug(True)
@@ -39,7 +41,7 @@ def init_database():
 
 def configure_routing():
     """Set all routes
-    FastAPI's routers are similar to Flask Blueprints
+    FastAPI routers are similar to Flask blueprints
     """
     static_path = project_root.joinpath('src', 'static')
     api.mount('/static', StaticFiles(directory=static_path), name='static')
