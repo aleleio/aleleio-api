@@ -31,31 +31,31 @@
 # The Road Ahead
 
 ### 0.6 Rewrite in FastAPI
-- [x] 0.6.0 move from gitlab to github
-- [ ] 0.6.1 ORM working
+- [x] 0.5.1 move from gitlab to github
+- [x] 0.5.2 ORM working
   - [x] transfer and update legacy models
   - [x] create diagram on editor.ponyorm.com
   - [x] get pony.orm to run locally
   - [x] set up configuration correctly
   - [ ] provide development data
-- [ ] 0.6.2 Basic validation working
+- [ ] 0.5.3 Basic validation working
   - [x] set up pydantic correctly
   - [x] use pydantic to validate settings
   - [ ] ...
-- [ ] 0.6.3 Testing from the start
+- [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working
   - [ ] ...
-- [ ] 0.6.4 User Authentication working
+- [ ] 0.5.5 User Authentication working
   - [ ] ...
-- [ ] 0.6.5 Core Logic working
+- [ ] 0.5.6 Core Logic working
   - [ ] filtering games
   - [ ] READ game working
   - [ ] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
   - [ ] ...
-- [ ] 0.6.5 Statistics working
+- [ ] 0.5.7 Statistics working
   - [ ] ...
 
 > Note: Careful before updating old version. Review backup_script: user & game_meta 
