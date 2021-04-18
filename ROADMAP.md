@@ -37,23 +37,23 @@
   - [x] create diagram on editor.ponyorm.com
   - [x] get pony.orm to run locally
   - [x] set up configuration correctly
-  - [ ] provide development data
-- [ ] 0.5.3 Basic validation working
-  - [x] set up pydantic correctly
-  - [x] use pydantic to validate settings
-  - [ ] ...
-- [ ] 0.5.4 Testing from the start
+- [ ] 0.5.3 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working
   - [ ] ...
-- [ ] 0.5.5 User Authentication working
+- [ ] 0.5.4 User Authentication working
   - [ ] ...
-- [ ] 0.5.6 Core Logic working
+- [ ] 0.5.5 Core Logic working
   - [ ] filtering games
   - [ ] READ game working
   - [ ] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
+  - [ ] ...
+- [ ] 0.5.6 Basic validation working
+  - [x] set up pydantic correctly
+  - [x] use pydantic to validate settings
+  - [ ] validate user input
   - [ ] ...
 - [ ] 0.5.7 Statistics working
   - [ ] ...
