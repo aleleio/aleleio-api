@@ -13,7 +13,11 @@ project_root = Path(__file__).parent.parent
 env_path = project_root.joinpath('.env')
 
 settings = Settings(_env_file=env_path)
-api = fastapi.FastAPI()
+api = fastapi.FastAPI(
+    title='alele.io API',
+    description='This is the API documentation for the teambuilding app alele.io',
+    version=settings.version,
+)
 
 
 def configure():
