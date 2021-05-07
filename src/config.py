@@ -9,39 +9,36 @@ class Settings(BaseSettings):
     """
     version: str = '0.0.0'
     development: bool = False
+    testing: bool = False
 
     db_host: str = 'localhost'
     db_user: str = ''
     db_password: str = ''
-    db_database_games: str = 'db_games'
-    db_database_users: str = 'db_users'
-    database_games: str = ''
-    database_users: str = ''
+    db_games: str = 'db_games'
+    db_users: str = 'db_users'
 
-    def populate_database(cls, v, values):
-        """Create a dict with the correct settings for development or production database
-        Achived through this reusable validator, which collects the validated values and uses them to complete
-        the attributes 'database_games' and 'database_users'.
+    def generate_db_dict(cls, v, values):
+        """Output a dictionary with the correct settings for development or production database
+        db_games and db_users are called via the decorator functions below and receive the validator value as "v".
         """
-        if 'database_games' in values:
-            current = values.get('db_database_users')
-        else:
-            current = values.get('db_database_games')
 
         if 'development' in values:
-            filename = current + '.sqlite'
+            filename = v + '.sqlite'
             return {'provider': 'sqlite', 'filename': filename, 'create_db': True}
+        if 'testing' in values:
+            return {'provider': 'sqlite', 'filename': ':memory:'}
         else:
             return {
                 'provider': 'mysql',
                 'host': values.get('db_host'),
                 'user': values.get('db_user'),
                 'passwd': values.get('db_password'),
-                'db': current
+                'db': v,
             }
 
     # Closures/Decorators: func()()
-    # assignment used to execute classmethod
-    _check_games = validator("database_games", always=True, allow_reuse=True)(populate_database)
-    _check_users = validator("database_users", allow_reuse=True)(populate_database)
+    # This works like a decorator on generate_db_dict()
+    # The assignment is used to activate them, will be exectued when e.g. settings.db_games is called in main.py
+    _generate_games_dict = validator("db_games", always=True, allow_reuse=True)(generate_db_dict)
+    _generate_users_dict = validator("db_users", allow_reuse=True)(generate_db_dict)
 

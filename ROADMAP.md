@@ -57,6 +57,7 @@
   - [ ] ...
 - [ ] 0.5.7 Statistics working
   - [ ] ...
+- [x] 0.5.8 API documentation with OpenAPI
 
 > Note: Careful before updating old version. Review backup_script: user & game_meta 
 > and test with web:master first, v0.5 might not be stable!

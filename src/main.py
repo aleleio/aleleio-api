@@ -34,10 +34,10 @@ def init_database():
     Settings are prepared in pydantic Settings class (/src/config.py)
     Different database settings, depending on whether envar 'DEVELOPMENT' is set
     """
-    db_games.bind(**settings.database_games)
+    db_games.bind(**settings.db_games)
     db_games.generate_mapping(create_tables=True)
 
-    db_users.bind(**settings.database_users)
+    db_users.bind(**settings.db_users)
     db_users.generate_mapping(create_tables=True)
 
     set_sql_debug(True)
