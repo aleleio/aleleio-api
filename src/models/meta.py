@@ -54,7 +54,7 @@ class VersionChangeset(db_games.Entity):
 
 class GameStatistic(db_games.Entity):
     """Search statistics for each individual game.
-    New in 0.6: Directly link the queries, in which a game appeared
+    New in 0.6: Directly link the queries in which a game appeared
     """
     game = Required(lambda: db_games.Game)
     queries = Set(lambda: QueryStatistic)

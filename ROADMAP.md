@@ -40,15 +40,16 @@
 - [ ] 0.5.3 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working
+  - [ ] github actions set up
   - [ ] ...
-- [ ] 0.5.4 User Authentication working
-  - [ ] ...
-- [ ] 0.5.5 Core Logic working
+- [ ] 0.5.4 Core Logic working
   - [ ] filtering games
   - [ ] READ game working
   - [ ] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
+  - [ ] ...
+- [ ] 0.5.5 User Authentication working   
   - [ ] ...
 - [ ] 0.5.6 Basic validation working
   - [x] set up pydantic correctly

@@ -11,19 +11,14 @@ from pydantic.main import BaseModel
 from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum
 
 
-class BasicFilter(BaseModel):
+class GameQuery(BaseModel):
+    # Basic Query
     game_type: Optional[GameTypeEnum]
     group_size: Optional[GroupSizeEnum]
     game_length: Optional[GameLengthEnum]
-
-
-class GroupNeedsFilter(BaseModel):
+    # Group Needs Query
     main: Optional[GroupNeedEnum]
     aux1: Optional[GroupNeedEnum]
     aux2: Optional[GroupNeedEnum]
-
-
-class GameQuery(BaseModel):
-    basic: Optional[BasicFilter] = None
-    group_needs: Optional[GroupNeedsFilter] = None
+    # Additional Options
     limit: Optional[int]

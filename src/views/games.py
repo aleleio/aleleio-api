@@ -9,21 +9,7 @@ router = fastapi.APIRouter()
 @router.get('/games', tags=['games'])
 def all_games_view(query: GameQuery = Depends()):
     # http GET http://localhost:8000/games group_needs:='{"main": "name"}'
-    limit = query.limit
-    if query.basic:
-        return {
-            "game_type": query.basic.game_type,
-            "group_size": query.basic.group_size,
-            "game_length": query.basic.game_length,
-        }
-    elif query.group_needs:
-        return {
-            "main": query.group_needs.main,
-            "aux1": query.group_needs.aux1,
-            "aux2": query.group_needs.aux2,
-        }
-    else:
-        return {"result": "all games"}
+    return {"result": "all games"}
 
 
 @router.get('/games/{game_id}', tags=['games'])

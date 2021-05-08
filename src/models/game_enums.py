@@ -73,21 +73,22 @@ class GroupSizeEnum(Enum):
 
 class GroupNeedEnum(Enum):
     FIRST = "first"
-    ENERGY = "ener"
-    HONESTY = "hon"
-    STRATEGY = "strat"
-    INSPIRATION = "insp"
-    IDENTITY = "id"
+    ENERGY = "energy"
+    HONESTY = "honesty"
+    STRATEGY = "strategy"
+    INSPIRATION = "inspiration"
+    WHY = "why"
+    IDENTITY = "identity"
 
     @property
     def full(self):
         lookup = {
             "first": "First Steps",
-            "ener": "Group Energy",
-            "hon": "Foster Honesty & Trust",
-            "strat": "Practice Strategy & Co-operation",
-            "insp": "Inspiration",
-            "why": "Team \'Why\'",
-            "id": "Group Identity",
+            "energy": "Group Energy",
+            "honesty": "Foster Honesty & Trust",
+            "strategy": "Practice Strategy & Co-operation",
+            "inspiration": "Inspiration",
+            "why": "Team \"Why\"",
+            "identity": "Group Identity",
         }
         return lookup[self.value]
