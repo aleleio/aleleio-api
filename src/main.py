@@ -23,7 +23,6 @@ api = fastapi.FastAPI(
 def configure():
     """Configure the application
     Get settings with os.getenv() and use settings object in the future
-    ToDo: https://fastapi.tiangolo.com/advanced/settings/#pydantic-settings
     """
     init_database()
     configure_routing()
@@ -34,10 +33,10 @@ def init_database():
     Settings are prepared in pydantic Settings class (/src/config.py)
     Different database settings, depending on whether envar 'DEVELOPMENT' is set
     """
-    db_games.bind(**settings.db_games)
+    db_games.bind(**settings.get_db_games_connection)
     db_games.generate_mapping(create_tables=True)
 
-    db_users.bind(**settings.db_users)
+    db_users.bind(**settings.get_db_users_connection)
     db_users.generate_mapping(create_tables=True)
 
     set_sql_debug(True)

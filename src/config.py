@@ -16,14 +16,20 @@ class Settings(BaseSettings):
     db_password: str = ''
     db_games: str = 'db_games'
     db_users: str = 'db_users'
+    get_db_games_connection: dict = None
+    get_db_users_connection: dict = None
 
     def generate_db_dict(cls, v, values):
         """Output a dictionary with the correct settings for development or production database
         db_games and db_users are called via the decorator functions below and receive the validator value as "v".
         """
+        if v == 'get_db_users_connection':
+            db = values.get('db_users')
+        else:
+            db = values.get('db_games')
 
         if 'development' in values:
-            filename = v + '.sqlite'
+            filename = db + '.sqlite'
             return {'provider': 'sqlite', 'filename': filename, 'create_db': True}
         if 'testing' in values:
             return {'provider': 'sqlite', 'filename': ':memory:'}
@@ -33,12 +39,12 @@ class Settings(BaseSettings):
                 'host': values.get('db_host'),
                 'user': values.get('db_user'),
                 'passwd': values.get('db_password'),
-                'db': v,
+                'db': db,
             }
 
     # Closures/Decorators: func()()
     # This works like a decorator on generate_db_dict()
     # The assignment is used to activate them, will be exectued when e.g. settings.db_games is called in main.py
-    _generate_games_dict = validator("db_games", always=True, allow_reuse=True)(generate_db_dict)
-    _generate_users_dict = validator("db_users", allow_reuse=True)(generate_db_dict)
+    _generate_games_dict = validator("get_db_games_connection", always=True, allow_reuse=True)(generate_db_dict)
+    _generate_users_dict = validator("get_db_users_connection", allow_reuse=True)(generate_db_dict)
 
