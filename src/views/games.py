@@ -2,11 +2,14 @@
 Routes for all /game and /games related operations
 
 """
+from typing import List
+
 import fastapi
 from fastapi import Depends
 
-from src.models import GameQuery
+from src.models import GameQuery, PostRequestGame
 from src.services import searching
+from src.services.create import create_game
 
 router = fastapi.APIRouter()
 
@@ -25,8 +28,11 @@ def single_game_view(game_id: int):
 
 
 @router.post('/games', tags=['games'])
-def create_game_view():
-    pass
+def create_game_view(request_objects: List[PostRequestGame]):
+    result = create_game(request_objects)
+    # statistics.post_create_game(user, request, result)
+    # log(user, request, result)
+    return result
 
 
 @router.patch('/games/{game_id}', tags=['games'])

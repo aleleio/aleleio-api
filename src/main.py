@@ -3,11 +3,11 @@ from pathlib import Path
 import fastapi
 
 from starlette.staticfiles import StaticFiles
-from pony.orm import set_sql_debug
+from pony.orm import set_sql_debug, db_session
 
 from src.config import Settings
-from src.models import db_games, db_users
-
+from src.models import db_games, db_users, GameType, GameTypeEnum, GameLengthEnum, GameLength, GroupSizeEnum, GroupSize, \
+    GroupNeedEnum, GroupNeed
 
 project_root = Path(__file__).parent.parent
 env_path = project_root.joinpath('.env')
@@ -25,6 +25,7 @@ def configure():
     Get settings with os.getenv() and use settings object in the future
     """
     init_database()
+    seed_database()
     configure_routing()
 
 
@@ -40,6 +41,19 @@ def init_database():
     db_users.generate_mapping(create_tables=True)
 
     set_sql_debug(True)
+
+
+@db_session
+def seed_database():
+    if not GameType.get(slug="ice"):
+        for item in GameTypeEnum:
+            GameType(slug=item.value, full=item.full)
+        for item in GameLengthEnum:
+            GameLength(slug=item.value, full=item.full)
+        for item in GroupSizeEnum:
+            GroupSize(slug=item.value, full=item.full)
+        for item in GroupNeedEnum:
+            GroupNeed(slug=item.value, full=item.full)
 
 
 def configure_routing():

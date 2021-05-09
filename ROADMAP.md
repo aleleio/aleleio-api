@@ -45,7 +45,7 @@
 - [ ] 0.5.4 Core Logic working
   - [ ] filtering games
   - [ ] READ game working
-  - [ ] CREATE game working
+  - [x] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
   - [ ] ...
