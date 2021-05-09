@@ -12,7 +12,7 @@ useful, when they are not linked or to initialize the database.
 from enum import Enum
 
 
-class GameTypeEnum(Enum):
+class GameTypeEnum(str, Enum):
     ICE = "ice"
     ENER = "ener"
     TRUST = "trust"
@@ -39,7 +39,7 @@ class GameTypeEnum(Enum):
         return lookup[self.value]
 
 
-class GameLengthEnum(Enum):
+class GameLengthEnum(str, Enum):
     SHORT = "short"
     MEDIUM = "medium"
     LONG = "long"
@@ -54,7 +54,7 @@ class GameLengthEnum(Enum):
         return lookup[self.value]
 
 
-class GroupSizeEnum(Enum):
+class GroupSizeEnum(str, Enum):
     SMALL = "small"
     LARGE = "large"
     MULTIPLE = "multiple"
@@ -71,7 +71,7 @@ class GroupSizeEnum(Enum):
         return lookup[self.value]
 
 
-class GroupNeedEnum(Enum):
+class GroupNeedEnum(str, Enum):
     FIRST = "first"
     ENERGY = "energy"
     HONESTY = "honesty"

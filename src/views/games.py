@@ -1,19 +1,26 @@
+"""
+Routes for all /game and /games related operations
+
+"""
 import fastapi
 from fastapi import Depends
 
 from src.models import GameQuery
+from src.services import searching
 
 router = fastapi.APIRouter()
 
 
 @router.get('/games', tags=['games'])
-def all_games_view(query: GameQuery = Depends()):
-    # http GET http://localhost:8000/games group_needs:='{"main": "name"}'
-    return {"result": "all games"}
+def all_games_view(query: GameQuery = Depends(GameQuery)):
+    result = searching.all_games(query)
+    # statistics.get_all_games(user, query, result)
+    # log(user, query, result)
+    return result
 
 
 @router.get('/games/{game_id}', tags=['games'])
-def single_game_view(game_id):
+def single_game_view(game_id: int):
     pass
 
 
