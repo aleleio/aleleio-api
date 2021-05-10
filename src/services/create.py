@@ -42,6 +42,7 @@ def create_game_relationships(game: Game, request: PostRequestGame):
         game.group_sizes.add(GroupSize.get(slug=item))
     for item in request.group_needs:
         group_need = GroupNeed.get(slug=item.slug)
+        print(group_need)
         GroupNeedScore(game=game, group_need=group_need, value=item.score)
 
 

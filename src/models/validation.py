@@ -46,3 +46,14 @@ class PostRequestGame(BaseModel):
 
     class Config:
         extra = 'forbid'  # forbid additional attributes
+        schema_extra = {
+            "example": {
+                    "names": ["Alele Kita Bonga", "Alele Kita Conga"],
+                    "descriptions": ["This call and response song is about the worship of watermelons (or fish?). Position yourself in a big circle and have participants repeat these lyrics after you:..."],
+                    "game_types": ["ice", "ener"],
+                    "group_sizes": ["large", "multiple", "event"],
+                    "game_lengths": ["short"],
+                    "group_needs": [{"slug": "energy", "score": 80}],
+                    "scalable": "true",
+                }
+            }
