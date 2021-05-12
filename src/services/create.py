@@ -4,7 +4,7 @@ from typing import List
 
 from pony.orm import db_session
 
-from src.models import Game, GameMeta, PostRequestGame, GameType, GameLength, GroupSize, GroupNeedScore, GroupNeed, \
+from src.models import Game, GameIn, GameType, GameLength, GroupSize, GroupNeedScore, GroupNeed, \
     Name, Material
 
 
@@ -19,7 +19,7 @@ def slugify(value):
     return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 
-def create_game_bools(game: Game, request: PostRequestGame):
+def create_game_bools(game: Game, request: GameIn):
     """Step 1: Create Game properties with a simple True/False value.
     """
     request_bools = {
@@ -31,7 +31,7 @@ def create_game_bools(game: Game, request: PostRequestGame):
     game.set(**request_bools)
 
 
-def create_game_relationships(game: Game, request: PostRequestGame):
+def create_game_relationships(game: Game, request: GameIn):
     """Step 2: Create Game properties that rely on Enums/Many-to-Many relationships.
     """
     for item in request.game_types:
@@ -42,11 +42,10 @@ def create_game_relationships(game: Game, request: PostRequestGame):
         game.group_sizes.add(GroupSize.get(slug=item))
     for item in request.group_needs:
         group_need = GroupNeed.get(slug=item.slug)
-        print(group_need)
         GroupNeedScore(game=game, group_need=group_need, value=item.score)
 
 
-def create_game_unique(game: Game, request: PostRequestGame):
+def create_game_unique(game: Game, request: GameIn):
     """Step 3: Create Game properties that don't fit into other categories.
     """
     for item in request.names:
@@ -66,8 +65,8 @@ def create_game_unique(game: Game, request: PostRequestGame):
 
 
 @db_session
-def create_game(request_objects: List[PostRequestGame]):
-    """Create one or several new games from the given list of PostRequestGame and save them in the database.
+def create_game(request_objects: List[GameIn]):
+    """Create one or several new games from the given list of GameIn and save them in the database.
     """
     created_games = []
 
@@ -76,8 +75,7 @@ def create_game(request_objects: List[PostRequestGame]):
         create_game_bools(game=new_game, request=request)
         create_game_relationships(game=new_game, request=request)
         create_game_unique(game=new_game, request=request)
-        created_games.append(new_game.id)
-
         # GameMeta(game=new_game, author_id=user.id)
+        created_games.append(new_game.id)
 
     return created_games

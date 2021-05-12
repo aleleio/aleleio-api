@@ -7,7 +7,7 @@ and create useful documentation.
 from typing import Optional, List
 
 from pydantic.fields import Field
-from pydantic.main import BaseModel
+from pydantic.main import BaseModel, create_model
 
 from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum
 
@@ -25,18 +25,37 @@ class GameQuery(BaseModel):
     limit: Optional[int]
 
 
-class GroupNeedCreation(BaseModel):
+class GameOut(BaseModel):
+    id: int
+    names: List[create_model('names', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
+    descriptions: List[create_model('descriptions', text=(str, ...))] = Field(..., min_items=1)
+    game_types: List[create_model('game_types', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
+    game_lengths: List[create_model('game_lengths', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
+    group_sizes: List[create_model('group_sizes', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
+    group_needs: List[create_model('group_needs', slug=(str, ...), full=(str, ...), value=(int, ...))]
+    materials: List[str]
+    prior_prep: str
+    exhausting: bool
+    touching: bool
+    scalable: bool
+    digital: bool
+
+    # class Config:
+    #     extra = 'forbid'
+
+
+class GameInGroupNeed(BaseModel):
     slug: GroupNeedEnum = Field(..., min_length=1)
     score: int = Field(..., ge=0, lt=100)
 
 
-class PostRequestGame(BaseModel):
+class GameIn(BaseModel):
     names: List[str] = Field(..., min_items=1, min_length=1)
     descriptions: List[str] = Field(..., min_items=1, min_length=1)
     game_types: List[GameTypeEnum] = Field(..., min_items=1)
     game_lengths: List[GameLengthEnum] = Field(..., min_items=1)
     group_sizes: List[GroupSizeEnum] = Field(..., min_items=1)
-    group_needs: List[GroupNeedCreation] = list()  # optional, but needs to be iterable
+    group_needs: List[GameInGroupNeed] = list()  # optional, but needs to be iterable
     materials: List[str] = list()  # optional, but needs to be iterable
     prior_prep: str = Field(None, min_length=1)
     exhausting: bool = False
