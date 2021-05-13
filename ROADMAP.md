@@ -37,28 +37,34 @@
   - [x] create diagram on editor.ponyorm.com
   - [x] get pony.orm to run locally
   - [x] set up configuration correctly
-- [ ] 0.5.3 Testing from the start
+- [ ] 0.5.3 Import/Export of Games
+  - [x] get json from api-legacy
+  - [x] export to markdown
+  - [ ] import from github
+- [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working
   - [ ] github actions set up
   - [ ] ...
-- [ ] 0.5.4 Core Logic working
+- [ ] 0.5.5 Core Logic working
   - [ ] filtering games
-  - [ ] READ game working
+  - [x] READ game working
   - [x] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
   - [ ] ...
-- [ ] 0.5.5 User Authentication working   
+- [ ] 0.5.6 User Authentication working   
+  - [ ] auth with github 
   - [ ] ...
-- [ ] 0.5.6 Basic validation working
+- [ ] 0.5.7 Basic validation working
   - [x] set up pydantic correctly
   - [x] use pydantic to validate settings
-  - [ ] validate user input
+  - [x] validate user input
   - [ ] ...
-- [ ] 0.5.7 Statistics working
+- [ ] 0.5.7 Meta and Statistics working
   - [ ] ...
-- [x] 0.5.8 API documentation with OpenAPI
+- [ ] 0.5.8 API documentation with OpenAPI
+
 
 > Note: Careful before updating old version. Review backup_script: user & game_meta 
 > and test with web:master first, v0.5 might not be stable!
@@ -67,24 +73,23 @@
 - docstrings complete
 - good enough test coverage
 - logging and sentry.io
-- auto-generate readme with swagger
+- fine-tune the readme with OpenAPI 
 - shut down legacy-api v0.5
 
 ### 0.8 Improve and Speedup
 - versions working again
-- revise auth: maybe oauth?
 - caching / async speed up
   
 ### 0.9 New Toys
 - collections of games
-- complete enum implementation (?)
+- revise auth / oauth / github
 
 
 
 ---
 **Links**
 
-0.7
+0.5.6, 0.9
 - authorization vs authentication (identity) - don't authorize admin/web with API keys?
 - https://oauth.net/
 - https://www.youtube.com/watch?v=mGSp-vsewxI
