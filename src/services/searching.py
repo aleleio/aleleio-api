@@ -31,5 +31,7 @@ def all_games(query: GameQuery):
 
     for game in all_games:
         result = list(format_game(game))
+    else:
+        result = []
 
     return result

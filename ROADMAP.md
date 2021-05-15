@@ -40,7 +40,9 @@
 - [ ] 0.5.3 Import/Export of Games
   - [x] get json from api-legacy
   - [x] export to markdown
-  - [ ] import from github
+  - [x] import from github
+  - [ ] don't overwrite exisiting
+  - [ ] add private data (stats, ...)
 - [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working

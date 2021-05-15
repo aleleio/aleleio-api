@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from src.main import api as app, configure
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def client():
     client = TestClient(app)
     configure()
