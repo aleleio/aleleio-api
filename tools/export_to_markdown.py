@@ -58,9 +58,9 @@ def write_dict_to_md(game: GameIn):
     if game.materials:
         md.append('materials:')
         for m in game.materials:
-            md.append(f'  - {m}')
+            md.append(f'  - \"{m}\"')
     if game.prior_prep:
-        md.append(f'prior_prep: {game.prior_prep}')
+        md.append(f'prior_prep: \"{game.prior_prep}\"')
     md.append(f'exhausting: {game.exhausting}')
     md.append(f'touching: {game.touching}')
     md.append(f'scalable: {game.scalable}')

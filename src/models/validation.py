@@ -46,7 +46,7 @@ class GameOut(BaseModel):
 
 class GameInGroupNeed(BaseModel):
     slug: GroupNeedEnum = Field(..., min_length=1)
-    score: int = Field(..., ge=0, lt=100)
+    score: int = Field(..., ge=0, le=5)
 
 
 class GameIn(BaseModel):
