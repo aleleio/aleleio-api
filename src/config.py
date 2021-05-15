@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     Envars can be provided through a .env file for local development.
     """
     version: str = '0.0.0'
-    development: bool = False
+    production: bool = False
     testing: bool = False
 
     db_host: str = 'localhost'

@@ -10,9 +10,13 @@ class GameMeta(db_games.Entity):
 
     timestamp = Required(datetime, default=datetime.utcnow)
     author_id = Required(int)
+    license = Optional(str)
+    license_url = Optional(str)
+    license_owner = Optional(str)
+    license_owner_url = Optional(str)
 
 
-class Source(db_games.Entity):
+class Reference(db_games.Entity):
     games = Set(lambda: db_games.Game)
 
     slug = Required(str)

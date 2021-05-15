@@ -4,7 +4,6 @@
 # Development
 .env
 *.sqlite
-/tools/tmp/
 /tools/games/
 
 # Byte-compiled / optimized / DLL files
