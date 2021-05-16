@@ -42,7 +42,9 @@
   - [x] export to markdown
   - [x] import from github
   - [ ] don't overwrite exisiting
+  - [ ] add licenses
   - [ ] add private data (stats, ...)
+  - [ ] make tools regular route (move to views/services) to facilitate automation 
 - [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
   - [ ] testing with orm working

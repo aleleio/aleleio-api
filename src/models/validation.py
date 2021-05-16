@@ -62,8 +62,12 @@ class GameIn(BaseModel):
     touching: bool = False
     scalable: bool = False
     digital: bool = False
+    license: str = "CC BY-SA 4.0"
+    license_url: str = "https://creativecommons.org/licenses/by-sa/4.0/"
+    license_owner: str = "European Youth Parliament"
+    license_owner_url: str = "https://eyp.org/"
 
-    class Config:
+class Config:
         extra = 'forbid'  # forbid additional attributes
         schema_extra = {
             "example": {

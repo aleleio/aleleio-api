@@ -18,8 +18,8 @@ class GameMeta(db_games.Entity):
 
 class Reference(db_games.Entity):
     games = Set(lambda: db_games.Game)
-
     slug = Required(str)
+
     full = Required(str)
     url = Optional(str)
 
