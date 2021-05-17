@@ -62,6 +62,8 @@ def create_game_unique(game: Game, request: GameIn):
             game.materials.add(found_item)
         else:
             game.materials.create(slug=slug, full=item)
+    if request.prior_prep is not None:
+        game.prior_prep = request.prior_prep
 
 
 @db_session
@@ -69,13 +71,19 @@ def create_game(request_objects: List[GameIn]):
     """Create one or several new games from the given list of GameIn and save them in the database.
     """
     created_games = []
+    errors = []
 
     for request in request_objects:
-        new_game = Game()
-        create_game_bools(game=new_game, request=request)
-        create_game_relationships(game=new_game, request=request)
-        create_game_unique(game=new_game, request=request)
-        # GameMeta(game=new_game, author_id=user.id)
+        try:
+            new_game = Game()
+            create_game_bools(game=new_game, request=request)
+            create_game_relationships(game=new_game, request=request)
+            create_game_unique(game=new_game, request=request)
+            # GameMeta(game=new_game, author_id=user.id)
+        except ValueError as err:
+            errors.append(err)
+            new_game.delete()
+            continue
         created_games.append(new_game.id)
 
-    return created_games
+    return created_games, errors

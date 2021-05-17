@@ -40,7 +40,7 @@ def init_database():
     db_users.bind(**settings.get_db_users_connection)
     db_users.generate_mapping(create_tables=True)
 
-    set_sql_debug(True)
+    set_sql_debug(False)
 
 
 @db_session

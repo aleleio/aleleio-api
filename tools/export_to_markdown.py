@@ -19,6 +19,7 @@ def convert_json_to_dict():
     games = []
     for g in data:
         gl_substitute = {'10': 'short', '30': 'medium', '120': 'long'}
+        gn_substitute = {'names': 'first', 'ener': 'energy', 'hon': 'honesty', 'strat': 'strategy', 'insp': 'inspiration', 'why': 'why', 'id': 'identity'}
         game = GameIn(
             names=[n['text'] for n in g['name']],
             descriptions=[d['text'] for d in g['description']],
@@ -26,7 +27,7 @@ def convert_json_to_dict():
             game_types=g['game_type'],
             game_lengths=[gl_substitute[i] for i in g['game_length']],
             group_sizes=g['group_size'],
-            group_needs=[{"slug": k, "score": v} for k, v in g['group_needs'].items()],
+            group_needs=[{"slug": gn_substitute[k], "score": v} for k, v in g['group_needs'].items()],
             prior_prep=g['prior_prep'] if g['prior_prep'] else None,
             exhausting=g['exhausting'],
             touching=g['touching'],
@@ -58,9 +59,11 @@ def write_dict_to_md(game: GameIn):
     if game.materials:
         md.append('materials:')
         for m in game.materials:
-            md.append(f'  - \"{m}\"')
+            clean_m = m.replace('"', '\\"')
+            md.append(f'  - \"{clean_m}\"')
     if game.prior_prep:
-        md.append(f'prior_prep: \"{game.prior_prep}\"')
+        clean_pp = game.prior_prep.replace('"', '\\"')
+        md.append(f'prior_prep: \"{clean_pp}\"')
     md.append(f'exhausting: {game.exhausting}')
     md.append(f'touching: {game.touching}')
     md.append(f'scalable: {game.scalable}')

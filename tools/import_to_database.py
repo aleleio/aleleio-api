@@ -79,7 +79,6 @@ def convert_md_to_game(md) -> Union[GameIn, None]:
         tokens = markdown(game.get('content'))
         is_description = 0
         for token in tokens:
-            print('game_md token:', token)
             if token['type'] == 'heading' and token['level'] == 1:
                 game['names'].append(token['children'][0]['text'])
                 is_description = 0
@@ -88,20 +87,36 @@ def convert_md_to_game(md) -> Union[GameIn, None]:
                 is_description = 1
                 continue
             elif is_description > 0:
-                if is_description == 1 and not token['type'] == 'list':
-                    game['descriptions'].append(token['children'][0]['text'])
-                elif is_description > 1:
-                    previous_description = game['descriptions'].pop()
-                    description = f"{previous_description}\n\n{token['children'][0]['text']}"
-                    game['descriptions'].append(description)
+                if not token['type'] == 'list':
+                    if is_description == 1:
+                        game['descriptions'].append(token['children'][0]['text'])
+                    elif is_description > 1:
+                        previous_description = game['descriptions'].pop()
+                        description = f"{previous_description}\n\n{token['children'][0]['text']}"
+                        game['descriptions'].append(description)
                 else:
                     # Todo: Make this better. This happens, when the token/paragraph starts with a '1.'
-                    game['descriptions'].append(token['children'][0]['children'][0]['children'][0]['text/'])
+                    if is_description == 1:
+                        game['descriptions'].append(token['children'][0]['children'][0]['children'][0]['text'])
+                    elif is_description > 1:
+                        previous_description = game['descriptions'].pop()
+                        description = f"{previous_description}\n\n{token['children'][0]['children'][0]['children'][0]['text']}"
+                        game['descriptions'].append(description)
                 is_description += 1
 
         del game['content']
 
         return GameIn(**game)
+
+
+def write_games_to_database(games):
+    """Use the API functions to validate and insert the games into the database
+    Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
+    """
+    main.configure()
+    created_games, errors = create.create_game(games)
+    print(f'Created ({len(created_games)}):', created_games)
+    print(f'Errors ({len(errors)}):', errors)
 
 
 def convert_yml_to_ref(ref_yml):
@@ -110,53 +125,53 @@ def convert_yml_to_ref(ref_yml):
     with open(ref_yml, 'r') as fin:
         ymls = yaml.safe_load_all(fin)
         for yml in ymls:
-            print(yml)
+            # print(yml)
             # Todo: find refer-to by slug and add reference
-
-
-def write_games_to_database(games):
-    """Use the API functions to validate and insert the games into the database
-    Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
-    """
-    main.configure()
-    create.create_game(games)
+            pass
 
 
 def run_local():
+    print('RUNNING IMPORT-TO-DATABASE LOCALLY')
+    print('----------------------------------')
     project_root = Path(__file__).parent.parent
     local_games_folder = project_root.joinpath('tools', 'games')
     local_refs_folder = project_root.joinpath('tools', 'references')
     games = get_files_from_local(local_games_folder)
     refs = get_files_from_local(local_refs_folder)
-    print('Read games & references inside.')
+    print(f'Reading games & references from {project_root}/tools/')
     return games, refs
 
 
 def run_github():
+    print('RUNNING IMPORT-TO-DATABASE FROM GITHUB')
+    print('----------------------------------')
     download_folder = get_games_from_github()
     download_games_folder = download_folder.joinpath('games')
     download_refs_folder = download_folder.joinpath('references')
     games = get_files_from_local(download_games_folder)
     refs = get_files_from_local(download_refs_folder)
-    print('Read games & references inside.')
+    print(f'Reading games & references from {download_folder}.')
     return games, refs
 
 
 if __name__ == '__main__':
-    games, refs = run_local()
-    # games, refs = run_github()
+    game_paths, ref_paths = run_local()
+    # game_paths, ref_paths = run_github()
 
-    for md in games[:2]:
+    game_list = []
+    alias_list = []
+    for md in game_paths:
         game = convert_md_to_game(md)
         if game is not None:
-            print(game)
-            # Todo: write_games_to_database()
-            pass
+            game_list.append(game)
         else:
-            print('is alias')
+            alias_list.append(md)
 
-    for ref_yml in refs:
-        ref = convert_yml_to_ref(ref_yml)
+    print('Writing games to database')
+    write_games_to_database(game_list)
+
+    for yml in ref_paths:
+        ref = convert_yml_to_ref(yml)
 
     # Remove tmp/repo/ folder with games
     # shutil.rmtree(download_folder)

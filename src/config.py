@@ -1,3 +1,4 @@
+from typing import Optional
 
 from pydantic.class_validators import validator
 from pydantic.env_settings import BaseSettings
@@ -6,10 +7,11 @@ from pydantic.env_settings import BaseSettings
 class Settings(BaseSettings):
     """Parse environment variables into a settings object
     Envars can be provided through a .env file for local development.
+    Do not give bools a default value, they should only be checked for presence.
     """
     version: str = '0.0.0'
-    production: bool = False
-    testing: bool = False
+    production: Optional[bool]
+    testing: Optional[bool]
 
     db_host: str = 'localhost'
     db_user: str = ''
@@ -28,12 +30,7 @@ class Settings(BaseSettings):
         else:
             db = values.get('db_games')
 
-        if 'development' in values:
-            filename = db + '.sqlite'
-            return {'provider': 'sqlite', 'filename': filename, 'create_db': True}
-        if 'testing' in values:
-            return {'provider': 'sqlite', 'filename': ':memory:'}
-        else:
+        if values.get('production') is not None:
             return {
                 'provider': 'mysql',
                 'host': values.get('db_host'),
@@ -41,6 +38,12 @@ class Settings(BaseSettings):
                 'passwd': values.get('db_password'),
                 'db': db,
             }
+        elif values.get('testing') is not None:
+            return {'provider': 'sqlite', 'filename': ':memory:'}
+        else:
+            filename = db + '.sqlite'
+            return {'provider': 'sqlite', 'filename': filename, 'create_db': True}
+
 
     # Closures/Decorators: func()()
     # This works like a decorator on generate_db_dict()

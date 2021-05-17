@@ -29,7 +29,7 @@ def single_game_view(game_id: int):
 
 @router.post('/games', tags=['games'])
 def create_game_view(request_objects: List[GameIn]):
-    result = create_game(request_objects)
+    result, errors = create_game(request_objects)
     # statistics.post_create_game(user, request, result)
     # log(user, request, result)
     return result
