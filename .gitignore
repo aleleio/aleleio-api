@@ -5,6 +5,7 @@
 .env
 *.sqlite
 /tools/games/
+/tools/references/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

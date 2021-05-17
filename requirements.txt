@@ -21,3 +21,6 @@ email-validator
 # testing
 pytest
 requests
+
+# tools
+pyyaml
