@@ -10,10 +10,15 @@ class GameMeta(db_games.Entity):
 
     timestamp = Required(datetime, default=datetime.utcnow)
     author_id = Required(int)
-    license = Optional(str)
-    license_url = Optional(str)
-    license_owner = Optional(str)
-    license_owner_url = Optional(str)
+
+
+class License(db_games.Entity):
+    games = Set(lambda: db_games.Game)
+
+    name = Required(str, default="CC BY-SA 4.0")
+    url = Optional(str, default="https://creativecommons.org/licenses/by-sa/4.0/")
+    owner = Optional(str, default="European Youth Parliament")
+    owner_url = Optional(str, default="https://eyp.org/")
 
 
 class Reference(db_games.Entity):

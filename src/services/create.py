@@ -5,7 +5,7 @@ from typing import List
 from pony.orm import db_session
 
 from src.models import Game, GameIn, GameType, GameLength, GroupSize, GroupNeedScore, GroupNeed, \
-    Name, Material
+    Name, Material, GameMeta, License
 
 
 def slugify(value):
@@ -66,6 +66,15 @@ def create_game_unique(game: Game, request: GameIn):
         game.prior_prep = request.prior_prep
 
 
+def create_game_meta(game: Game, request: GameIn):
+    """
+    """
+    GameMeta(
+        game=game,
+        author_id=1,  # Todo: Validation with actual User!
+    )
+
+
 @db_session
 def create_game(request_objects: List[GameIn]):
     """Create one or several new games from the given list of GameIn and save them in the database.
@@ -75,11 +84,11 @@ def create_game(request_objects: List[GameIn]):
 
     for request in request_objects:
         try:
-            new_game = Game()
+            new_game = Game(license=License(**request.license.dict()))
             create_game_bools(game=new_game, request=request)
             create_game_relationships(game=new_game, request=request)
             create_game_unique(game=new_game, request=request)
-            # GameMeta(game=new_game, author_id=user.id)
+            create_game_meta(game=new_game, request=request)
         except ValueError as err:
             errors.append(err)
             new_game.delete()

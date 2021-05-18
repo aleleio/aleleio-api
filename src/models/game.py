@@ -17,6 +17,7 @@ class Game(db_games.Entity):
     group_need_scores = Set(lambda: GroupNeedScore)
 
     meta = Optional(lambda: db_games.GameMeta, cascade_delete=True)
+    license = Required(lambda: db_games.License)
     references = Set(lambda: db_games.Reference)
     collections = Set(lambda: db_games.Collection)
     versions = Set(lambda: db_games.Version)

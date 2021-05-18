@@ -24,7 +24,8 @@ def all_games_view(query: GameQuery = Depends(GameQuery)):
 
 @router.get('/games/{game_id}', tags=['games'])
 def single_game_view(game_id: int):
-    pass
+    result = searching.single_game(game_id)
+    return result
 
 
 @router.post('/games', tags=['games'])

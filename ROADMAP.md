@@ -42,8 +42,7 @@
   - [x] export to markdown
   - [x] import from github
   - [x] don't overwrite exisiting
-  - [x] add licenses
-  - [ ] add private data (stats, ...)
+  - [x] add meta: licenses, refs
   - [ ] make tools regular route (move to views/services) to facilitate automation 
 - [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
@@ -56,18 +55,19 @@
   - [x] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
-  - [ ] ...
 - [ ] 0.5.6 User Authentication working   
-  - [ ] auth with github 
-  - [ ] ...
+  - [ ] auth with github?
+  - [ ] API keys 
 - [ ] 0.5.7 Basic validation working
   - [x] set up pydantic correctly
   - [x] use pydantic to validate settings
   - [x] validate user input
   - [ ] ...
-- [ ] 0.5.7 Meta and Statistics working
+- [ ] 0.5.7 Statistics working
+  - [ ] add stats (private, independent) and create tools to import 
   - [ ] ...
 - [ ] 0.5.8 API documentation with OpenAPI
+- [ ] 0.5.9 Premium Features
 
 
 > Note: Careful before updating old version. Review backup_script: user & game_meta 

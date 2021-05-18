@@ -71,10 +71,6 @@ def convert_md_to_game(md) -> Union[GameIn, None]:
         game = md.to_dict()
         game['names'] = list()
         game['descriptions'] = list()
-        game['license_url'] = game['license']['url']
-        game['license_owner'] = game['license']['owner']
-        game['license_owner_url'] = game['license']['owner_url']
-        game['license'] = game['license']['name']
         markdown = mistune.create_markdown(renderer='ast')
         tokens = markdown(game.get('content'))
         is_description = 0

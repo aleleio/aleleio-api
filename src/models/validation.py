@@ -4,12 +4,13 @@ Pydantic Models for Validation
 FastAPI uses type hints together with pydantics models to validate the API inputs, generate helpful error responses
 and create useful documentation.
 """
+import datetime
 from typing import Optional, List
 
 from pydantic.fields import Field
 from pydantic.main import BaseModel, create_model
 
-from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum
+from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum, Game
 
 
 class GameQuery(BaseModel):
@@ -33,15 +34,19 @@ class GameOut(BaseModel):
     game_lengths: List[create_model('game_lengths', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
     group_sizes: List[create_model('group_sizes', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
     group_needs: List[create_model('group_needs', slug=(str, ...), full=(str, ...), value=(int, ...))]
-    materials: List[str]
+    materials: List[create_model('materials', slug=(str, ...), full=(str, ...))]
     prior_prep: str
     exhausting: bool
     touching: bool
     scalable: bool
     digital: bool
+    # Meta
+    meta: create_model('meta', timestamp=(datetime.datetime, ...), author_id=(int, ...))
+    license: create_model('license', name=(str, ...), url=(str, ...), owner=(str, ...), owner_url=(str, ...)) = Field(...)
+    references: List[create_model('references', slug=(str, ...), full=(str, ...))]
 
-    # class Config:
-    #     extra = 'forbid'
+    class Config:
+        extra = 'forbid'
 
 
 class GameInGroupNeed(BaseModel):
@@ -50,11 +55,13 @@ class GameInGroupNeed(BaseModel):
 
 
 class GameIn(BaseModel):
-    names: List[str] = Field(..., min_items=1, min_length=1)
-    descriptions: List[str] = Field(..., min_items=1, min_length=1)
-    game_types: List[GameTypeEnum] = Field(..., min_items=1)
-    game_lengths: List[GameLengthEnum] = Field(..., min_items=1)
-    group_sizes: List[GroupSizeEnum] = Field(..., min_items=1)
+    """Used for Game creation
+    """
+    names: List[str]
+    descriptions: List[str]
+    game_types: List[GameTypeEnum]
+    game_lengths: List[GameLengthEnum]
+    group_sizes: List[GroupSizeEnum]
     group_needs: List[GameInGroupNeed] = list()  # optional, but needs to be iterable
     materials: List[str] = list()  # optional, but needs to be iterable
     prior_prep: str = Field(None, min_length=1)
@@ -62,12 +69,15 @@ class GameIn(BaseModel):
     touching: bool = False
     scalable: bool = False
     digital: bool = False
-    license: str = "CC BY-SA 4.0"
-    license_url: str = "https://creativecommons.org/licenses/by-sa/4.0/"
-    license_owner: str = "European Youth Parliament"
-    license_owner_url: str = "https://eyp.org/"
+    # Meta
+    license: create_model('license',
+                          name="CC BY-SA 4.0",
+                          url="https://creativecommons.org/licenses/by-sa/4.0/",
+                          owner="European Youth Parliament",
+                          owner_url="https://eyp.org/",
+                          )
 
-class Config:
+    class Config:
         extra = 'forbid'  # forbid additional attributes
         schema_extra = {
             "example": {
@@ -76,7 +86,15 @@ class Config:
                     "game_types": ["ice", "ener"],
                     "group_sizes": ["large", "multiple", "event"],
                     "game_lengths": ["short"],
-                    "group_needs": [{"slug": "energy", "score": 80}],
+                    "group_needs": [{"slug": "energy", "score": 4}],
                     "scalable": "true",
                 }
             }
+
+
+class ReferenceIn(BaseModel):
+    game_slug: str
+    full: str
+    url: str
+
+
