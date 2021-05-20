@@ -18,7 +18,7 @@ import requests as requests
 
 # repackage.up()
 
-from src.models import GameIn
+from src.models import GameIn, ReferenceIn
 from src.services import create
 from src import main
 
@@ -109,8 +109,7 @@ def write_games_to_database(games):
     """Use the API functions to validate and insert the games into the database
     Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
-    main.configure()
-    created_games, errors = create.create_game(games)
+    created_games, errors = create.create_games(games)
     print(f'Created ({len(created_games)}):', created_games)
     print(f'Errors ({len(errors)}):', errors)
 
@@ -118,12 +117,21 @@ def write_games_to_database(games):
 def convert_yml_to_ref(ref_yml):
     """Convert Markdown to reference
     """
+    references = []
     with open(ref_yml, 'r') as fin:
         ymls = yaml.safe_load_all(fin)
-        for yml in ymls:
-            # print(yml)
-            # Todo: find refer-to by slug and add reference
-            pass
+        for ref in ymls:
+            ref['game_slug'] = ref.pop('refers_to')
+            references.append(ReferenceIn(**ref))
+    return references
+
+
+def write_references_to_database(references):
+    """
+    """
+    created_refs, errors = create.create_references(references)
+    print(f'Created ({len(created_refs)}):', created_refs)
+    print(f'Errors ({len(errors)}):', errors)
 
 
 def run_local():
@@ -163,11 +171,19 @@ if __name__ == '__main__':
         else:
             alias_list.append(md)
 
+    main.configure()
+
+    print()
     print('Writing games to database')
     write_games_to_database(game_list)
 
+    print()
+    print('Writing references to database')
     for yml in ref_paths:
-        ref = convert_yml_to_ref(yml)
+        print(f"Reading from: {str(yml).split('/').pop()}")
+        refs = convert_yml_to_ref(yml)
+        write_references_to_database(refs)
+
 
     # Remove tmp/repo/ folder with games
     # shutil.rmtree(download_folder)

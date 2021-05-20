@@ -5,7 +5,7 @@ FastAPI uses type hints together with pydantics models to validate the API input
 and create useful documentation.
 """
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Type
 
 from pydantic.fields import Field
 from pydantic.main import BaseModel, create_model
@@ -92,9 +92,15 @@ class GameIn(BaseModel):
             }
 
 
+class CollectionIn(BaseModel):
+    games: List[Type[Game]]
+    full: str
+    slug: Optional[str]
+
+
 class ReferenceIn(BaseModel):
     game_slug: str
     full: str
-    url: str
+    url: Optional[str]
 
 

@@ -5,7 +5,7 @@ from typing import List
 from pony.orm import db_session
 
 from src.models import Game, GameIn, GameType, GameLength, GroupSize, GroupNeedScore, GroupNeed, \
-    Name, Material, GameMeta, License
+    Name, Material, GameMeta, License, ReferenceIn, Reference, CollectionIn, Collection
 
 
 def slugify(value):
@@ -76,23 +76,77 @@ def create_game_meta(game: Game, request: GameIn):
 
 
 @db_session
-def create_game(request_objects: List[GameIn]):
+def create_games(games: List[GameIn]):
     """Create one or several new games from the given list of GameIn and save them in the database.
     """
-    created_games = []
+    created_instances = []
     errors = []
 
-    for request in request_objects:
+    for game in games:
         try:
-            new_game = Game(license=License(**request.license.dict()))
-            create_game_bools(game=new_game, request=request)
-            create_game_relationships(game=new_game, request=request)
-            create_game_unique(game=new_game, request=request)
-            create_game_meta(game=new_game, request=request)
+            new_instance = Game(license=License(**game.license.dict()))
+            create_game_bools(game=new_instance, request=game)
+            create_game_relationships(game=new_instance, request=game)
+            create_game_unique(game=new_instance, request=game)
+            create_game_meta(game=new_instance, request=game)
         except ValueError as err:
             errors.append(err)
-            new_game.delete()
+            new_instance.delete()
             continue
-        created_games.append(new_game.id)
+        created_instances.append(new_instance.id)
 
-    return created_games, errors
+    return created_instances, errors
+
+
+@db_session
+def create_references(references: List[ReferenceIn]):
+    """
+    """
+    created_instances = []
+    errors = []
+
+    for ref in references:
+        try:
+            name = Name.get(lambda n: ref.game_slug in n.slug)
+            game = name.game
+            slug = name.slug + '-ref-' + str(len(game.references))
+            # Todo: Check for duplicates
+            new_instance = Reference(slug=slug, full=ref.full, url=ref.url)
+            new_instance.games.add(game)
+        except ValueError as err:
+            errors.append(err)
+            new_instance.delete()
+            continue
+        created_instances.append(new_instance.slug)
+
+    return created_instances, errors
+
+
+@db_session
+def create_collections(collections: List[CollectionIn]):
+    """
+    """
+    used_instances = []
+    errors = []
+
+    for collection in collections:
+        try:
+            if collection.slug:
+                slug = collection.slug
+            else:
+                slug = slugify(collection.full)
+
+            instance = Collection.get(slug=slug)
+            if not instance:
+                instance = Collection(slug=slug, full=collection.full)
+            used_instances.append(instance)
+
+            for game in collection.games:
+                instance.games.add(game)
+        except ValueError as err:
+            errors.append(err)
+            continue
+        used_instances.append(instance.slug)
+
+    return used_instances, errors
+
