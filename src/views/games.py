@@ -24,7 +24,6 @@ def all_games_view(query: GameQuery = Depends(GameQuery)):
 
 @router.get('/games/{game_id}', tags=['games'], response_model=GameOut)
 def single_game_view(game_id: int):
-    # Todo: Catch game_id that doesn't exist
     result = read.single_game(game_id)
     return result
 

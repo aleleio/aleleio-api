@@ -28,7 +28,9 @@ def format_game(game):
 @db_session
 def single_game(game_id: int):
     game = Game.get(id=game_id)
-    return format_game(game)
+    if game is not None:
+        return format_game(game)
+    return None
 
 
 @db_session
