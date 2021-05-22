@@ -33,4 +33,5 @@ def single_game(game_id: int):
 @db_session
 def all_references():
     refs = Reference.select()
-    return refs[:]
+    result = [ref.to_dict(exclude=['id', 'timestamp']) for ref in refs]
+    return result
