@@ -43,7 +43,7 @@ class GameOut(BaseModel):
     # Meta
     meta: create_model('meta', timestamp=(datetime.datetime, ...), author_id=(int, ...))
     license: create_model('license', name=(str, ...), url=(str, ...), owner=(str, ...), owner_url=(str, ...)) = Field(...)
-    references: List[create_model('references', slug=(str, ...), full=(str, ...))]
+    references: List[create_model('references', slug=(str, ...), full=(str, ...), url=(str, ...))]
 
     class Config:
         extra = 'forbid'

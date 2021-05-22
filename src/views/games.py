@@ -8,7 +8,7 @@ import fastapi
 from fastapi import Depends
 
 from src.models import GameQuery, GameOut, GameIn
-from src.services import search
+from src.services import search, read
 from src.services.create import create_games
 
 router = fastapi.APIRouter()
@@ -24,6 +24,7 @@ def all_games_view(query: GameQuery = Depends(GameQuery)):
 
 @router.get('/games/{game_id}', tags=['games'], response_model=GameOut)
 def single_game_view(game_id: int):
+    # Todo: Catch game_id that doesn't exist
     result = read.single_game(game_id)
     return result
 

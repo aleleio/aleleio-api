@@ -17,6 +17,7 @@ def format_game(game):
     game['materials'] = [item.to_dict(exclude=['id', 'games']) for item in game['materials']]
     game['meta'] = game['meta'].to_dict(exclude=['id', 'game'])
     game['license'] = game['license'].to_dict(exclude=['id', 'games'])
+    game['references'] = [item.to_dict(exclude=['id', 'timestamp']) for item in game['references']]
 
     print(game)
     return GameOut(
