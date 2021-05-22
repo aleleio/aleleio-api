@@ -100,7 +100,7 @@ def create_games(games: List[GameIn]):
 
 @db_session
 def create_references(references: List[ReferenceIn]):
-    """
+    """Create one or several references from the given list of ReferenceIn and save them to the database.
     """
     created_instances = []
     errors = []
@@ -109,13 +109,16 @@ def create_references(references: List[ReferenceIn]):
         try:
             name = Name.get(lambda n: ref.game_slug in n.slug)
             game = name.game
+            if ref.url:
+                if Reference.get(url=ref.url):
+                    raise ValueError(f'Reference "{ref.url}" exists already.')
+            elif Reference.get(full=ref.full):
+                raise ValueError(f'Reference "{ref.full}" exists already.')
             slug = name.slug + '-ref-' + str(len(game.references))
-            # Todo: Check for duplicates
             new_instance = Reference(slug=slug, full=ref.full, url=ref.url)
             new_instance.games.add(game)
         except ValueError as err:
             errors.append(err)
-            new_instance.delete()
             continue
         created_instances.append(new_instance.slug)
 
@@ -124,7 +127,7 @@ def create_references(references: List[ReferenceIn]):
 
 @db_session
 def create_collections(collections: List[CollectionIn]):
-    """
+    """Create or attach to one or several collections from the given list of CollectionIn.
     """
     used_instances = []
     errors = []

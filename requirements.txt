@@ -18,9 +18,11 @@ uvicorn
 python-dotenv
 email-validator
 
-# testing
+# testing (optional)
 pytest
 requests
 
-# tools
+# tools (optional)
 pyyaml
+python-frontmatter
+mistune == 2.0.0rc1
