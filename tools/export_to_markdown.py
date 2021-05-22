@@ -32,6 +32,7 @@ def convert_json_to_dict():
             exhausting=g['exhausting'],
             touching=g['touching'],
             scalable=g['scalable'],
+            license={},
         )
         games.append(game)
     return games
@@ -69,10 +70,10 @@ def write_dict_to_md(game: GameIn):
     md.append(f'scalable: {game.scalable}')
     md.append(f'digital: {game.digital}')
     md.append(f'license:')
-    md.append(f'  name: {game.license}')
-    md.append(f'  url: {game.license_url}')
-    md.append(f'  owner: {game.license_owner}')
-    md.append(f'  owner_url: {game.license_owner_url}')
+    md.append(f'  name: {game.license.name}')
+    md.append(f'  url: {game.license.url}')
+    md.append(f'  owner: {game.license.owner}')
+    md.append(f'  owner_url: {game.license.owner_url}')
     md.append('---')
     md.append(f'# {game.names[0]}\n')
     for d in game.descriptions:
