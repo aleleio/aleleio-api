@@ -5,8 +5,9 @@ FastAPI uses type hints together with pydantics models to validate the API input
 and create useful documentation.
 """
 import datetime
-from typing import Optional, List, Type
+from typing import Optional, List, Type, Any
 
+from pydantic import validator
 from pydantic.fields import Field
 from pydantic.main import BaseModel, create_model
 
@@ -26,13 +27,43 @@ class GameQuery(BaseModel):
     limit: Optional[int]
 
 
+class GameORM(BaseModel):
+    id: int
+    names: List[Any]
+    descriptions: List[Any]
+    game_types: List[Any]
+    game_lengths: List[Any]
+    group_sizes: List[Any]
+    group_need_scores: List[Any] = Field(list(), alias='group_needs')
+    materials: List[Any]
+    prior_prep: str
+    exhausting: bool
+    touching: bool
+    scalable: bool
+    digital: bool
+    meta: Any
+    license: Any
+    references: List[Any]
+
+    @validator('names', 'descriptions', 'game_types', 'game_lengths', 'group_sizes', 'group_need_scores', 'materials', 'references', pre=True, allow_reuse=True)
+    def pony_set_to_list(cls, values):
+        return [v.to_dict(with_lazy=True) for v in values]
+
+    @validator('meta', 'license', pre=True, allow_reuse=True)
+    def pony_entity_to_dict(cls, value):
+        return value.to_dict()
+
+    class Config:
+        orm_mode = True
+
+
 class GameOut(BaseModel):
     id: int
-    names: List[create_model('names', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
-    descriptions: List[create_model('descriptions', text=(str, ...))] = Field(..., min_items=1)
-    game_types: List[create_model('game_types', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
-    game_lengths: List[create_model('game_lengths', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
-    group_sizes: List[create_model('group_sizes', slug=(str, ...), full=(str, ...))] = Field(..., min_items=1)
+    names: List[create_model('names', slug=(str, ...), full=(str, ...))]
+    descriptions: List[create_model('descriptions', text=(str, ...))]
+    game_types: List[create_model('game_types', slug=(str, ...), full=(str, ...))]
+    game_lengths: List[create_model('game_lengths', slug=(str, ...), full=(str, ...))]
+    group_sizes: List[create_model('group_sizes', slug=(str, ...), full=(str, ...))]
     group_needs: List[create_model('group_needs', slug=(str, ...), full=(str, ...), value=(int, ...))]
     materials: List[create_model('materials', slug=(str, ...), full=(str, ...))]
     prior_prep: str
@@ -42,7 +73,7 @@ class GameOut(BaseModel):
     digital: bool
     # Meta
     meta: create_model('meta', timestamp=(datetime.datetime, ...), author_id=(int, ...))
-    license: create_model('license', name=(str, ...), url=(str, ...), owner=(str, ...), owner_url=(str, ...)) = Field(...)
+    license: create_model('license', name=(str, ...), url=(str, ...), owner=(str, ...), owner_url=(str, ...))
     references: List[create_model('references', slug=(str, ...), full=(str, ...), url=(str, ...))]
 
     class Config:
@@ -92,15 +123,32 @@ class GameIn(BaseModel):
             }
 
 
+class GameInPatch(GameIn):
+    game_types: List[GameTypeEnum] = None
+
+
 class CollectionIn(BaseModel):
     games: List[Type[Game]]
     full: str
     slug: Optional[str]
 
 
+class ReferenceOut(BaseModel):
+    games: List[Any]
+    timestamp: datetime.datetime
+    slug: str
+    full: str
+    url: str
+
+    @validator('games', pre=True)
+    def pony_set_to_list(cls, values):
+        return [v.to_dict(with_lazy=True, only='id') for v in values]
+
+    class Config:
+        orm_mode = True
+
+
 class ReferenceIn(BaseModel):
     game_slug: str
     full: str
     url: Optional[str]
-
-

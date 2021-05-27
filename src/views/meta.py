@@ -1,9 +1,9 @@
 from typing import List
 
 import fastapi
+from pony.orm import db_session
 
-from src.models import ReferenceIn
-from src.services import read
+from src.models import ReferenceIn, Reference, ReferenceOut
 
 router = fastapi.APIRouter()
 
@@ -15,7 +15,10 @@ def all_collections_view():
 
 @router.get('/references')
 def all_references_view():
-    return read.all_references()
+    with db_session:
+        references = Reference.select()
+        result = [ReferenceOut.from_orm(r) for r in references]
+    return result
 
 
 @router.post('/references')

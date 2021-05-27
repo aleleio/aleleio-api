@@ -7,4 +7,4 @@ from .meta import *
 from .user import *  # db_users database object comes from here
 from .game_enums import *
 from .user_enums import *
-from .validation import *
+from .schema import *

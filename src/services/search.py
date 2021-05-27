@@ -1,7 +1,6 @@
 from pony.orm import db_session
 
-from src.models import GameQuery, Game
-from src.services import read
+from src.models import GameQuery, Game, GameORM
 
 
 @db_session
@@ -16,6 +15,6 @@ def all_games(query: GameQuery):
     # Todo: is limit working?
     all_games.limit(query.limit)
 
-    result = [read.format_game(game) for game in all_games]
+    result = [GameORM.from_orm(game) for game in all_games]
 
     return result

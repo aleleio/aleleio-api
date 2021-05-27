@@ -6,10 +6,10 @@ from typing import List
 
 import fastapi
 from fastapi import Depends
+from pony.orm import db_session
 
-from src.models import GameQuery, GameOut, GameIn
-from src.services import search, read
-from src.services.create import create_games
+from src.models import GameQuery, GameOut, GameIn, Game, GameORM
+from src.services import search, create, update
 
 router = fastapi.APIRouter()
 
@@ -23,22 +23,24 @@ def all_games_view(query: GameQuery = Depends(GameQuery)):
 
 
 @router.get('/games/{game_id}', tags=['games'], response_model=GameOut)
+@db_session
 def single_game_view(game_id: int):
-    result = read.single_game(game_id)
+    # Todo: Also allow for slug as game_id?
+    result = GameORM.from_orm(Game[game_id])
     return result
 
 
 @router.post('/games', tags=['games'])
 def create_games_view(request_objects: List[GameIn]):
-    result, errors = create_games(request_objects)
+    result, errors = create.create_games(request_objects)
     # statistics.post_create_game(user, request, result)
     # log(user, request, result)
     return result
 
 
 @router.patch('/games/{game_id}', tags=['games'])
-def update_game_view(game_id):
-    pass
+def update_game_view(game_id, game=GameIn):
+    result = update.single_game(game_id, game=game)
 
 
 @router.delete('/games/{game_id}', tags=['games'])

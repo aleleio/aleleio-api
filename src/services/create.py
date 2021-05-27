@@ -5,7 +5,7 @@ from typing import List
 from pony.orm import db_session
 
 from src.models import Game, GameIn, GameType, GameLength, GroupSize, GroupNeedScore, GroupNeed, \
-    Name, Material, GameMeta, License, ReferenceIn, Reference, CollectionIn, Collection
+    Name, Material, GameMeta, License, ReferenceIn, Reference, CollectionIn, Collection, GameTypeEnum
 
 
 def slugify(value):
@@ -29,6 +29,12 @@ def create_game_bools(game: Game, request: GameIn):
         'digital': request.digital,
     }
     game.set(**request_bools)
+
+
+def update_game_relationships(game: Game, request: GameIn):
+    game_enums = set(GameTypeEnum(f'{item}') for item in game.game_types)
+    deleted = game_enums - set(request.game_types)
+    added = set(request.game_types) - game_enums
 
 
 def create_game_relationships(game: Game, request: GameIn):

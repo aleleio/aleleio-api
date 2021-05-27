@@ -58,23 +58,19 @@
 - [ ] 0.5.6 User Authentication working   
   - [ ] auth with github?
   - [ ] API keys 
-- [ ] 0.5.7 Basic validation working
+- [x] 0.5.7 Basic validation working
   - [x] set up pydantic correctly
   - [x] use pydantic to validate settings
   - [x] validate user input
-  - [ ] ...
 - [ ] 0.5.7 Statistics working
   - [ ] add stats (private, independent) and create tools to import 
   - [ ] ...
 - [ ] 0.5.8 API documentation with OpenAPI
-- [ ] 0.5.9 Premium Features
 
-
-> Note: Careful before updating old version. Review backup_script: user & game_meta 
-> and test with web:master first, v0.5 might not be stable!
 
 ### 0.7 Document and Deploy
 - docstrings complete
+- implement Todos
 - good enough test coverage
 - logging and sentry.io
 - fine-tune the readme with OpenAPI 
