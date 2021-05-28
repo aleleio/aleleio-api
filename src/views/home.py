@@ -1,4 +1,3 @@
-from pathlib import Path
 import fastapi
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates

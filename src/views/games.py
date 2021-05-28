@@ -2,7 +2,6 @@
 Routes for all /game and /games related operations
 
 """
-from typing import List
 
 import fastapi
 from fastapi import Depends
@@ -14,7 +13,7 @@ from src.services import search, create, update
 router = fastapi.APIRouter()
 
 
-@router.get('/games', tags=['games'], response_model=List[GameOut])
+@router.get('/games', tags=['games'], response_model=list[GameOut])
 def all_games_view(query: GameQuery = Depends(GameQuery)):
     result = search.all_games(query)
     # statistics.get_all_games(user, query, result)
@@ -31,7 +30,7 @@ def single_game_view(game_id: int):
 
 
 @router.post('/games', tags=['games'])
-def create_games_view(request_objects: List[GameIn]):
+def create_games_view(request_objects: list[GameIn]):
     result, errors = create.create_games(request_objects)
     # statistics.post_create_game(user, request, result)
     # log(user, request, result)

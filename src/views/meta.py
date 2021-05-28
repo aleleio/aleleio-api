@@ -1,5 +1,3 @@
-from typing import List
-
 import fastapi
 from pony.orm import db_session
 
@@ -22,5 +20,5 @@ def all_references_view():
 
 
 @router.post('/references')
-def create_references_view(request_objects: List[ReferenceIn]):
+def create_references_view(request_objects: list[ReferenceIn]):
     pass

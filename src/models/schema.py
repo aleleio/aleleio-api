@@ -5,7 +5,7 @@ FastAPI uses type hints together with pydantics models to validate the API input
 and create useful documentation.
 """
 import datetime
-from typing import Optional, List, Type, Any
+from typing import Optional, Type, Any
 
 from pydantic import validator
 from pydantic.fields import Field
@@ -29,13 +29,13 @@ class GameQuery(BaseModel):
 
 class GameORM(BaseModel):
     id: int
-    names: List[Any]
-    descriptions: List[Any]
-    game_types: List[Any]
-    game_lengths: List[Any]
-    group_sizes: List[Any]
-    group_need_scores: List[Any] = Field(list(), alias='group_needs')
-    materials: List[Any]
+    names: list[Any]
+    descriptions: list[Any]
+    game_types: list[Any]
+    game_lengths: list[Any]
+    group_sizes: list[Any]
+    group_need_scores: list[Any] = Field(list(), alias='group_needs')
+    materials: list[Any]
     prior_prep: str
     exhausting: bool
     touching: bool
@@ -43,7 +43,7 @@ class GameORM(BaseModel):
     digital: bool
     meta: Any
     license: Any
-    references: List[Any]
+    references: list[Any]
 
     @validator('names', 'descriptions', 'game_types', 'game_lengths', 'group_sizes', 'group_need_scores', 'materials', 'references', pre=True, allow_reuse=True)
     def pony_set_to_list(cls, values):
@@ -59,13 +59,13 @@ class GameORM(BaseModel):
 
 class GameOut(BaseModel):
     id: int
-    names: List[create_model('names', slug=(str, ...), full=(str, ...))]
-    descriptions: List[create_model('descriptions', text=(str, ...))]
-    game_types: List[create_model('game_types', slug=(str, ...), full=(str, ...))]
-    game_lengths: List[create_model('game_lengths', slug=(str, ...), full=(str, ...))]
-    group_sizes: List[create_model('group_sizes', slug=(str, ...), full=(str, ...))]
-    group_needs: List[create_model('group_needs', slug=(str, ...), full=(str, ...), value=(int, ...))]
-    materials: List[create_model('materials', slug=(str, ...), full=(str, ...))]
+    names: list[create_model('names', slug=(str, ...), full=(str, ...))]
+    descriptions: list[create_model('descriptions', text=(str, ...))]
+    game_types: list[create_model('game_types', slug=(str, ...), full=(str, ...))]
+    game_lengths: list[create_model('game_lengths', slug=(str, ...), full=(str, ...))]
+    group_sizes: list[create_model('group_sizes', slug=(str, ...), full=(str, ...))]
+    group_needs: list[create_model('group_needs', slug=(str, ...), full=(str, ...), value=(int, ...))]
+    materials: list[create_model('materials', slug=(str, ...), full=(str, ...))]
     prior_prep: str
     exhausting: bool
     touching: bool
@@ -74,7 +74,7 @@ class GameOut(BaseModel):
     # Meta
     meta: create_model('meta', timestamp=(datetime.datetime, ...), author_id=(int, ...))
     license: create_model('license', name=(str, ...), url=(str, ...), owner=(str, ...), owner_url=(str, ...))
-    references: List[create_model('references', slug=(str, ...), full=(str, ...), url=(str, ...))]
+    references: list[create_model('references', slug=(str, ...), full=(str, ...), url=(str, ...))]
 
     class Config:
         extra = 'forbid'
@@ -88,13 +88,13 @@ class GameInGroupNeed(BaseModel):
 class GameIn(BaseModel):
     """Used for Game creation
     """
-    names: List[str]
-    descriptions: List[str]
-    game_types: List[GameTypeEnum]
-    game_lengths: List[GameLengthEnum]
-    group_sizes: List[GroupSizeEnum]
-    group_needs: List[GameInGroupNeed] = list()  # optional, but needs to be iterable
-    materials: List[str] = list()  # optional, but needs to be iterable
+    names: list[str]
+    descriptions: list[str]
+    game_types: list[GameTypeEnum]
+    game_lengths: list[GameLengthEnum]
+    group_sizes: list[GroupSizeEnum]
+    group_needs: list[GameInGroupNeed] = list()  # optional, but needs to be iterable
+    materials: list[str] = list()  # optional, but needs to be iterable
     prior_prep: str = Field(None, min_length=1)
     exhausting: bool = False
     touching: bool = False
@@ -124,17 +124,17 @@ class GameIn(BaseModel):
 
 
 class GameInPatch(GameIn):
-    game_types: List[GameTypeEnum] = None
+    game_types: list[GameTypeEnum] = None
 
 
 class CollectionIn(BaseModel):
-    games: List[Type[Game]]
+    games: list[Type[Game]]
     full: str
     slug: Optional[str]
 
 
 class ReferenceOut(BaseModel):
-    games: List[Any]
+    games: list[Any]
     timestamp: datetime.datetime
     slug: str
     full: str
