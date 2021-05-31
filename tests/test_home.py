@@ -1,4 +1,4 @@
-
+from pony.orm import db_session
 
 def test_index(client):
     response = client.get("/")

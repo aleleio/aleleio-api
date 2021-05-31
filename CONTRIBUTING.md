@@ -1,6 +1,6 @@
 # Contributing to alele.io | API Component
 
-The API Component uses Python 3.8.8 to run the [FastAPI](https://fastapi.tiangolo.com/) Web Framework. In addition:
+The API Component uses Python 3.9 to run the [FastAPI](https://fastapi.tiangolo.com/) Web Framework. Specifically:
 
 * async and await support through [Starlette](https://www.starlette.io/)
 * validation with [Pydantic](https://pydantic-docs.helpmanual.io) using Python's Standard Library [Type Hints](https://docs.python.org/3/library/typing.html)

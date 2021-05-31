@@ -13,11 +13,9 @@ from dotenv import load_dotenv
 
 import frontmatter
 import mistune
-# import repackage
 import requests as requests
 
-# repackage.up()
-
+from src.main import application as app, database as db, configure
 from src.models import GameIn, ReferenceIn
 from src.services import create
 from src import main
@@ -171,7 +169,7 @@ if __name__ == '__main__':
         else:
             alias_list.append(md)
 
-    main.configure()
+    configure(app, db)
 
     print()
     print('Writing games to database')
@@ -183,7 +181,6 @@ if __name__ == '__main__':
         print(f"Reading from: {str(yml).split('/').pop()}")
         refs = convert_yml_to_ref(yml)
         write_references_to_database(refs)
-
 
     # Remove tmp/repo/ folder with games
     # shutil.rmtree(download_folder)

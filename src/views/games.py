@@ -1,13 +1,13 @@
 """
 Routes for all /game and /games related operations
-
 """
 
 import fastapi
 from fastapi import Depends
 from pony.orm import db_session
 
-from src.models import GameQuery, GameOut, GameIn, Game, GameORM
+from src.main import database as db
+from src.models import GameQuery, GameOut, GameIn, GameORM
 from src.services import search, create, update
 
 router = fastapi.APIRouter()
@@ -25,7 +25,7 @@ def all_games_view(query: GameQuery = Depends(GameQuery)):
 @db_session
 def single_game_view(game_id: int):
     # Todo: Also allow for slug as game_id?
-    result = GameORM.from_orm(Game[game_id])
+    result = GameORM.from_orm(db.Game[game_id])
     return result
 
 
@@ -38,7 +38,7 @@ def create_games_view(request_objects: list[GameIn]):
 
 
 @router.patch('/games/{game_id}', tags=['games'])
-def update_game_view(game_id, game=GameIn):
+def update_game_view(game_id: int, game=GameIn):
     result = update.single_game(game_id, game=game)
 
 

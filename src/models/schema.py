@@ -1,5 +1,5 @@
 """
-Pydantic Models for Validation
+Pydantic Schemas for Validation
 
 FastAPI uses type hints together with pydantics models to validate the API inputs, generate helpful error responses
 and create useful documentation.
@@ -11,7 +11,7 @@ from pydantic import validator
 from pydantic.fields import Field
 from pydantic.main import BaseModel, create_model
 
-from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum, Game
+from src.models import GameTypeEnum, GroupSizeEnum, GameLengthEnum, GroupNeedEnum
 
 
 class GameQuery(BaseModel):
@@ -128,7 +128,7 @@ class GameInPatch(GameIn):
 
 
 class CollectionIn(BaseModel):
-    games: list[Type[Game]]
+    games: list[Any]  # list[Type[Game]]
     full: str
     slug: Optional[str]
 

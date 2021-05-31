@@ -46,7 +46,7 @@
   - [ ] make tools regular route (move to views/services) to facilitate automation 
 - [ ] 0.5.4 Testing from the start
   - [x] basic setup with pytest working
-  - [ ] testing with orm working
+  - [x] testing with orm working
   - [ ] github actions set up
   - [ ] ...
 - [ ] 0.5.5 Core Logic working

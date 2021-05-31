@@ -1,13 +1,12 @@
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import uvicorn
-from src.main import configure, api
+
+from src.main import configure, application as app, database as db
+
 
 if os.getenv('PRODUCTION'):
-    configure()
+    configure(app, db)
 else:  # DEVELOPMENT
     print("Running in DEVELOPMENT mode.")
-    load_dotenv(Path('.env').resolve())
-    configure()
-    uvicorn.run(api, port=8000, host='localhost')
+    configure(app, db)
+    uvicorn.run(app, port=8000, host='localhost')

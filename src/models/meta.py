@@ -2,104 +2,96 @@ from datetime import datetime
 
 from pony.orm import *
 
-from src.models import db_games
 
+def define_entities_meta(db):
 
-class GameMeta(db_games.Entity):
-    game = Required(lambda: db_games.Game)
+    class GameMeta(db.Entity):
+        game = Required(lambda: db.Game)
 
-    timestamp = Required(datetime, default=datetime.utcnow)
-    author_id = Required(int)
+        timestamp = Required(datetime, default=datetime.utcnow)
+        author_id = Required(int)
 
+    class License(db.Entity):
+        games = Set(lambda: db.Game)
 
-class License(db_games.Entity):
-    games = Set(lambda: db_games.Game)
+        name = Required(str, default="CC BY-SA 4.0")
+        url = Optional(str, default="https://creativecommons.org/licenses/by-sa/4.0/")
+        owner = Optional(str, default="European Youth Parliament")
+        owner_url = Optional(str, default="https://eyp.org/")
 
-    name = Required(str, default="CC BY-SA 4.0")
-    url = Optional(str, default="https://creativecommons.org/licenses/by-sa/4.0/")
-    owner = Optional(str, default="European Youth Parliament")
-    owner_url = Optional(str, default="https://eyp.org/")
+    class Reference(db.Entity):
+        games = Set(lambda: db.Game)
 
+        timestamp = Required(datetime, default=datetime.utcnow)
+        slug = Required(str)
+        full = Required(str)
+        url = Optional(str)
 
-class Reference(db_games.Entity):
-    games = Set(lambda: db_games.Game)
+    class Collection(db.Entity):
+        """Todo: Implement, connect to user (id), add more details
+        """
+        games = Set(lambda: db.Game)
 
-    timestamp = Required(datetime, default=datetime.utcnow)
-    slug = Required(str)
-    full = Required(str)
-    url = Optional(str)
+        slug = Required(str)
+        full = Required(str)
 
+    class Version(db.Entity):
+        game = Required(lambda: db.Game)
+        changesets = Set(lambda: VersionChangeset)
 
-class Collection(db_games.Entity):
-    """Todo: Implement, connect to user (id), add more details
-    """
-    games = Set(lambda: db_games.Game)
+        author_id = Required(int)
+        timestamp = Required(datetime, default=datetime.utcnow)
 
-    slug = Required(str)
-    full = Required(str)
+    class VersionChangeset(db.Entity):
+        """For each changed entity in a new version of a game,
+        track the detailed changes and store them in a VersionChangeset
+        (e.g. one changeset for key="name"; an additional name)
+        """
+        version = Required(Version)
 
+        key = Required(str)
+        value = Required(LongStr)
+        key_id = Optional(int)
+        score = Optional(int)
+        url = Optional(str)
+        action = Required(str)
 
-class Version(db_games.Entity):
-    game = Required(lambda: db_games.Game)
-    changesets = Set(lambda: VersionChangeset)
+    class GameStatistic(db.Entity):
+        """Search statistics for each individual game.
+        New in 0.6: Directly link the queries in which a game appeared
+        """
+        game = Required(lambda: db.Game)
+        queries = Set(lambda: QueryStatistic)
 
-    author_id = Required(int)
-    timestamp = Required(datetime, default=datetime.utcnow)
+        search_impressions = Optional(int)
+        detail_impressions = Optional(int)
+        last_impression = Optional(datetime)
 
+    class QueryStatistic(db.Entity):
+        """API query statistics
+        """
+        game_statistics = Set(GameStatistic)
 
-class VersionChangeset(db_games.Entity):
-    """For each changed entity in a new version of a game,
-    track the detailed changes and store them in a VersionChangeset
-    (e.g. one changeset for key="name"; an additional name)
-    """
-    version = Required(Version)
+        timestamp = Required(datetime, default=datetime.utcnow)
+        user_id = Required(int)
+        request_origin = Required(str)
+        request_uri = Required(str)
+        request_type = Required(str)
+        request_game_id = Optional(int)
+        request_param = Optional(lambda: QueryStatisticParam)
+        request_result = Optional(int)
 
-    key = Required(str)
-    value = Required(LongStr)
-    key_id = Optional(int)
-    score = Optional(int)
-    url = Optional(str)
-    action = Required(str)
+    class QueryStatisticParam(db.Entity):
+        """API query parameters
+        New in 0.6: Add group_needs tracking
+        """
+        query = Required(QueryStatistic)
 
-
-class GameStatistic(db_games.Entity):
-    """Search statistics for each individual game.
-    New in 0.6: Directly link the queries in which a game appeared
-    """
-    game = Required(lambda: db_games.Game)
-    queries = Set(lambda: QueryStatistic)
-
-    search_impressions = Optional(int)
-    detail_impressions = Optional(int)
-    last_impression = Optional(datetime)
-
-
-class QueryStatistic(db_games.Entity):
-    """API query statistics
-    """
-    game_statistics = Set(GameStatistic)
-
-    timestamp = Required(datetime, default=datetime.utcnow)
-    user_id = Required(int)
-    request_origin = Required(str)
-    request_uri = Required(str)
-    request_type = Required(str)
-    request_game_id = Optional(int)
-    request_param = Optional(lambda: QueryStatisticParam)
-    request_result = Optional(int)
-
-
-class QueryStatisticParam(db_games.Entity):
-    """API query parameters
-    New in 0.6: Add group_needs tracking
-    """
-    query = Required(QueryStatistic)
-
-    query_type = Optional(str)  # basic / group_needs
-    game_type = Optional(str)
-    game_length = Optional(str)
-    group_size = Optional(str)
-    main = Optional(str)
-    aux1 = Optional(str)
-    aux2 = Optional(str)
-    limit = Optional(int)
+        query_type = Optional(str)  # basic / group_needs
+        game_type = Optional(str)
+        game_length = Optional(str)
+        group_size = Optional(str)
+        main = Optional(str)
+        aux1 = Optional(str)
+        aux2 = Optional(str)
+        limit = Optional(int)
