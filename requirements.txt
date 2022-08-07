@@ -1,0 +1,6 @@
+flask
+connexion[swagger-ui]
+python-dotenv
+
+# testing
+pytest

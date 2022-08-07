@@ -1,0 +1,325 @@
+openapi: 3.0.0
+x-stoplight:
+  id: nt7y66s08tf4g
+info:
+  title: alele.io
+  version: 0.5.1
+  description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
+  license:
+    name: European Union Public License (EUPL) 1.2
+    url: 'https://eupl.eu'
+  contact:
+    name: '@christiandoes'
+    url: 'https://twitter.com/christiandoes'
+    email: christian@alele.io
+servers:
+  - url: 'https://alele.io'
+    description: alele.io
+paths:
+  /games:
+    post:
+      summary: Create Game
+      tags: []
+      operationId: games.create
+      description: Create one or several games.
+      responses:
+        '201':
+          description: Created
+      requestBody:
+        $ref: '#/components/requestBodies/GameIn'
+    get:
+      summary: Get All Games
+      tags: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GamesOut'
+      operationId: games.get_all
+      description: Get a list of all existing games and their contents.
+  '/games/{game_id}':
+    parameters:
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+    get:
+      summary: Get Game by ID
+      tags: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GameOut'
+      operationId: games.get_single
+      description: Get information about one game by its unique ID.
+    patch:
+      summary: Update Game by ID
+      tags: []
+      operationId: games.update_single
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete Game by ID
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: games.delete_single
+  /references:
+    get:
+      summary: Get All References
+      tags: []
+      responses:
+        '200':
+          $ref: '#/components/responses/ReferencesOut'
+      operationId: terms.get_references
+    post:
+      summary: Create References
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: terms.create_references
+components:
+  schemas:
+    GameIn:
+      title: GameIn
+      x-stoplight:
+        id: 5umoytctch9rc
+      type: object
+      properties:
+        name:
+          type: array
+          items:
+            type: string
+        description:
+          type: array
+          items:
+            type: string
+        game_type:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameTypeEnum'
+        game_length:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameLengthEnum'
+        group_size:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupSizeEnum'
+        group_needs:
+          type: array
+          items:
+            type: object
+            properties:
+              need:
+                $ref: '#/components/schemas/GroupNeedsEnum'
+              score:
+                type: integer
+        material:
+          type: array
+          items:
+            type: string
+        prior_prep:
+          type: string
+          nullable: true
+        exhausting:
+          type: string
+        touching:
+          type: string
+        scalable:
+          type: string
+        digital:
+          type: string
+    GameOut:
+      title: GameOut
+      x-stoplight:
+        id: 5umoytctch9rc
+      type: object
+      properties:
+        name:
+          type: array
+          items:
+            type: string
+        description:
+          type: array
+          items:
+            type: string
+        game_type:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameTypeEnum'
+        game_length:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameLengthEnum'
+        group_size:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupSizeEnum'
+        group_needs:
+          type: array
+          items:
+            type: object
+            properties:
+              need:
+                $ref: '#/components/schemas/GroupNeedsEnum'
+              score:
+                type: integer
+        material:
+          type: array
+          items:
+            type: string
+        prior_prep:
+          type: string
+          nullable: true
+        exhausting:
+          type: string
+        touching:
+          type: string
+        scalable:
+          type: string
+        digital:
+          type: string
+        meta:
+          type: object
+          properties:
+            author_id:
+              type: integer
+            timestamp:
+              type: string
+              format: date-time
+        license:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+            owner:
+              type: string
+            owner-url:
+              type: string
+        references:
+          type: array
+          items:
+            type: object
+            properties:
+              slug:
+                type: string
+              full:
+                type: string
+              url:
+                type: string
+    License:
+      title: License
+      x-stoplight:
+        id: xpdtjfbm4hh1a
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        owner:
+          type: string
+        owner-url:
+          type: string
+      description: License description.
+    Reference:
+      title: Reference
+      x-stoplight:
+        id: b0i9u6cq03vk3
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        refers-to:
+          type: string
+    GameTypeEnum:
+      type: string
+      enum:
+        - ice
+        - ener
+        - trust
+        - prob
+        - name
+        - brain
+        - song
+        - race
+        - gtk
+      description: List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
+    GameLengthEnum:
+      type: string
+      enum:
+        - short
+        - medium
+        - long
+    GroupSizeEnum:
+      type: string
+      enum:
+        - small
+        - large
+        - multiple
+        - event
+    GroupNeedsEnum:
+      type: string
+      enum:
+        - names
+        - ener
+        - hon
+        - strat
+        - insp
+        - why
+        - id
+  requestBodies:
+    GameIn:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GameIn'
+  responses:
+    GameOut:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GameOut'
+    GamesOut:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: array
+            x-examples:
+              example-1:
+                name:
+                  - string
+                description:
+                  - string
+                material:
+                  - {}
+                prior_prep: string
+                game_type:
+                  - string
+                game_length:
+                  - string
+                group_needs:
+                  ener: 0
+                  strat: 0
+                group_size:
+                  - string
+                touching: string
+            items:
+              $ref: '#/components/schemas/GameOut'
+    ReferencesOut:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Reference'
+  parameters: {}
