@@ -1,6 +1,17 @@
+# main application
 flask
 connexion[swagger-ui]
 python-dotenv
+pony
+
+# tools
+frontmatter
+pyyaml
+mistune
+requests
 
 # testing
 pytest
+
+# error logging
+sentry-sdk[flask]
