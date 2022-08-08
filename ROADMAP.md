@@ -35,25 +35,17 @@
   - [x] setup aleleio org on github
   - [x] single source of truth on github
 
-- [ ] 0.6.2 Import/Export of Games
-  - [x] get json from api-legacy
-  - [x] export to markdown
-  - [x] import from github
-  - [x] don't overwrite existing
-  - [x] add meta: licenses, refs
-  - [ ] make tools work again with connexion
-
-- [ ] 0.6.3 move to connexion
+- [x] 0.6.2 move to connexion
   - [x] API rebuild with OAS3.0 (Stoplight Studio)
-  - [ ] basic validation working
-  - [ ] use connexion to validate user input
+  - [x] basic validation working
+  - [x] use connexion to validate user input
 
-- [ ] 0.6.4 ORM working
+- [ ] 0.6.3 ORM working
   - [ ] update diagram on editor.ponyorm.com
   - [ ] transfer and update legacy models
   - [ ] set up configuration correctly
-   
-- [ ] 0.6.5 Testing from the start
+
+- [ ] 0.6.4 Testing from the start
   - [ ] basic setup with pytest working
   - [ ] testing with orm working
   - [ ] add test data
@@ -61,16 +53,25 @@
   - [ ] getting good coverage
   - [ ] github actions set up
 
-- [ ] 0.6.6 Core Logic working
+- [ ] 0.6.5 Core Logic working
   - [ ] filtering games with OAS queries
   - [ ] READ game working
   - [ ] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
 
+- [ ] 0.6.6 Import/Export of Games
+  - [x] get json from api-legacy
+  - [x] export to markdown
+  - [x] import from github
+  - [x] don't overwrite existing
+  - [x] add meta: licenses, refs
+  - [ ] make tools work again with connexion
+
 - [ ] 0.6.7 User Authentication working   
   - [ ] auth with github?
   - [ ] API keys with oauth2
+  - [ ] CORS because of web/mobile?
 
 - [ ] 0.6.8 make tools regular route (move to views/services) to facilitate automation 
 

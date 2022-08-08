@@ -3,7 +3,7 @@ def get_all():
 
 
 def create():
-    return "create"
+    return "create", 201
 
 
 def get_single(game_id):

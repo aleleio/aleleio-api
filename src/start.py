@@ -11,6 +11,13 @@ def get_project_root():
 
 
 def get_app():
-    app = FlaskApp(__name__, specification_dir=get_project_root(), options={'swagger_url': '/'})
-    app.add_api('openapi.yml', resolver=RelativeResolver('src.views'))
+    options = {
+        'swagger_url': '/',
+        'swagger_ui_config': {
+            'operationsSorter': 'method',
+            'tagsSorter': 'alpha',
+        }
+    }
+    app = FlaskApp(__name__, specification_dir=get_project_root(), options=options)
+    app.add_api('openapi.yml', resolver=RelativeResolver('src.views'), validate_responses=True)
     return app

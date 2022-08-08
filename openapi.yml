@@ -1,35 +1,30 @@
 openapi: 3.0.0
-x-stoplight:
-  id: nt7y66s08tf4g
 info:
   title: alele.io
-  version: 0.5.1
+  version: 0.6.2
   description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
   license:
     name: European Union Public License (EUPL) 1.2
     url: 'https://eupl.eu'
-  contact:
-    name: '@christiandoes'
-    url: 'https://twitter.com/christiandoes'
-    email: christian@alele.io
-servers:
-  - url: 'https://alele.io'
-    description: alele.io
+  contact: {}
+servers: []
 paths:
   /games:
     post:
-      summary: Create Game
-      tags: []
+      summary: Create one or several new games.
       operationId: games.create
       description: Create one or several games.
       responses:
         '201':
-          description: Created
+          $ref: '#/components/responses/GamesOut'
       requestBody:
-        $ref: '#/components/requestBodies/GameIn'
+        $ref: '#/components/requestBodies/GamesIn'
+      tags:
+        - update & create
     get:
-      summary: Get All Games
-      tags: []
+      summary: Get all games in the database.
+      tags:
+        - games
       responses:
         '200':
           $ref: '#/components/responses/GamesOut'
@@ -43,68 +38,103 @@ paths:
         in: path
         required: true
     get:
-      summary: Get Game by ID
-      tags: []
+      summary: Get a single game by its ID.
+      tags:
+        - games
       responses:
         '200':
           $ref: '#/components/responses/GameOut'
       operationId: games.get_single
       description: Get information about one game by its unique ID.
     patch:
-      summary: Update Game by ID
-      tags: []
+      summary: Update one or several properties of a single game.
       operationId: games.update_single
       responses:
         '200':
           description: OK
+      tags:
+        - update & create
     delete:
-      summary: Delete Game by ID
-      tags: []
+      summary: Delete a game by its ID.
       responses:
         '200':
           description: OK
       operationId: games.delete_single
+      tags:
+        - warning
   /references:
     get:
-      summary: Get All References
-      tags: []
+      summary: Get all references (linked sources) for games.
+      responses:
+        '201':
+          $ref: '#/components/responses/ReferencesOut'
+      operationId: terms.get_references
+      tags:
+        - meta
+    post:
+      summary: Create one or several new references (linked sources).
       responses:
         '200':
           $ref: '#/components/responses/ReferencesOut'
-      operationId: terms.get_references
+      operationId: terms.create_references
+      requestBody:
+        $ref: '#/components/requestBodies/ReferencesIn'
+      tags:
+        - update & create
+  /collections:
+    get:
+      summary: Get all game collections.
+      tags:
+        - meta
+      responses:
+        '201':
+          $ref: '#/components/responses/ReferencesOut'
+      operationId: terms.get_collections
     post:
-      summary: Create References
-      tags: []
+      summary: Create one or several new game collections.
       responses:
         '200':
-          description: OK
-      operationId: terms.create_references
+          $ref: '#/components/responses/ReferencesOut'
+      operationId: terms.create_collections
+      requestBody:
+        $ref: '#/components/requestBodies/ReferencesIn'
+      tags:
+        - update & create
+    parameters: []
 components:
   schemas:
     GameIn:
+      type: object
       title: GameIn
       x-stoplight:
         id: 5umoytctch9rc
-      type: object
+      additionalProperties: false
+      description: Creating games with POST-requests to /games requires a json body with the following properties.
       properties:
-        name:
+        names:
           type: array
+          description: A game can have more than one name.
+          minItems: 1
           items:
             type: string
-        description:
+        descriptions:
           type: array
+          minItems: 1
           items:
             type: string
-        game_type:
+        game_types:
           type: array
+          minItems: 1
           items:
             $ref: '#/components/schemas/GameTypeEnum'
-        game_length:
+        game_lengths:
           type: array
+          minItems: 1
           items:
             $ref: '#/components/schemas/GameLengthEnum'
-        group_size:
+        group_sizes:
           type: array
+          minItems: 1
           items:
             $ref: '#/components/schemas/GroupSizeEnum'
         group_needs:
@@ -116,13 +146,12 @@ components:
                 $ref: '#/components/schemas/GroupNeedsEnum'
               score:
                 type: integer
-        material:
+        materials:
           type: array
           items:
             type: string
         prior_prep:
           type: string
-          nullable: true
         exhausting:
           type: string
         touching:
@@ -131,11 +160,29 @@ components:
           type: string
         digital:
           type: string
+        license:
+          $ref: '#/components/schemas/License'
+        references:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              url:
+                type: string
+      required:
+        - names
+        - descriptions
+        - game_types
+        - game_lengths
+        - group_sizes
     GameOut:
+      type: object
       title: GameOut
       x-stoplight:
         id: 5umoytctch9rc
-      type: object
+      additionalProperties: false
       properties:
         name:
           type: array
@@ -172,7 +219,6 @@ components:
             type: string
         prior_prep:
           type: string
-          nullable: true
         exhausting:
           type: string
         touching:
@@ -275,11 +321,20 @@ components:
         - why
         - id
   requestBodies:
-    GameIn:
+    GamesIn:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/GameIn'
+            type: array
+            items:
+              $ref: '#/components/schemas/GameIn'
+    ReferencesIn:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Reference'
   responses:
     GameOut:
       description: Example response
