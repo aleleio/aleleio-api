@@ -154,12 +154,16 @@ components:
           type: string
         exhausting:
           type: string
+          default: 'no'
         touching:
           type: string
+          default: 'no'
         scalable:
           type: string
+          default: 'no'
         digital:
           type: string
+          default: 'no'
         license:
           $ref: '#/components/schemas/License'
         references:
@@ -262,16 +266,20 @@ components:
       x-stoplight:
         id: xpdtjfbm4hh1a
       type: object
+      description: License description.
       properties:
         name:
           type: string
+          default: CC BY-SA 4.0
         url:
           type: string
+          default: 'https://creativecommons.org/licenses/by-sa/4.0/'
         owner:
           type: string
+          default: alele.io
         owner-url:
           type: string
-      description: License description.
+          default: 'https://alele.io'
     Reference:
       title: Reference
       x-stoplight:
@@ -297,12 +305,15 @@ components:
         - race
         - gtk
       description: List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
+      x-examples:
+        example-1: ice
     GameLengthEnum:
       type: string
       enum:
         - short
         - medium
         - long
+      x-examples: {}
     GroupSizeEnum:
       type: string
       enum:
@@ -322,6 +333,7 @@ components:
         - id
   requestBodies:
     GamesIn:
+      x-body-name: games
       content:
         application/json:
           schema:

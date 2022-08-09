@@ -41,9 +41,9 @@
   - [x] use connexion to validate user input
 
 - [ ] 0.6.3 ORM working
+  - [x] set up configuration correctly
   - [ ] update diagram on editor.ponyorm.com
   - [ ] transfer and update legacy models
-  - [ ] set up configuration correctly
 
 - [ ] 0.6.4 Testing from the start
   - [ ] basic setup with pytest working
