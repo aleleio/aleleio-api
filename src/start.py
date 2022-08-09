@@ -6,9 +6,10 @@ import yaml
 from connexion import FlaskApp
 from connexion.resolver import RelativeResolver
 from dotenv import load_dotenv
-from pony.orm import Database, set_sql_debug
+from pony.orm import Database, set_sql_debug, db_session
 
-from src.models import define_entities_game, define_entities_meta, define_entities_user
+from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
+    GroupSizeEnum, GroupNeedEnum
 from src.services.enforcedefaults import validator_remap
 
 
@@ -26,6 +27,24 @@ def get_project_version():
         yml = yaml.safe_load(fin)
 
     return yml['info']['version']
+
+
+def get_db():
+    """Bind Pony ORM to database
+    """
+    if os.environ.get('FLASK_DEBUG') == 0:  # production
+        host = os.environ.get('DB_HOST')
+        user = os.environ.get('DB_USER')
+        passwd = os.environ.get('DB_PASSWORD')
+        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_aleleio')
+    else:  # development
+        database = Database(provider='sqlite', filename='db_aleleio.sqlite', create_db=True)
+    define_entities_game(database)
+    define_entities_meta(database)
+    define_entities_user(database)
+    database.generate_mapping(create_tables=True)
+    set_sql_debug(False)
+    return database
 
 
 @lru_cache()
@@ -68,19 +87,15 @@ def get_app():
     return connexion_app
 
 
-def get_db():
-    """Bind Pony ORM to database
-    """
-    if os.environ.get('FLASK_DEBUG') == 0:  # production
-        host = os.environ.get('DB_HOST')
-        user = os.environ.get('DB_USER')
-        passwd = os.environ.get('DB_PASSWORD')
-        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_aleleio')
-    else:  # development
-        database = Database(provider='sqlite', filename='db_aleleio.sqlite', create_db=True)
-    define_entities_game(database)
-    define_entities_meta(database)
-    define_entities_user(database)
-    database.generate_mapping(create_tables=True)
-    set_sql_debug(False)
-    return database
+@db_session
+def run_startup_tasks(db):
+    # Seed database
+    if not db.GameType.get(slug="ice"):
+        for item in GameTypeEnum:
+            db.GameType(slug=item.value, full=item.full)
+        for item in GameLengthEnum:
+            db.GameLength(slug=item.value, full=item.full)
+        for item in GroupSizeEnum:
+            db.GroupSize(slug=item.value, full=item.full)
+        for item in GroupNeedEnum:
+            db.GroupNeed(slug=item.value, full=item.full)

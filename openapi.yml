@@ -153,17 +153,17 @@ components:
         prior_prep:
           type: string
         exhausting:
-          type: string
-          default: 'no'
+          type: boolean
+          default: false
         touching:
-          type: string
-          default: 'no'
+          type: boolean
+          default: false
         scalable:
-          type: string
-          default: 'no'
+          type: boolean
+          default: false
         digital:
-          type: string
-          default: 'no'
+          type: boolean
+          default: false
         license:
           $ref: '#/components/schemas/License'
         references:
@@ -224,13 +224,13 @@ components:
         prior_prep:
           type: string
         exhausting:
-          type: string
+          type: boolean
         touching:
-          type: string
+          type: boolean
         scalable:
-          type: string
+          type: boolean
         digital:
-          type: string
+          type: boolean
         meta:
           type: object
           properties:
@@ -270,16 +270,14 @@ components:
       properties:
         name:
           type: string
-          default: CC BY-SA 4.0
         url:
           type: string
-          default: 'https://creativecommons.org/licenses/by-sa/4.0/'
         owner:
           type: string
-          default: alele.io
         owner-url:
           type: string
-          default: 'https://alele.io'
+      required:
+        - name
     Reference:
       title: Reference
       x-stoplight:

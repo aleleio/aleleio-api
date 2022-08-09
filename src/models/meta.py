@@ -16,8 +16,8 @@ def define_entities_meta(db):
 
         name = Required(str, default="CC BY-SA 4.0")
         url = Optional(str, default="https://creativecommons.org/licenses/by-sa/4.0/")
-        owner = Optional(str, default="European Youth Parliament")
-        owner_url = Optional(str, default="https://eyp.org/")
+        owner = Optional(str, default="alele.io")
+        owner_url = Optional(str, default="https://alele.io")
 
     class Reference(db.Entity):
         games = Set(lambda: db.Game)
