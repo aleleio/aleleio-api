@@ -11,15 +11,17 @@ db = get_db()
 
 @db_session
 def get_all():
-    games = db.Game.select()
-    result = [g.to_dict() for g in games]
+    games = db.Game.select()[:]
+    result = [game.to_schema_out() for game in games]
     return result
 
 
 @db_session
 def create(games: List[Dict]):
-    create_games(games)
-    return [], 201
+    new_instances, errors = create_games(games)
+    if errors:
+        return {"errors": [e.__str__() for e in errors]}, 409
+    return [game.to_schema_out() for game in new_instances], 201
 
 
 @db_session
@@ -27,7 +29,7 @@ def get_single(game_id):
     game = db.Game.get(id=game_id)
     if game is None:
         abort(404)
-    return game.to_dict()
+    return game.to_schema_out()
 
 
 def update_single():

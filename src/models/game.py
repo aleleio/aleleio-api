@@ -30,6 +30,24 @@ def define_entities_game(db):
         scalable = Optional(bool)
         digital = Optional(bool)
 
+        def to_schema_out(self):
+            """Build a JSON-serialisable dict that is validated as GameOut
+            """
+            result = self.to_dict(only=['id', 'prior_prep', 'exhausting', 'touching', 'scalable', 'digital'])
+            result['names'] = [n.to_dict(exclude='game') for n in self.names]
+            result['descriptions'] = [obj.to_dict(exclude='game', with_lazy=True) for obj in self.descriptions]
+            result['game_types'] = [obj.to_dict() for obj in self.game_types]
+            result['game_lengths'] = [obj.to_dict() for obj in self.game_lengths]
+            result['group_sizes'] = [obj.to_dict() for obj in self.group_sizes]
+            result['group_needs'] = [obj.to_dict(exclude='game', related_objects=True) for obj in self.group_need_scores]
+            for item in result['group_needs']:
+                item['need'] = item['group_need'].slug
+                del item['group_need']
+            result['materials'] = [obj.to_dict(exclude='games') for obj in self.materials]
+            result['license'] = self.license.to_dict()
+            result['meta'] = self.meta.to_dict(exclude=['id', 'game'])
+            return result
+
     class Name(db.Entity):
         game = Required(Game)
 

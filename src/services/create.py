@@ -108,7 +108,6 @@ def create_games(games: List[Dict]):
     errors = []
 
     for game in games:
-        print(game)
         try:
             game_license = create_game_license(game)
             new_instance = db.Game(license=game_license)
@@ -120,7 +119,7 @@ def create_games(games: List[Dict]):
             errors.append(err)
             new_instance.delete()
             continue
-        created_instances.append(new_instance.id)
+        created_instances.append(new_instance)
 
     return created_instances, errors
 

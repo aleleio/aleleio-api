@@ -1,4 +1,6 @@
 openapi: 3.0.0
+x-stoplight:
+  id: rria4fpm6hztp
 info:
   title: alele.io
   version: 0.6.2
@@ -188,26 +190,61 @@ components:
         id: 5umoytctch9rc
       additionalProperties: false
       properties:
-        name:
+        id:
+          type: integer
+        names:
           type: array
           items:
-            type: string
-        description:
+            type: object
+            properties:
+              id:
+                type: integer
+              slug:
+                type: string
+              full:
+                type: string
+        descriptions:
           type: array
           items:
-            type: string
-        game_type:
+            type: object
+            properties:
+              id:
+                type: integer
+              text:
+                type: string
+        game_types:
           type: array
           items:
-            $ref: '#/components/schemas/GameTypeEnum'
-        game_length:
+            type: object
+            properties:
+              id:
+                type: integer
+              slug:
+                $ref: '#/components/schemas/Openapi_GameTypeEnum'
+              full:
+                type: string
+        game_lengths:
           type: array
           items:
-            $ref: '#/components/schemas/GameLengthEnum'
-        group_size:
+            type: object
+            properties:
+              id:
+                type: integer
+              slug:
+                $ref: '#/components/schemas/Openapi_GameLengthEnum'
+              full:
+                type: string
+        group_sizes:
           type: array
           items:
-            $ref: '#/components/schemas/GroupSizeEnum'
+            type: object
+            properties:
+              id:
+                type: integer
+              slug:
+                $ref: '#/components/schemas/Openapi_GroupSizeEnum'
+              full:
+                type: string
         group_needs:
           type: array
           items:
@@ -217,17 +254,17 @@ components:
                 $ref: '#/components/schemas/GroupNeedsEnum'
               score:
                 type: integer
-        material:
+        materials:
           type: array
           items:
             type: string
         prior_prep:
           type: string
-        exhausting:
-          type: boolean
         touching:
           type: boolean
         scalable:
+          type: boolean
+        exhausting:
           type: boolean
         digital:
           type: boolean
@@ -329,6 +366,35 @@ components:
         - insp
         - why
         - id
+    Openapi_GameLengthEnum:
+      type: string
+      enum:
+        - short
+        - medium
+        - long
+      x-examples: {}
+    Openapi_GameTypeEnum:
+      type: string
+      enum:
+        - ice
+        - ener
+        - trust
+        - prob
+        - name
+        - brain
+        - song
+        - race
+        - gtk
+      description: List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
+      x-examples:
+        example-1: ice
+    Openapi_GroupSizeEnum:
+      type: string
+      enum:
+        - small
+        - large
+        - multiple
+        - event
   requestBodies:
     GamesIn:
       x-body-name: games
