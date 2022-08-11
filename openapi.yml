@@ -144,7 +144,7 @@ components:
           items:
             type: object
             properties:
-              need:
+              slug:
                 $ref: '#/components/schemas/GroupNeedsEnum'
               score:
                 type: integer
@@ -257,7 +257,14 @@ components:
         materials:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              id:
+                type: integer
+              full:
+                type: string
+              slug:
+                type: string
         prior_prep:
           type: string
         touching:

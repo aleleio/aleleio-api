@@ -2,7 +2,7 @@ import re
 import unicodedata
 from typing import List, Dict
 
-from pony.orm import db_session, select
+from pony.orm import db_session
 
 from src.start import get_db
 from src.models import GameTypeEnum
@@ -26,7 +26,7 @@ def create_game_bools(game, request):
     """
     request_bools = {
         'exhausting': request['exhausting'],
-        'touching': request['exhausting'],
+        'touching': request['touching'],
         'scalable': request['scalable'],
         'digital': request['digital'],
     }
@@ -52,8 +52,8 @@ def create_game_relationships(game, request):
 
     if request.get('group_needs') is not None:
         for item in request['group_needs']:
-            group_need = db.GroupNeed.get(slug=item.slug)
-            db.GroupNeedScore(game=game, group_need=group_need, value=item.score)
+            group_need = db.GroupNeed.get(slug=item['slug'])
+            db.GroupNeedScore(game=game, group_need=group_need, value=item['score'])
 
 
 def create_game_unique(game, request):
@@ -92,12 +92,12 @@ def create_game_license(request):
     """Check if the license exists already. Return defaults (from model definition) otherwise.
     """
     if request.get('license'):
-        license_name = request['license']['name']
-        if db.License.get(slug=license_name):
-            license_owner = request['license'].get('owner')
-            return db.License.get(lambda l: l.name == license_name and l.owner == license_owner)
-    else:
-        return db.License()
+        license_url = request['license'].get('url')
+        license_owner = request['license'].get('owner')
+        license_owner_url = request['license'].get('owner_url')
+        if existing := db.License.get(lambda l: l.url == license_url and l.owner == license_owner and l.owner_url == license_owner_url):
+            return existing
+    return db.License()
 
 
 @db_session

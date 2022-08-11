@@ -25,15 +25,15 @@ def define_entities_game(db):
         statistic = Optional(lambda: db.GameStatistic, cascade_delete=True)
 
         prior_prep = Optional(LongStr)
-        exhausting = Optional(bool)
-        touching = Optional(bool)
-        scalable = Optional(bool)
-        digital = Optional(bool)
+        exhausting = Optional(bool, default=False)
+        touching = Optional(bool, default=False)
+        scalable = Optional(bool, default=False)
+        digital = Optional(bool, default=False)
 
         def to_schema_out(self):
             """Build a JSON-serialisable dict that is validated as GameOut
             """
-            result = self.to_dict(only=['id', 'prior_prep', 'exhausting', 'touching', 'scalable', 'digital'])
+            result = self.to_dict(only=['id', 'prior_prep', 'exhausting', 'touching', 'scalable', 'digital'], with_lazy=True)
             result['names'] = [n.to_dict(exclude='game') for n in self.names]
             result['descriptions'] = [obj.to_dict(exclude='game', with_lazy=True) for obj in self.descriptions]
             result['game_types'] = [obj.to_dict() for obj in self.game_types]
@@ -43,7 +43,7 @@ def define_entities_game(db):
             for item in result['group_needs']:
                 item['need'] = item['group_need'].slug
                 del item['group_need']
-            result['materials'] = [obj.to_dict(exclude='games') for obj in self.materials]
+            result['materials'] = [obj.to_dict(exclude=['games']) for obj in self.materials]
             result['license'] = self.license.to_dict()
             result['meta'] = self.meta.to_dict(exclude=['id', 'game'])
             return result

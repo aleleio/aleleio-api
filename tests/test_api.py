@@ -1,8 +1,15 @@
 import os
 from copy import deepcopy
 
-GAME1 = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],
-               'game_lengths': ['short'], 'group_sizes': ['event']}
+MIN_GAME = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],
+            'game_lengths': ['short'], 'group_sizes': ['event']}
+MAX_GAME = {'names': ['Monkey Circus', 'Dog Show'], 'descriptions': ['This game has two descriptions.', 'Second one'],
+            'game_types': ['ice', 'song'], 'game_lengths': ['short'], 'group_sizes': ['event'],
+            'group_needs': [{'slug': 'why', 'score': 4}], 'materials': ['bananas', 'bones'],
+            'prior_prep': 'Prepare the area by hiding both, bananas and bones.',
+            'exhausting': True, 'touching': True, 'scalable': True, 'digital': True,
+            'license': {'name': 'Unlicense', 'url': 'https://unlicense', 'owner': 'alele.io', 'owner_url': 'alele.io'},
+            'references': [{'name': 'Wikipedia', 'url': 'https://wikipedia.org/monkey_circus'}]}
 
 
 def test_get_games(client):
@@ -18,14 +25,14 @@ def test_create_games_empty_json(client):
 
 
 def test_create_games_without_array(client):
-    payload = GAME1
+    payload = MIN_GAME
     response = client.post('/games', json=payload)
     assert response.status_code == 400
     assert 'is not of type \'array\'' in response.text
 
 
 def test_create_games_with_additional_properties(client):
-    payload = deepcopy(GAME1)
+    payload = deepcopy(MIN_GAME)
     payload['eek'] = 'A mouse!'
     response = client.post('/games', json=[payload])
     assert response.status_code == 400
@@ -33,6 +40,12 @@ def test_create_games_with_additional_properties(client):
 
 
 def test_create_games_with_complete_request(client):
-    payload = [GAME1]
+    payload = [MIN_GAME]
+    response = client.post('/games', json=payload)
+    assert response.status_code == 201
+
+
+def test_create_games_with_maximum_request(client):
+    payload = [MAX_GAME]
     response = client.post('/games', json=payload)
     assert response.status_code == 201
