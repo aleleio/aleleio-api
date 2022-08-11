@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 
 GAME1 = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],
@@ -6,6 +7,7 @@ GAME1 = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!
 
 def test_get_games(client):
     response = client.get('/games')
+    # print(response.text)
     assert response.status_code == 200
 
 

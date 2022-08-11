@@ -41,13 +41,13 @@
   - [x] use connexion to validate user input
 
 - [ ] 0.6.3 ORM working
-  - [x] set up configuration correctly
+  - [x] transfer and update legacy models
   - [ ] update diagram on editor.ponyorm.com
-  - [ ] transfer and update legacy models
+  - [x] set up configuration correctly
 
 - [ ] 0.6.4 Testing from the start
-  - [ ] basic setup with pytest working
-  - [ ] testing with orm working
+  - [x] basic setup with pytest working
+  - [x] testing with orm working
   - [ ] add test data
   - [ ] testing api endpoints
   - [ ] getting good coverage
@@ -55,8 +55,8 @@
 
 - [ ] 0.6.5 Core Logic working
   - [ ] filtering games with OAS queries
-  - [ ] READ game working
-  - [ ] CREATE game working
+  - [x] READ game working
+  - [x] CREATE game working
   - [ ] UPDATE game working
   - [ ] DELETE game working
 
