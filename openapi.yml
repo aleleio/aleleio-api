@@ -1,9 +1,9 @@
 openapi: 3.0.0
 x-stoplight:
-  id: rria4fpm6hztp
+  id: cdaa90c0aba36
 info:
   title: alele.io
-  version: 0.6.2
+  version: 0.6.3
   description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
   license:
     name: European Union Public License (EUPL) 1.2
@@ -32,6 +32,13 @@ paths:
           $ref: '#/components/responses/GamesOut'
       operationId: games.get_all
       description: Get a list of all existing games and their contents.
+      parameters:
+        - $ref: '#/components/parameters/game_length'
+        - $ref: '#/components/parameters/game_type'
+        - $ref: '#/components/parameters/group_size'
+        - $ref: '#/components/parameters/main'
+        - $ref: '#/components/parameters/aux1'
+        - $ref: '#/components/parameters/aux2'
   '/games/{game_id}':
     parameters:
       - schema:
@@ -220,7 +227,7 @@ components:
               id:
                 type: integer
               slug:
-                $ref: '#/components/schemas/Openapi_GameTypeEnum'
+                $ref: '#/components/schemas/GameTypeEnum'
               full:
                 type: string
         game_lengths:
@@ -231,7 +238,7 @@ components:
               id:
                 type: integer
               slug:
-                $ref: '#/components/schemas/Openapi_GameLengthEnum'
+                $ref: '#/components/schemas/GameLengthEnum'
               full:
                 type: string
         group_sizes:
@@ -242,7 +249,7 @@ components:
               id:
                 type: integer
               slug:
-                $ref: '#/components/schemas/Openapi_GroupSizeEnum'
+                $ref: '#/components/schemas/GroupSizeEnum'
               full:
                 type: string
         group_needs:
@@ -373,35 +380,6 @@ components:
         - insp
         - why
         - id
-    Openapi_GameLengthEnum:
-      type: string
-      enum:
-        - short
-        - medium
-        - long
-      x-examples: {}
-    Openapi_GameTypeEnum:
-      type: string
-      enum:
-        - ice
-        - ener
-        - trust
-        - prob
-        - name
-        - brain
-        - song
-        - race
-        - gtk
-      description: List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
-      x-examples:
-        example-1: ice
-    Openapi_GroupSizeEnum:
-      type: string
-      enum:
-        - small
-        - large
-        - multiple
-        - event
   requestBodies:
     GamesIn:
       x-body-name: games
@@ -460,4 +438,84 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Reference'
-  parameters: {}
+  parameters:
+    game_type:
+      name: game_type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - ice
+          - ener
+          - trust
+          - prob
+          - name
+          - brain
+          - song
+          - race
+          - gtk
+      description: Request a specific game type.
+    game_length:
+      name: game_length
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - short
+          - medium
+          - long
+    group_size:
+      name: group_size
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - small
+          - large
+          - multiple
+          - event
+    main:
+      name: main
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - names
+          - ener
+          - hon
+          - strat
+          - insp
+          - why
+          - id
+    aux1:
+      name: aux1
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - names
+          - ener
+          - hon
+          - strat
+          - insp
+          - why
+          - id
+    aux2:
+      name: aux2
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - names
+          - ener
+          - hon
+          - strat
+          - insp
+          - why
+          - id

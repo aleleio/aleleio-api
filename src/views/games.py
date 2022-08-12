@@ -1,9 +1,11 @@
 import os
 from typing import List, Dict
 
+import connexion
 from flask import abort
 from pony.orm import db_session
 
+from src.services import search
 from src.services.create import create_games
 from src.start import get_db
 
@@ -12,8 +14,10 @@ db = get_db()
 
 @db_session
 def get_all():
-    games = db.Game.select()[:]
-    result = [game.to_schema_out() for game in games]
+    query = connexion.request.values
+    result = search.all_games(query)
+    # games = db.Game.select()[:]
+    # result = [game.to_schema_out() for game in games]
     return result
 
 
