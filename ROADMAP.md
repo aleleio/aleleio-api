@@ -48,8 +48,8 @@
   - [x] filtering games with queries
   - [x] READ game working
   - [x] CREATE game working
+  - [x] DELETE game working
   - [ ] UPDATE game working
-  - [ ] DELETE game working
    
 - [ ] 0.6.5 Testing from the start
   - [x] basic setup with pytest working

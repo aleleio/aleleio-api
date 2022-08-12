@@ -21,8 +21,8 @@ def all_games(query: dict):
         games = games.filter(lambda game: group_size in game.group_sizes.slug)
     if game_length := query.get('game_length'):
         games = games.filter(lambda game: game_length in game.game_lengths.slug)
-    limit = int(query.get('limit'))
-    games = games.limit(limit)
+    if limit := query.get('limit'):
+        games = games.limit(int(limit))
 
     result = [game.to_schema_out() for game in games]
 

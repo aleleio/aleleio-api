@@ -40,6 +40,10 @@ def get_single(game_id):
 def update_single():
     return "update_single"
 
-
-def delete_single():
-    return "delete_single"
+@db_session
+def delete_single(game_id):
+    game = db.Game.get(id=game_id)
+    if game is None:
+        abort(404)
+    game.delete()
+    return {"success": f"Deleted game#{game_id}."}
