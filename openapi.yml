@@ -31,7 +31,7 @@ paths:
         '200':
           $ref: '#/components/responses/GamesOut'
       operationId: games.get_all
-      description: Get a list of all existing games and their contents.
+      description: Get a list of all existing games and their contents. Use query parameters to filter out the relevant results.
       parameters:
         - $ref: '#/components/parameters/game_length'
         - $ref: '#/components/parameters/game_type'
@@ -110,6 +110,23 @@ paths:
       tags:
         - update & create
     parameters: []
+  /names:
+    get:
+      summary: Get all game names in the database.
+      tags:
+        - games
+      responses:
+        '200':
+          $ref: '#/components/responses/NamesOut'
+      operationId: names.get_all
+      parameters:
+        - $ref: '#/components/parameters/game_type'
+        - $ref: '#/components/parameters/game_length'
+        - $ref: '#/components/parameters/group_size'
+        - $ref: '#/components/parameters/main'
+        - $ref: '#/components/parameters/aux1'
+        - $ref: '#/components/parameters/aux2'
+      description: Use query parameters to filter out the relevant results.
 components:
   schemas:
     GameIn:
@@ -312,6 +329,8 @@ components:
                 type: string
               url:
                 type: string
+        weight:
+          type: number
     License:
       title: License
       x-stoplight:
@@ -373,13 +392,34 @@ components:
     GroupNeedsEnum:
       type: string
       enum:
-        - names
-        - ener
-        - hon
-        - strat
-        - insp
+        - first
+        - energy
+        - honesty
+        - strategy
+        - inspiration
         - why
-        - id
+        - groupid
+    NameOut:
+      type: object
+      title: NameOut
+      x-stoplight:
+        id: 8dkrsyt9h0xb3
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        game_id:
+          type: integer
+        full:
+          type: string
+        slug:
+          type: string
+        weight:
+          type: number
+        vals:
+          type: array
+          items:
+            type: string
   requestBodies:
     GamesIn:
       x-body-name: games
@@ -438,6 +478,14 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Reference'
+    NamesOut:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/NameOut'
   parameters:
     game_type:
       name: game_type
@@ -484,13 +532,13 @@ components:
       schema:
         type: string
         enum:
-          - names
-          - ener
-          - hon
-          - strat
-          - insp
+          - first
+          - energy
+          - honesty
+          - strategy
+          - inspiration
           - why
-          - id
+          - groupid
     aux1:
       name: aux1
       in: query
@@ -498,13 +546,13 @@ components:
       schema:
         type: string
         enum:
-          - names
-          - ener
-          - hon
-          - strat
-          - insp
+          - first
+          - energy
+          - honesty
+          - strategy
+          - inspiration
           - why
-          - id
+          - groupid
     aux2:
       name: aux2
       in: query
@@ -512,10 +560,10 @@ components:
       schema:
         type: string
         enum:
-          - names
-          - ener
-          - hon
-          - strat
-          - insp
+          - first
+          - energy
+          - honesty
+          - strategy
+          - inspiration
           - why
-          - id
+          - groupid

@@ -1,4 +1,3 @@
-import os
 from typing import List, Dict
 
 import connexion
@@ -12,16 +11,11 @@ from src.start import get_db
 db = get_db()
 
 
-@db_session
 def get_all():
     query = connexion.request.values
-    result = search.all_games(query)
-    # games = db.Game.select()[:]
-    # result = [game.to_schema_out() for game in games]
-    return result
+    return search.all_games(query)
 
 
-@db_session
 def create(games: List[Dict]):
     new_instances, errors = create_games(games)
     if errors:
@@ -38,7 +32,10 @@ def get_single(game_id):
 
 
 def update_single():
+    # Update in Github Games Repo
+    # https://stackoverflow.com/a/61533333
     return "update_single"
+
 
 @db_session
 def delete_single(game_id):

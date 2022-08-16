@@ -78,7 +78,7 @@ class GroupNeedEnum(str, Enum):
     STRATEGY = "strategy"
     INSPIRATION = "inspiration"
     WHY = "why"
-    IDENTITY = "identity"
+    GROUPID = "groupid"
 
     @property
     def full(self):
@@ -89,6 +89,6 @@ class GroupNeedEnum(str, Enum):
             "strategy": "Practice Strategy & Co-operation",
             "inspiration": "Inspiration",
             "why": "Team \"Why\"",
-            "identity": "Group Identity",
+            "groupid": "Group Identity",
         }
         return lookup[self.value]

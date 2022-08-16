@@ -46,6 +46,10 @@ def define_entities_game(db):
             result['materials'] = [obj.to_dict(exclude=['games']) for obj in self.materials]
             result['license'] = self.license.to_dict()
             result['meta'] = self.meta.to_dict(exclude=['id', 'game'])
+            try:  # game.weight is dynamically set in services.search:sort_query_by_weighted_group_needs()
+                result['weight'] = self.weight
+            except AttributeError:
+                pass
             return result
 
     class Name(db.Entity):
@@ -53,6 +57,17 @@ def define_entities_game(db):
 
         slug = Required(str)
         full = Required(str)
+
+        def to_schema_out(self):
+            """Build a JSON-serialisable dict that is validated as NameOut
+            """
+            result = self.to_dict(only=['id', 'slug', 'full'])
+            result['game_id'] = self.game.id
+            try:  # name.weight is dynamically set in services.search:sort_query_by_weighted_group_needs()
+                result['weight'] = self.weight
+            except AttributeError:
+                pass
+            return result
 
     class Description(db.Entity):
         game = Required(Game)
