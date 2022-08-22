@@ -16,6 +16,7 @@ import mistune
 import requests as requests
 
 from src.services import create
+from src.start import run_startup_tasks, get_db
 
 
 def get_games_from_github():
@@ -101,9 +102,10 @@ def convert_md_to_game(md):
 
 
 def write_games_to_database(games):
-    """Validate and insert the games into the database
+    """Insert the games into the database
     Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
+
     created_games, errors = create.create_games(games)
     print(f'Created ({len(created_games)}):', created_games)
     print(f'Errors ({len(errors)}):', errors)
@@ -117,13 +119,14 @@ def convert_yml_to_ref(ref_yml):
         ymls = yaml.safe_load_all(fin)
         for ref in ymls:
             ref['game_slug'] = ref.pop('refers_to')
-            references.append(ReferenceIn(**ref))
+            references.append(ref)
     return references
 
 
 def write_references_to_database(references):
     """
     """
+    # run_startup_tasks(get_db())
     created_refs, errors = create.create_references(references)
     print(f'Created ({len(created_refs)}):', created_refs)
     print(f'Errors ({len(errors)}):', errors)
