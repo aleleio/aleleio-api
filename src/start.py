@@ -33,12 +33,12 @@ def get_project_version():
 def get_db():
     """Bind Pony ORM to database
     """
-    if int(os.environ.get('FLASK_DEBUG')) == 0:  # production
+    if os.environ.get('FLASK_DEBUG') is not None and int(os.environ.get('FLASK_DEBUG')) == 0:  # production
         host = os.environ.get('DB_HOST')
         user = os.environ.get('DB_USER')
         passwd = os.environ.get('DB_PASSWORD')
         database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_aleleio')
-    elif int(os.environ.get('FLASK_TESTING')) == 1:
+    elif os.environ.get('FLASK_TESTING') is not None and int(os.environ.get('FLASK_TESTING')) == 1:
         database = Database(provider='sqlite', filename='db_testing.sqlite', create_db=True)
     else:  # development
         database = Database(provider='sqlite', filename='db_aleleio.sqlite', create_db=True)

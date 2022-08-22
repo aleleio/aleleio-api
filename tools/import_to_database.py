@@ -15,10 +15,7 @@ import frontmatter
 import mistune
 import requests as requests
 
-from src.main import application as app, database as db, configure
-from src.models import GameIn, ReferenceIn
 from src.services import create
-from src import main
 
 
 def get_games_from_github():
@@ -58,7 +55,7 @@ def get_files_from_local(path):
     return file_list
 
 
-def convert_md_to_game(md) -> Union[GameIn, None]:
+def convert_md_to_game(md):
     """Convert Markdown to GameIn object
     """
     md = frontmatter.load(md)
@@ -100,11 +97,11 @@ def convert_md_to_game(md) -> Union[GameIn, None]:
 
         del game['content']
 
-        return GameIn(**game)
+        return game
 
 
 def write_games_to_database(games):
-    """Use the API functions to validate and insert the games into the database
+    """Validate and insert the games into the database
     Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
     created_games, errors = create.create_games(games)
@@ -168,8 +165,6 @@ if __name__ == '__main__':
             game_list.append(game)
         else:
             alias_list.append(md)
-
-    configure(app, db)
 
     print()
     print('Writing games to database')
