@@ -1,5 +1,5 @@
 import os
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 
 import yaml
@@ -13,12 +13,12 @@ from src.models import define_entities_game, define_entities_meta, define_entiti
 from src.services.enforcedefaults import validator_remap
 
 
-@lru_cache()
+@cache
 def get_project_root():
     return Path(__file__).parent.parent
 
 
-@lru_cache()
+@cache
 def get_project_version():
     """Get the current version from openapi.yml config file.
     """
@@ -29,6 +29,7 @@ def get_project_version():
     return yml['info']['version']
 
 
+@cache
 def get_db():
     """Bind Pony ORM to database
     """
@@ -49,7 +50,7 @@ def get_db():
     return database
 
 
-@lru_cache()
+@cache
 def get_app():
     """Connexion Wrapper App
     Connexion creates a wrapper around a Flask app, through which all requests are passed.

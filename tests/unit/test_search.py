@@ -1,5 +1,4 @@
 import pytest
-from pony.orm import db_session
 
 from src.services.search import all_games
 from src.services.create import create_games
@@ -16,7 +15,6 @@ GAMEC = {'names': ['C'], 'descriptions': ['C'],
 
 
 @pytest.fixture()
-@db_session()
 def populate_with_abc(db):
     create_games([GAMEA, GAMEB, GAMEC])
 
@@ -43,3 +41,4 @@ def test_all_games_gs(db, populate_with_abc):
 
 
 def test_all_games_gn():
+    pass

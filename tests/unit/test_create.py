@@ -1,3 +1,4 @@
+import pytest
 from pony.orm import db_session
 
 from src.services.create import slugify, create_game_bools, create_game_relationships
@@ -26,13 +27,11 @@ def test_create_game_bools(db):
     game.delete()
 
 
-# Todo: TypeError: Item of collection Game.game_types must be an instance of GameType. Got: GameType[1]
-# @db_session
-# def test_create_game_relationships(db, monkeypatch):
-#     monkeypatch.setattr('src.services.create.get_db', lambda: db)
-#     game = db.Game(license=db.License())
-#     request = {'game_types': ['ice', 'ener', 'trust', 'prob', 'name', 'brain', 'song'],
-#                'game_lengths': ['short', 'medium', 'long'],
-#                'group_sizes': ['small', 'large', 'multiple', 'event']}
-#     create_game_relationships(game, request)
+@db_session
+def test_create_game_relationships(db):
+    game = db.Game(license=db.License())
+    request = {'game_types': ['ice', 'ener', 'trust', 'prob', 'name', 'brain', 'song'],
+               'game_lengths': ['short', 'medium', 'long'],
+               'group_sizes': ['small', 'large', 'multiple', 'event']}
+    create_game_relationships(game, request)
 
