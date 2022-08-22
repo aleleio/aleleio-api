@@ -49,3 +49,8 @@ def test_create_games_with_maximum_request(client):
     payload = [MAX_GAME]
     response = client.post('/games', json=payload)
     assert response.status_code == 201
+
+
+def test_get_names(client):
+    response = client.get('/names')
+    assert response.status_code == 200
