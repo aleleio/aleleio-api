@@ -126,7 +126,6 @@ def convert_yml_to_ref(ref_yml):
 def write_references_to_database(references):
     """
     """
-    # run_startup_tasks(get_db())
     created_refs, errors = create.create_references(references)
     print(f'Created ({len(created_refs)}):', created_refs)
     print(f'Errors ({len(errors)}):', errors)
@@ -159,6 +158,8 @@ def run_github():
 if __name__ == '__main__':
     game_paths, ref_paths = run_local()
     # game_paths, ref_paths = run_github()
+
+    run_startup_tasks(get_db())
 
     game_list = []
     alias_list = []

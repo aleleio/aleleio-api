@@ -126,22 +126,22 @@ def create_games(games: List[Dict]):
 
 @db_session
 def create_references(references):
-    """Create one or several references from the given list of ReferenceIn and save them to the database.
+    """Create one or several references from the given list of references and save them to the database.
     """
     created_instances = []
     errors = []
 
     for ref in references:
         try:
-            name = db.Name.get(lambda n: ref.game_slug in n.slug)
+            name = db.Name.get(lambda n: ref['game_slug'] in n.slug)
             game = name.game
-            if ref.url:
-                if db.Reference.get(url=ref.url):
-                    raise ValueError(f'Reference "{ref.url}" exists already.')
-            elif db.Reference.get(full=ref.full):
-                raise ValueError(f'Reference "{ref.full}" exists already.')
+            if ref['url']:
+                if db.Reference.get(url=ref['url']):
+                    raise ValueError(f"Reference \"{ref['url']}\" exists already.")
+            elif db.Reference.get(full=ref['full']):
+                raise ValueError(f"Reference \"{ref['full']}\" exists already.")
             slug = name.slug + '-ref-' + str(len(game.references))
-            new_instance = db.Reference(slug=slug, full=ref.full, url=ref.url)
+            new_instance = db.Reference(slug=slug, full=ref['full'], url=ref['url'])
             new_instance.games.add(game)
         except ValueError as err:
             errors.append(err)
