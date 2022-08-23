@@ -6,6 +6,7 @@ from pony.orm import db_session
 
 from src.services import search
 from src.services.create import create_games
+from src.services.update import update_game
 from src.start import get_db
 
 db = get_db()
@@ -31,10 +32,15 @@ def get_single(game_id):
     return game.to_schema_out()
 
 
-def update_single():
+@db_session
+def update_single(game_id, patch):
     # Update in Github Games Repo
     # https://stackoverflow.com/a/61533333
-    return "update_single"
+    game = db.Game.get(id=game_id)
+    if game is None:
+        abort(404)
+    game = update_game(game, patch)
+    return game.to_schema_out()
 
 
 @db_session

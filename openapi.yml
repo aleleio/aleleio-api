@@ -1,6 +1,6 @@
 openapi: 3.0.0
 x-stoplight:
-  id: t4d4kqa6yhm87
+  id: aies3v2j0bsns
 info:
   title: alele.io
   version: 0.6.3
@@ -260,16 +260,12 @@ components:
           type: string
         exhausting:
           type: boolean
-          default: false
         touching:
           type: boolean
-          default: false
         scalable:
           type: boolean
-          default: false
         digital:
           type: boolean
-          default: false
         license:
           $ref: '#/components/schemas/License'
         references:
@@ -511,6 +507,7 @@ components:
             items:
               $ref: '#/components/schemas/Reference'
     PatchIn:
+      x-body-name: patch
       content:
         application/json:
           schema:

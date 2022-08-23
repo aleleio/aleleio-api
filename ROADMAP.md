@@ -65,7 +65,7 @@
   - [x] import from github
   - [x] don't overwrite existing
   - [x] add meta: licenses, refs
-  - [ ] make tools work again with connexion
+  - [x] make import work again with connexion
   - [ ] easy import to get started with development immediately
 
 - [ ] 0.6.7 User Authentication working   
