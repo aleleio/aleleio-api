@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.1  CRUD working
+### 0.1 CRUD working
 - first version, build on [Pyramid Framework](https://trypyramid.com/) in April 2019
 - CRUD working: API handles incoming GET/POST/PATCH(!)/DELETE requests
 - using JSON Schema to validate requests
@@ -28,22 +28,17 @@
 - new meta: sources & collections with own /api/endpoints
 - add /api/about
 
+### 0.6 Rewrite with Connexion & Flask
+- OpenAPI spec-first approach with Connexion framework in August 2022
+- new license: European Union Public License
+- new workflow: aleleio/teambuilding-games on github
+
 # The Road Ahead
 
 ### 0.6 Rewrite with Connexion & Flask
 - [x] 0.6.1 move from gitlab to github
-  - [x] setup aleleio org on github
-  - [x] single source of truth on github
-
 - [x] 0.6.2 move to connexion
-  - [x] API rebuild with OAS3.0 (Stoplight Studio)
-  - [x] basic validation working
-  - [x] use connexion to validate user input
-
 - [x] 0.6.3 ORM working
-  - [x] transfer and update legacy models
-  - [x] set up configuration correctly
-
 - [ ] 0.6.4 Core Logic working
   - [x] filtering games with queries
   - [x] READ game working
@@ -54,32 +49,28 @@
 - [ ] 0.6.5 Testing from the start
   - [x] basic setup with pytest working
   - [x] testing with orm working
-  - [ ] add test data
   - [ ] testing api endpoints
-  - [ ] getting good coverage
+  - [ ] getting to 100% coverage
   - [ ] github actions set up
 
-- [ ] 0.6.6 Import/Export of Games
-  - [x] get json from api-legacy
-  - [x] export to markdown
-  - [x] import from github
-  - [x] don't overwrite existing
-  - [x] add meta: licenses, refs
+- [ ] 0.6.x Import/Export Tools
   - [x] make import work again with connexion
-  - [ ] easy import to get started with development immediately
+  - [ ] make tools regular route (move to views/services) to facilitate automation 
+  
+- [ ] 0.6.x User Onboarding
+  - [ ] add Windows instructions to CONTRIBUTING
+  - [ ] easy games import to get started with development immediately
 
-- [ ] 0.6.7 User Authentication working   
-  - [ ] auth with github?
-  - [ ] API keys with oauth2
+- [ ] 0.6.x Authentication working   
+  - [ ] auth with github, user accounts necessary?
+  - [ ] API keys with oauth2 (maybe overkill)
   - [ ] CORS because of web/mobile?
-
-- [ ] 0.6.8 make tools regular route (move to views/services) to facilitate automation 
 
 - [ ] 0.6.9 Statistics working
   - [ ] add stats (private, independent) and create tools to import 
   - [ ] add api/about
 
-- [ ] 0.6.10 API documentation with OpenAPI
+- [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
 
 
 ### 0.7 Document and Deploy
