@@ -30,7 +30,7 @@ the requirements:
 Deactivate the virtual environment at any time with `deactivate`.
 
 **Configuration**
-Copy the provided [.env_template](.env) and rename it to `.env`, to set up the neccessary environment variables
+Copy the provided [.env_template](.env_template) and rename it to `.env`, to set up the neccessary environment variables
 (envars) for development. 
 
 ## Workflow
