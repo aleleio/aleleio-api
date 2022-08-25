@@ -4,12 +4,16 @@ jobs:
   Code-Climate-Coverage:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt install python3.10
-      - run: python3.10 --version 
       - run: pwd
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: ls -la
+      - name: Setup Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          # python-version: # optional
+          python-version-file: .python-version      
+      - run: python --version 
       - run: pip install pytest coverage
       - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
