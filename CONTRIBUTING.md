@@ -1,14 +1,6 @@
 # Contributing to alele.io | API Component
 
-The API Component uses Python 3.10 to run our stack:
-
-* API-first design driven by [Connexion](https://github.com/spec-first/connexion) with [Flask](https://flask.palletsprojects.com)
-* open standards using [OpenAPI Specification 3.0](https://openapis.org)
-* database access through [PonyORM](https://ponyorm.org/)
-* templates are written with [Jinja](https://jinja.palletsprojects.com/)
-* testing with [pytest](https://docs.pytest.org)
-
-## Setting Up the Local Development Environment
+Set up your local development environment:
 
 **Python Version** \
 We are using pyenv ([linux](https://github.com/pyenv/pyenv) [mac](https://github.com/pyenv/pyenv) [win](https://github.com/pyenv-win/pyenv-win)) for Python version management.
