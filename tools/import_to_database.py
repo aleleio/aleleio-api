@@ -156,8 +156,8 @@ def run_github():
 
 
 if __name__ == '__main__':
-    game_paths, ref_paths = run_local()
-    # game_paths, ref_paths = run_github()
+    # game_paths, ref_paths = run_local()
+    game_paths, ref_paths = run_github()
 
     run_startup_tasks(get_db())
 

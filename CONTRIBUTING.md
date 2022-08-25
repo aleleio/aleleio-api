@@ -1,43 +1,45 @@
 # Contributing to alele.io | API Component
 
-Set up your local development environment:
+Welcome to alele.io! 
 
-**Python Version** \
+### Set up your local development environment:
+
+**Step 1: Python Version** \
 We are using pyenv ([linux](https://github.com/pyenv/pyenv) [mac](https://github.com/pyenv/pyenv) [win](https://github.com/pyenv-win/pyenv-win)) for Python version management.
 Either check if you want to do the same or install the version specified in [.python-version](.python-version) for your operating system: [installation guide](https://realpython.com/installing-python/).
 
-**Virtual Environment** \
+**Step 2: Virtual Environment** \
 To separate the local python packages from the system python's packages, you want to set up a virtual environment
 for the project. Create it with python's `venv` module in the project root, activate it and `pip` install
 the requirements. Either with bash on a Unix system:
     
-    [kitabonga@bash]$ cd ~/code/aleleio-api
-    [kitabonga@bash]$ python -m venv venv
-    [kitabonga@bash]$ source venv/bin/activate
-    (venv)[kitabonga@bash]$ pip install -r requirements.txt
-    (venv)[kitabonga@bash]$
+    $ cd ~/code/aleleio-api
+    $ python -m venv venv
+    $ source venv/bin/activate
+    (venv) $ pip install -r requirements.txt
+    (venv) $
 
 Or with the Command Prompt/PowerShell:
 
-    C:\Users\kitabonga> cd code/aleleio-api
-    C:\Users\kitabonga\code\aleleio-api>python -m venv venv
-    C:\Users\kitabonga\code\aleleio-api>.\venv\Scripts\activate
-    (venv) C:\Users\kitabonga\code\aleleio-api> pip install -r requirements.txt
-    (venv) C:\Users\kitabonga\code\aleleio-api>
+    cd code\aleleio-api
+    python -m venv venv
+    .\venv\Scripts\activate
+    (venv) pip install -r requirements.txt
+    (venv)
 
 Deactivate the virtual environment at any time with `deactivate`.
 
-**Configuration**
+**Step 3: Configuration**
 Copy the provided [.env_template](.env_template) and rename it to `.env`, to set up the neccessary environment variables
 (envars) for development.
+
+**Step 4: Games (optional)**
+To load the most recent collection of games into your database, add a [github token](https://github.com/settings/tokens)
+to your [.env](.env_template) file and run the [import script](tools/import_to_database.py) in [tools/](tools).
 
 
 ## Workflow
 
-*Todo: Document the workflow*
-
-We are using [github flow](https://guides.github.com/introduction/flow/).
-
-If you want to better understand how the code works, look at the [/docs folder](docs/README.md).
+We are using [github flow](https://guides.github.com/introduction/flow/), Pull Requests (PRs) are welcome.
 
 The changelog and future roadmap can be found in [ROADMAP.md](ROADMAP.md).
