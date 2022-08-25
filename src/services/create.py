@@ -33,13 +33,6 @@ def create_game_bools(game, request):
     game.set(**request_bools)
 
 
-def update_game_relationships(game, request):
-    # Todo: Is this needed? Not called atm
-    game_enums = set(GameTypeEnum(f'{item}') for item in game.game_types)
-    deleted = game_enums - set(request.game_types)
-    added = set(request.game_types) - game_enums
-
-
 def create_game_relationships(game, request):
     """Step 2: Create Game properties that rely on Enums/Many-to-Many relationships.
     """
