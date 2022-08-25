@@ -14,10 +14,9 @@ jobs:
           python-version-file: .python-version      
       - run: pip install -r requirements.txt
       - run: pip install pytest coverage
-      - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: 6387c450c21d2766b4b96582b035e0ea88afbaa050ef510ce200725c911c2b56
         with:
-          coverageCommand: coverage report
+          coverageCommand: coverage run -m pytest tests/
