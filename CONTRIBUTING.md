@@ -11,8 +11,8 @@ The API Component uses Python 3.10 to run our stack:
 ## Setting Up the Local Development Environment
 
 **Python Version** \
-We are using pyenv [linux](https://github.com/pyenv/pyenv) [mac](https://github.com/pyenv/pyenv) [win](https://github.com/pyenv-win/pyenv-win] for Python version management.
-Either check if you want to do the same or install the version specified in [.python-version](.python-version) for your operating system: [guide to installation](https://realpython.com/installing-python/).
+We are using pyenv ([linux](https://github.com/pyenv/pyenv) [mac](https://github.com/pyenv/pyenv) [win](https://github.com/pyenv-win/pyenv-win)) for Python version management.
+Either check if you want to do the same or install the version specified in [.python-version](.python-version) for your operating system: [installation guide](https://realpython.com/installing-python/).
 
 **Virtual Environment** \
 To separate the local python packages from the system python's packages, you want to set up a virtual environment
