@@ -14,7 +14,6 @@ MAX_GAME = {'names': ['Monkey Circus', 'Dog Show'], 'descriptions': ['This game 
 
 def test_get_games(client):
     response = client.get('/games')
-    # print(response.text)
     assert response.status_code == 200
 
 
@@ -54,3 +53,12 @@ def test_create_games_with_maximum_request(client):
 def test_get_names(client):
     response = client.get('/names')
     assert response.status_code == 200
+
+
+def test_update_games_with_empty_game_types(client):
+    """Games need at least one game_type
+    """
+    payload = {"game_types": []}
+    response = client.patch('games/1', json=payload)
+    assert response.status_code == 400
+    assert '[] is too short - \'game_types\'' in response.text

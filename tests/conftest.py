@@ -11,6 +11,8 @@ connexion_app = get_app()
 def reset_db_get():
     import src.services.create
     importlib.reload(src.services.create)
+    import src.services.update
+    importlib.reload(src.services.update)
 
 
 @pytest.fixture(scope='module')
