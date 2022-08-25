@@ -4,7 +4,8 @@ jobs:
   Code-Climate-Coverage:
     runs-on: ubuntu-latest
     steps:
-      - run: python --version 
+      - run: apt install python3.10
+      - run: python3.10 --version 
       - run: pwd
       - name: Check out repository code
         uses: actions/checkout@v3
