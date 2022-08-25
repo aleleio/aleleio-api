@@ -21,8 +21,9 @@ jobs:
     steps:
       - run: python --version 
       - run: pwd
+      - run: ls -la
       - run: pip install pytest coverage
-      - run: coverage run -m pytest tests
+      - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
