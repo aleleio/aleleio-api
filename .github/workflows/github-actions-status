@@ -1,5 +1,5 @@
 name: GitHub Actions Status
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
   GitHub-Actions-Status:
     runs-on: ubuntu-latest
