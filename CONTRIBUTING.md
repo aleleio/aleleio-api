@@ -11,27 +11,34 @@ The API Component uses Python 3.10 to run our stack:
 ## Setting Up the Local Development Environment
 
 **Python Version** \
-We are using [pyenv](https://github.com/pyenv/pyenv) for Python version management.
-Either check if you want to do the same or install the version specified in [.python-version](.python-version)
-for your operating system: [guide to installation](https://realpython.com/installing-python/).
+We are using pyenv [linux](https://github.com/pyenv/pyenv) [mac](https://github.com/pyenv/pyenv) [win](https://github.com/pyenv-win/pyenv-win] for Python version management.
+Either check if you want to do the same or install the version specified in [.python-version](.python-version) for your operating system: [guide to installation](https://realpython.com/installing-python/).
 
 **Virtual Environment** \
 To separate the local python packages from the system python's packages, you want to set up a virtual environment
 for the project. Create it with python's `venv` module in the project root, activate it and `pip` install
-the requirements:
+the requirements. Either with bash on a Unix system:
     
-    [kita@bonga]$ cd ~/code/aleleio-api
-    [kita@bonga]$ cat .python-version
-    [kita@bonga]$ python -m venv venv
-    [kita@bonga]$ source venv/bin/activate
-    (venv)[kita@bonga]$ pip install -r requirements.txt
-    (venv)[kita@bonga]$ 
-    
+    [kitabonga@bash]$ cd ~/code/aleleio-api
+    [kitabonga@bash]$ python -m venv venv
+    [kitabonga@bash]$ source venv/bin/activate
+    (venv)[kitabonga@bash]$ pip install -r requirements.txt
+    (venv)[kitabonga@bash]$
+
+Or with the Command Prompt/PowerShell:
+
+    C:\Users\kitabonga> cd code/aleleio-api
+    C:\Users\kitabonga\code\aleleio-api>python -m venv venv
+    C:\Users\kitabonga\code\aleleio-api>.\venv\Scripts\activate
+    (venv) C:\Users\kitabonga\code\aleleio-api> pip install -r requirements.txt
+    (venv) C:\Users\kitabonga\code\aleleio-api>
+
 Deactivate the virtual environment at any time with `deactivate`.
 
 **Configuration**
 Copy the provided [.env_template](.env_template) and rename it to `.env`, to set up the neccessary environment variables
-(envars) for development. 
+(envars) for development.
+
 
 ## Workflow
 
