@@ -44,6 +44,7 @@ def write_dict_to_md(game):
 
     md = ['---']
     md = add_categories(game, md)
+    md = add_group_needs(game, md)
     md = add_materials(game, md)
     md = add_prior_prep(game, md)
     md = add_bools(game, md)
@@ -68,7 +69,10 @@ def add_categories(game, md):
         md.append(f'{category}:')
         for item in game[category]:
             md.append(f'  - {item}')
+    return md
 
+
+def add_group_needs(game, md):
     if game['group_needs']:
         md.append('group_needs:')
         for gn in game['group_needs']:
