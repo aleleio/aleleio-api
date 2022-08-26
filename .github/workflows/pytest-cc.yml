@@ -15,6 +15,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install pytest coverage
       - run: coverage run -m pytest tests/
+      - run: export FLASK_DEBUG=1
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
