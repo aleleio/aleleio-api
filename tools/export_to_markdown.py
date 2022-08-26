@@ -4,7 +4,6 @@ A couple of scripts to export JSON or Python objects to Markdown, using the API'
 
 import json
 
-from src.models import GameIn
 from src.services.create import slugify
 
 

@@ -22,19 +22,16 @@ def slugify(value):
 
 
 def create_game_bools(game, request):
-    """Step 1: Create Game properties with a simple True/False value.
+    """Step 1: Create game properties with a simple True/False value.
     """
-    request_bools = {
-        'exhausting': request['exhausting'],
-        'touching': request['touching'],
-        'scalable': request['scalable'],
-        'digital': request['digital'],
-    }
-    game.set(**request_bools)
+    game.exhausting = request['exhausting']
+    game.touching = request['touching']
+    game.scalable = request['scalable']
+    game.digital = request['digital']
 
 
-def create_game_relationships(game, request):
-    """Step 2: Create Game properties that rely on Enums/Many-to-Many relationships.
+def create_game_categories(game, request):
+    """Step 2: Create game properties that rely on Enums/Many-to-Many relationships.
     """
     for item in request['game_types']:
         game.game_types.add(db.GameType.get(slug=item))
@@ -49,17 +46,22 @@ def create_game_relationships(game, request):
             db.GroupNeedScore(game=game, group_need=group_need, value=item['score'])
 
 
-def create_game_unique(game, request):
-    """Step 3: Create Game properties that don't fit into other categories.
+def create_game_descriptive(game, request):
+    """Step 3: Create game names and descriptions
     """
     for item in request['names']:
         slug = slugify(item)
         if db.Name.get(slug=slug):
             raise ValueError(f"A game with the name \"{slug}\" exists already.")
         game.names.create(slug=slug, full=item)
+
     for item in request['descriptions']:
         game.descriptions.create(text=item)
 
+
+def create_game_supplements(game, request):
+    """Step 4: Create and link materials as well as prior_prep
+    """
     if request.get('materials') is not None:
         for item in request['materials']:
             slug = slugify(item)
@@ -68,12 +70,13 @@ def create_game_unique(game, request):
                 game.materials.add(found_item)
             else:
                 game.materials.create(slug=slug, full=item)
+
     if request.get('prior_prep') is not None:
         game.prior_prep = request['prior_prep']
 
 
 def create_game_meta(game: db.Game, request):
-    """
+    """Step 5: Create game meta
     """
     db.GameMeta(
         game=game,
@@ -105,8 +108,9 @@ def create_games(games: List[Dict]):
             game_license = create_game_license(game)
             new_instance = db.Game(license=game_license)
             create_game_bools(game=new_instance, request=game)
-            create_game_relationships(game=new_instance, request=game)
-            create_game_unique(game=new_instance, request=game)
+            create_game_categories(game=new_instance, request=game)
+            create_game_descriptive(game=new_instance, request=game)
+            create_game_supplements(game=new_instance, request=game)
             create_game_meta(game=new_instance, request=game)
         except ValueError as err:
             errors.append(err)

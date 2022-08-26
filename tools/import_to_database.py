@@ -67,27 +67,26 @@ def convert_md_to_game(md):
 
     if md.get('alias'):
         return None
-    else:
-        game = md.to_dict()
-        game['names'] = list()
-        game['descriptions'] = list()
-        markdown = mistune.create_markdown(renderer='ast')
-        tokens = markdown(game.get('content'))
-        for token in tokens:
-            if is_name(token):
-                game['names'].append(token['children'][0]['text'])
-            elif is_description(token):
-                game['descriptions'].append('')
-            elif is_list(token):
-                for list_item in token['children']:
-                    game['descriptions'][-1] += f"{list_item['children'][0]['children'][0]['text']}\n"
-                game['descriptions'][-1] += "\n"
-            else: # is description paragraph
-                game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
 
-        del game['content']
+    game = md.to_dict()
+    game['names'] = list()
+    game['descriptions'] = list()
 
-        return game
+    markdown = mistune.create_markdown(renderer='ast')
+    tokens = markdown(game.get('content'))
+    for token in tokens:
+        if is_name(token):
+            game['names'].append(token['children'][0]['text'])
+        elif is_description(token):
+            game['descriptions'].append('')
+        elif is_list(token):
+            game['descriptions'][-1] += list_to_string(token)
+        else:  # is description paragraph
+            game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
+
+    del game['content']
+
+    return game
 
 
 def is_name(token):
@@ -108,6 +107,13 @@ def is_list(token):
     if token['type'] == 'list':
         return True
     return False
+
+
+def list_to_string(token):
+    result = ''
+    for list_item in token['children']:
+        result += f"{list_item['children'][0]['children'][0]['text']}\n"
+    return f'{result}\n'
 
 
 def write_games_to_database(games):
@@ -166,15 +172,15 @@ def run_github():
 
 if __name__ == '__main__':
     # game_paths, ref_paths = run_local()
-    game_paths, ref_paths = run_github()
+    game_files, ref_files = run_github()
 
     run_startup_tasks(get_db())
 
     game_list = []
     alias_list = []
-    for md in game_paths:
+    for md in game_files:
         game = convert_md_to_game(md)
-        if game is not None:
+        if game:
             game_list.append(game)
         else:
             alias_list.append(md)
@@ -185,7 +191,7 @@ if __name__ == '__main__':
 
     print()
     print('Writing references to database')
-    for yml in ref_paths:
+    for yml in ref_files:
         print(f"Reading from: {str(yml).split('/').pop()}")
         refs = convert_yml_to_ref(yml)
         write_references_to_database(refs)
