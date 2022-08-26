@@ -24,13 +24,17 @@ def get_games_from_github():
     """
     project_root = Path(__file__).parent.parent
     load_dotenv(project_root.joinpath('.env'))
-    token = os.getenv('GITHUB_TOKEN')
+    if not (token := os.getenv('GITHUB_TOKEN')):
+        raise ValueError('GITHUB_TOKEN not set in .env')
+    # token = os.getenv('GITHUB_TOKEN')
     tmp_path = project_root.joinpath('tools', 'tmp')
 
     # Download zip file from github
     url = 'https://api.github.com/repos/aleleio/teambuilding-games/zipball'
     headers = {'Authorization': f'token {token}'}
     r = requests.get(url, headers=headers, allow_redirects=True)
+    if r.status_code != 200:
+        raise ConnectionError(r.text)
     parts = r.headers.get('content-disposition').split(' ')
     download_name = parts[1][9:-4]
     zip_path = tmp_path.joinpath(f'{download_name}.zip')
@@ -69,36 +73,41 @@ def convert_md_to_game(md):
         game['descriptions'] = list()
         markdown = mistune.create_markdown(renderer='ast')
         tokens = markdown(game.get('content'))
-        is_description = 0
         for token in tokens:
-            if token['type'] == 'heading' and token['level'] == 1:
+            if is_name(token):
                 game['names'].append(token['children'][0]['text'])
-                is_description = 0
-                continue
-            elif token['type'] == 'heading' and token['children'][0]['text'] == 'Description':
-                is_description = 1
-                continue
-            elif is_description > 0:
-                if not token['type'] == 'list':
-                    if is_description == 1:
-                        game['descriptions'].append(token['children'][0]['text'])
-                    elif is_description > 1:
-                        previous_description = game['descriptions'].pop()
-                        description = f"{previous_description}\n\n{token['children'][0]['text']}"
-                        game['descriptions'].append(description)
-                else:
-                    # Todo: Make this better. This happens, when the token/paragraph starts with a '1.'
-                    if is_description == 1:
-                        game['descriptions'].append(token['children'][0]['children'][0]['children'][0]['text'])
-                    elif is_description > 1:
-                        previous_description = game['descriptions'].pop()
-                        description = f"{previous_description}\n\n{token['children'][0]['children'][0]['children'][0]['text']}"
-                        game['descriptions'].append(description)
-                is_description += 1
+            elif is_description(token):
+                game['descriptions'].append('')
+            elif is_list(token):
+                for list_item in token['children']:
+                    game['descriptions'][-1] += f"{list_item['children'][0]['children'][0]['text']}\n"
+                game['descriptions'][-1] += "\n"
+            else: # is description paragraph
+                game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
 
         del game['content']
 
         return game
+
+
+def is_name(token):
+    if token['type'] == 'heading' and token['level'] == 1:
+        return True
+    return False
+
+
+def is_description(token):
+    if token['type'] == 'heading' and token['children'][0]['text'] in ['Description', 'description', 'descr']:
+        return True
+    return False
+
+
+def is_list(token):
+    """This happens when a paragraph starts with a '1'.
+    """
+    if token['type'] == 'list':
+        return True
+    return False
 
 
 def write_games_to_database(games):
