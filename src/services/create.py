@@ -59,24 +59,28 @@ def create_game_descriptive(game, request):
         game.descriptions.create(text=item)
 
 
-def create_game_supplements(game, request):
-    """Step 4: Create and link materials as well as prior_prep
+def create_game_materials(game, request):
+    """Step 4: Create and link materials
     """
-    if request.get('materials') is not None:
+    if request.get('materials'):
         for item in request['materials']:
             slug = slugify(item)
-            found_item = db.Material.get(slug=slug)
-            if found_item:
-                game.materials.add(found_item)
+            existing_item = db.Material.get(slug=slug)
+            if existing_item:
+                game.materials.add(existing_item)
             else:
                 game.materials.create(slug=slug, full=item)
 
-    if request.get('prior_prep') is not None:
+
+def create_game_prior_prep(game, request):
+    """Step 5: Create prior preparation
+    """
+    if request.get('prior_prep'):
         game.prior_prep = request['prior_prep']
 
 
 def create_game_meta(game: db.Game, request):
-    """Step 5: Create game meta
+    """Step 6: Create game meta
     """
     db.GameMeta(
         game=game,
@@ -110,7 +114,8 @@ def create_games(games: List[Dict]):
             create_game_bools(game=new_instance, request=game)
             create_game_categories(game=new_instance, request=game)
             create_game_descriptive(game=new_instance, request=game)
-            create_game_supplements(game=new_instance, request=game)
+            create_game_materials(game=new_instance, request=game)
+            create_game_prior_prep(game=new_instance, request=game)
             create_game_meta(game=new_instance, request=game)
         except ValueError as err:
             errors.append(err)

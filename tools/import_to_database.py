@@ -61,7 +61,7 @@ def get_files_from_local(path):
 
 
 def convert_md_to_game(md):
-    """Convert Markdown to GameIn object
+    """Convert Markdown to game dictionary
     """
     md = frontmatter.load(md)
 
@@ -75,18 +75,22 @@ def convert_md_to_game(md):
     markdown = mistune.create_markdown(renderer='ast')
     tokens = markdown(game.get('content'))
     for token in tokens:
-        if is_name(token):
-            game['names'].append(token['children'][0]['text'])
-        elif is_description(token):
-            game['descriptions'].append('')
-        elif is_list(token):
-            game['descriptions'][-1] += list_to_string(token)
-        else:  # is description paragraph
-            game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
+        md_token_to_game(game, token)
 
     del game['content']
 
     return game
+
+
+def md_token_to_game(game, token):
+    if is_name(token):
+        game['names'].append(token['children'][0]['text'])
+    elif is_description(token):
+        game['descriptions'].append('')
+    elif is_list(token):
+        game['descriptions'][-1] += list_to_string(token)
+    else:  # is description paragraph
+        game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
 
 
 def is_name(token):

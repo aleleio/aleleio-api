@@ -93,13 +93,17 @@ def get_app():
 
 @db_session
 def run_startup_tasks(db):
-    # Seed database
-    if not db.GameType.get(slug="ice"):
-        for item in GameTypeEnum:
-            db.GameType(slug=item.value, full=item.full)
-        for item in GameLengthEnum:
-            db.GameLength(slug=item.value, full=item.full)
-        for item in GroupSizeEnum:
-            db.GroupSize(slug=item.value, full=item.full)
-        for item in GroupNeedEnum:
-            db.GroupNeed(slug=item.value, full=item.full)
+    """Seed database with category enums if not already present
+    """
+    if db.GameType.get(slug="ice"):
+        return
+
+    for item in GameTypeEnum:
+        db.GameType(slug=item.value, full=item.full)
+    for item in GameLengthEnum:
+        db.GameLength(slug=item.value, full=item.full)
+    for item in GroupSizeEnum:
+        db.GroupSize(slug=item.value, full=item.full)
+    for item in GroupNeedEnum:
+        db.GroupNeed(slug=item.value, full=item.full)
+
