@@ -28,12 +28,12 @@ def define_entities_meta(db):
         url = Optional(str)
 
     class Collection(db.Entity):
-        """Todo: Implement, connect to user (id), add more details
-        """
         games = Set(lambda: db.Game)
 
+        author_id = Required(int)
         slug = Required(str)
         full = Required(str)
+        description = Optional(LongStr)
 
     class Version(db.Entity):
         game = Required(lambda: db.Game)

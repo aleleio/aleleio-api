@@ -1,5 +1,5 @@
 """
-Importing all models in models/__init__ allows to import from src.models directly.
+Importing all models in models/__init__ allows to import from `src.models` directly.
 """
 
 from .game import *

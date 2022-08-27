@@ -135,13 +135,10 @@ def create_references(references):
 
     for ref in references:
         try:
-            name = db.Name.get(lambda n: ref['game_slug'] in n.slug)
+            name = db.Name.get(slug=ref['refers_to'])
             game = name.game
-            if ref['url']:
-                if db.Reference.get(url=ref['url']):
-                    raise ValueError(f"Reference \"{ref['url']}\" exists already.")
-            elif db.Reference.get(full=ref['full']):
-                raise ValueError(f"Reference \"{ref['full']}\" exists already.")
+            if ref.get('url') and db.Reference.get(url=ref['url']):
+                raise ValueError(f"Reference \"{ref['url']}\" exists already.")
             slug = name.slug + '-ref-' + str(len(game.references))
             new_instance = db.Reference(slug=slug, full=ref['full'], url=ref['url'])
             new_instance.games.add(game)

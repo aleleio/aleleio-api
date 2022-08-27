@@ -137,7 +137,6 @@ def convert_yml_to_ref(ref_yml):
     with open(ref_yml, 'r') as fin:
         ymls = yaml.safe_load_all(fin)
         for ref in ymls:
-            ref['game_slug'] = ref.pop('refers_to')
             references.append(ref)
     return references
 

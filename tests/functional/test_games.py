@@ -17,6 +17,18 @@ def test_get_games(client):
     assert response.status_code == 200
 
 
+def test_create_games_with_complete_request(client):
+    payload = [MIN_GAME]
+    response = client.post('/games', json=payload)
+    assert response.status_code == 201
+
+
+def test_create_games_with_maximum_request(client):
+    payload = [MAX_GAME]
+    response = client.post('/games', json=payload)
+    assert response.status_code == 201
+
+
 def test_create_games_empty_json(client):
     response = client.post('/games', json=[{}])
     assert response.status_code == 400
@@ -38,51 +50,22 @@ def test_create_games_with_additional_properties(client):
     assert 'Additional properties are not allowed' in response.text
 
 
-def test_create_games_with_complete_request(client):
-    payload = [MIN_GAME]
-    response = client.post('/games', json=payload)
-    assert response.status_code == 201
-
-
-def test_create_games_with_maximum_request(client):
-    payload = [MAX_GAME]
-    response = client.post('/games', json=payload)
-    assert response.status_code == 201
-
-
-def test_get_names(client):
-    response = client.get('/names')
+def test_get_single_game(client):
+    response = client.get('/games/1')
     assert response.status_code == 200
+
+
+def test_get_single_game_wrong_id(client):
+    response = client.get('/games/99')
+    assert response.status_code == 404
 
 
 def test_update_games_with_empty_game_types(client):
     """Games need at least one game_type
     """
     payload = {"game_types": []}
-    response = client.patch('games/1', json=payload)
+    response = client.patch('/games/1', json=payload)
     assert response.status_code == 400
     assert '[] is too short - \'game_types\'' in response.text
 
 
-def test_get_references(client):
-    response = client.get('references')
-    assert response.status_code == 200
-
-
-def test_create_references(client):
-    payload = [{"name": "Alelchen", "url": "https://alele.io", "refers-to": "alele"}]
-    response = client.post('references', json=payload)
-    assert response.status_code == 200
-
-
-def test_get_collections(client):
-    # ToDo: NotImplemented
-    response = client.get('collections')
-    assert response.status_code == 204
-
-
-def test_create_collections(client):
-    # ToDo: NotImplemented
-    payload = []
-    response = client.post('collections', json=payload)
-    assert response.status_code == 204
