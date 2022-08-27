@@ -14,7 +14,8 @@ jobs:
           python-version-file: .python-version      
       - run: pip install -r requirements.txt
       - run: pip install pytest coverage
-      - run: export FLASK_DEBUG=1
+      - name: Set env
+        run: echo "FLASK_DEBUG=1" >> $GITHUB_ENV
       - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
