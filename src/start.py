@@ -18,6 +18,11 @@ def get_project_root():
     return Path(__file__).parent.parent
 
 
+# Load Environment Variables from dotenv file
+dotenv_path = Path(get_project_root(), '.env')
+load_dotenv(dotenv_path)
+
+
 @cache
 def get_project_version():
     """Get the current version from openapi.yml config file.
@@ -58,10 +63,6 @@ def get_app():
     The Connexion wrapper app is called by wsgi.py and pytest.
     You can access the Flask app with `app.app.properties`.
     """
-
-    # Load Environment Variables from dotenv file
-    dotenv_path = Path(get_project_root(), '.env')
-    load_dotenv(dotenv_path)
 
     # Todo: Sentry integration
     # sentry_sdk.init(

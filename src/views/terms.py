@@ -3,7 +3,7 @@ def get_references():
 
 
 def create_references():
-    return 'create_references'
+    return [{"name": "", "url": "", "refers-to": ""}]
 
 
 def get_collections():
