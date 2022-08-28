@@ -26,7 +26,7 @@ def test_create_references(client):
 def test_create_references_with_duplicate(client):
     response = client.post('references', json=[REF_A])
     assert response.status_code == 409
-    assert response.json == {'errors': ['Reference "youtube.com/v=12345" exists already.']}
+    assert response.json == {'errors': ["Cannot create Reference: value 'youtube.com/v=12345' for key url already exists"]}
 
 
 def test_get_references(client):

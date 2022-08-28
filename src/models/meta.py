@@ -25,7 +25,7 @@ def define_entities_meta(db):
         timestamp = Required(datetime, default=datetime.utcnow)
         slug = Required(str)
         full = Required(str)
-        url = Optional(str)
+        url = Optional(str, unique=True)
 
     class Collection(db.Entity):
         games = Set(lambda: db.Game)

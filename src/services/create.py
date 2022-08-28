@@ -4,6 +4,7 @@ from typing import List, Dict
 
 from flask import abort
 from pony.orm import db_session
+from pony.orm.core import CacheIndexError
 
 from src.start import get_db
 from src.models import GameTypeEnum
@@ -139,12 +140,12 @@ def create_references(references):
             name = db.Name.get(slug=ref['refers_to'])
             if not name:
                 abort(404, description=f"No game with slug {name} to refer to.")
+            url = ref.get('url')
             game = name.game
-            if ref.get('url') and db.Reference.get(url=ref['url']):
-                raise ValueError(f"Reference \"{ref['url']}\" exists already.")
             slug = name.slug + '-ref-' + str(len(game.references))
-            new_instance = db.Reference(game=game, slug=slug, full=ref['full'], url=ref['url'])
-        except ValueError as err:
+            new_instance = db.Reference(game=game, slug=slug, full=ref['full'], url=url)
+        except (ValueError, CacheIndexError) as err:
+            # Pony CacheIndexError when url is not unique
             errors.append(err)
             continue
         created_instances.append(new_instance)
