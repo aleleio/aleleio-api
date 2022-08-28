@@ -49,16 +49,16 @@
 - [ ] 0.6.5 Testing from the start
   - [x] basic setup with pytest working
   - [x] testing with orm working
+  - [x] github actions set up
   - [ ] testing api endpoints
   - [ ] getting to 100% coverage
-  - [ ] github actions set up
 
 - [ ] 0.6.x Import/Export Tools
   - [x] make import work again with connexion
   - [ ] make tools regular route (move to views/services) to facilitate automation 
   
 - [ ] 0.6.x User Onboarding
-  - [ ] add Windows instructions to CONTRIBUTING
+  - [x] add Windows instructions to CONTRIBUTING
   - [ ] easy games import to get started with development immediately
 
 - [ ] 0.6.x Authentication working   

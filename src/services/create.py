@@ -2,6 +2,7 @@ import re
 import unicodedata
 from typing import List, Dict
 
+from flask import abort
 from pony.orm import db_session
 
 from src.start import get_db
@@ -136,45 +137,52 @@ def create_references(references):
     for ref in references:
         try:
             name = db.Name.get(slug=ref['refers_to'])
+            if not name:
+                abort(404, description=f"No game with slug {name} to refer to.")
             game = name.game
             if ref.get('url') and db.Reference.get(url=ref['url']):
                 raise ValueError(f"Reference \"{ref['url']}\" exists already.")
             slug = name.slug + '-ref-' + str(len(game.references))
-            new_instance = db.Reference(slug=slug, full=ref['full'], url=ref['url'])
-            new_instance.games.add(game)
+            new_instance = db.Reference(game=game, slug=slug, full=ref['full'], url=ref['url'])
         except ValueError as err:
             errors.append(err)
             continue
-        created_instances.append(new_instance.slug)
+        created_instances.append(new_instance)
 
     return created_instances, errors
 
 
 @db_session
 def create_collections(collections):
-    """Create or attach to one or several collections from the given list of CollectionIn.
+    """Create or attach to one or several collections from the given list.
     """
-    used_instances = []
+    created_instances = []
     errors = []
 
     for collection in collections:
         try:
-            if collection.slug:
-                slug = collection.slug
-            else:
-                slug = slugify(collection.full)
+            slug = slugify(collection['full'])
+            description = collection.get('description')
+            author_id = 1  # Todo: Real Author ID
 
-            instance = db.Collection.get(slug=slug)
-            if not instance:
-                instance = db.Collection(slug=slug, full=collection.full)
-            used_instances.append(instance)
-
+            if is_collection_in_database(slug):
+                raise ValueError(f"A collection with the name \"{slug}\" exists already.")
+            instance = db.Collection(slug=slug, full=collection['full'], description=description, author_id=author_id)
             for game in collection.games:
                 instance.games.add(game)
+            created_instances.append(instance)
+
         except ValueError as err:
             errors.append(err)
             continue
-        used_instances.append(instance.slug)
+        created_instances.append(instance.slug)
 
-    return used_instances, errors
+    return created_instances, errors
+
+
+def is_collection_in_database(slug):
+    if db.Collection.get(slug=slug):
+        return True
+    return False
+
 

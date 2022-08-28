@@ -20,7 +20,7 @@ def define_entities_meta(db):
         owner_url = Optional(str, default="https://alele.io")
 
     class Reference(db.Entity):
-        games = Set(lambda: db.Game)
+        game = Required(lambda: db.Game)
 
         timestamp = Required(datetime, default=datetime.utcnow)
         slug = Required(str)
