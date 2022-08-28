@@ -7,7 +7,6 @@ from pony.orm import db_session
 from pony.orm.core import CacheIndexError
 
 from src.start import get_db
-from src.models import GameTypeEnum
 
 db = get_db()
 
@@ -54,7 +53,7 @@ def create_game_descriptive(game, request):
     for item in request['names']:
         slug = slugify(item)
         if db.Name.get(slug=slug):
-            raise ValueError(f"A game with the name \"{slug}\" exists already.")
+            raise ValueError(f"A game with the name '{slug}' exists already.")
         game.names.create(slug=slug, full=item)
 
     for item in request['descriptions']:

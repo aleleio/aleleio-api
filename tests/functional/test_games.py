@@ -29,6 +29,13 @@ def test_create_games_with_maximum_request(client):
     assert response.status_code == 201
 
 
+def test_create_games_with_duplicate(client):
+    payload = [MIN_GAME]
+    response = client.post('/games', json=payload)
+    assert response.status_code == 409
+    assert response.json == {"errors": ["A game with the name 'bananas' exists already."]}
+
+
 def test_create_games_empty_json(client):
     response = client.post('/games', json=[{}])
     assert response.status_code == 400

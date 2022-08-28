@@ -55,7 +55,7 @@ def define_entities_game(db):
     class Name(db.Entity):
         game = Required(Game)
 
-        slug = Required(str)
+        slug = Required(str, unique=True)
         full = Required(str)
 
         def to_schema_out(self):
