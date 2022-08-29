@@ -4,6 +4,7 @@ from typing import List, Dict
 
 from flask import abort
 from pony.orm import db_session
+# Pony CacheIndexError when new instance is duplicate/not unique
 from pony.orm.core import CacheIndexError
 
 from src.start import get_db
@@ -22,47 +23,67 @@ def slugify(value):
     return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 
-def add_game_bools(game, request):
-    """Step 1: Create game properties with a simple True/False value.
+@db_session
+def create_games(games: List[Dict]):
+    """Create one or several new games from the given list and save them in the database.
     """
-    game.exhausting = request['exhausting']
-    game.touching = request['touching']
-    game.scalable = request['scalable']
-    game.digital = request['digital']
+    created_instances = []
+    errors = []
+
+    for game in games:
+        game_license = create_game_license(game)
+        new_instance = db.Game(license=game_license)
+        try:
+            set_game_bools(game=new_instance, request=game)
+            set_game_categories(game=new_instance, request=game)
+            set_game_group_needs(game=new_instance, request=game)
+            set_game_names(game=new_instance, request=game)
+            set_game_descriptions(game=new_instance, request=game)
+            set_game_materials(game=new_instance, request=game)
+            set_game_prior_prep(game=new_instance, request=game)
+            set_game_meta(game=new_instance, request=game)
+        except CacheIndexError as err:
+            errors.append(err)
+            new_instance.delete()
+            continue
+        created_instances.append(new_instance)
+
+    return created_instances, errors
 
 
-def add_game_categories(game, request):
-    """Step 2: Create game properties that rely on Enums/Many-to-Many relationships.
-    """
-    for item in request['game_types']:
-        game.game_types.add(db.GameType.get(slug=item))
-    for item in request['game_lengths']:
-        game.game_lengths.add(db.GameLength.get(slug=item))
-    for item in request['group_sizes']:
-        game.group_sizes.add(db.GroupSize.get(slug=item))
+def set_game_bools(game, request, keys=('exhausting', 'touching', 'scalable', 'digital')):
+    for key in keys:
+        game.set(**{key: request[key]})
 
+
+def set_game_categories(game, request, keys=('game_types', 'game_lengths', 'group_sizes')):
+    for key in keys:
+        for item in request[key]:
+            db_type = {"game_types": "GameType", "game_lengths": "GameLength", "group_sizes": "GroupSize"}
+            db_item = getattr(db, db_type[key]).get(slug=item)
+            getattr(game, key).add(db_item)
+
+
+def set_game_group_needs(game, request):
     if request.get('group_needs') is not None:
         for item in request['group_needs']:
             group_need = db.GroupNeed.get(slug=item['slug'])
             db.GroupNeedScore(game=game, group_need=group_need, value=item['score'])
 
 
-def add_game_descriptive(game, request):
-    """Step 3: Create game names and descriptions
-    """
+def set_game_names(game, request):
     for item in request['names']:
         slug = slugify(item)
-        if db.Name.get(slug=slug):
-            raise ValueError(f"A game with the name '{slug}' exists already.")
+        db.Name.get(slug=slug)  # Needed to flush PonyORM's db_session
         game.names.create(slug=slug, full=item)
 
+
+def set_game_descriptions(game, request):
     for item in request['descriptions']:
         game.descriptions.create(text=item)
 
 
-def add_game_materials(game, request):
-    """Step 4: Create and link materials
-    """
+def set_game_materials(game, request):
     if request.get('materials'):
         for item in request['materials']:
             slug = slugify(item)
@@ -73,16 +94,12 @@ def add_game_materials(game, request):
                 game.materials.create(slug=slug, full=item)
 
 
-def add_game_prior_prep(game, request):
-    """Step 5: Create prior preparation
-    """
+def set_game_prior_prep(game, request):
     if request.get('prior_prep'):
         game.prior_prep = request['prior_prep']
 
 
-def add_game_meta(game: db.Game, request):
-    """Step 6: Create game meta
-    """
+def set_game_meta(game: db.Game, request):
     db.GameMeta(
         game=game,
         author_id=1,  # Todo: Validation with actual User!
@@ -102,32 +119,6 @@ def create_game_license(request):
 
 
 @db_session
-def create_games(games: List[Dict]):
-    """Create one or several new games from the given list and save them in the database.
-    """
-    created_instances = []
-    errors = []
-
-    for game in games:
-        try:
-            game_license = create_game_license(game)
-            new_instance = db.Game(license=game_license)
-            add_game_bools(game=new_instance, request=game)
-            add_game_categories(game=new_instance, request=game)
-            add_game_descriptive(game=new_instance, request=game)
-            add_game_materials(game=new_instance, request=game)
-            add_game_prior_prep(game=new_instance, request=game)
-            add_game_meta(game=new_instance, request=game)
-        except ValueError as err:
-            errors.append(err)
-            new_instance.delete()
-            continue
-        created_instances.append(new_instance)
-
-    return created_instances, errors
-
-
-@db_session
 def create_references(references):
     """Create one or several references from the given list of references and save them to the database.
     """
@@ -143,8 +134,7 @@ def create_references(references):
             game = name.game
             slug = name.slug + '-ref-' + str(len(game.references))
             new_instance = db.Reference(game=game, slug=slug, full=ref['full'], url=url)
-        except (ValueError, CacheIndexError) as err:
-            # Pony CacheIndexError when url is not unique
+        except CacheIndexError as err:
             errors.append(err)
             continue
         created_instances.append(new_instance)
@@ -170,8 +160,7 @@ def create_collections(collections):
                 instance.games.add(game)
             created_instances.append(instance)
 
-        except (ValueError, CacheIndexError) as err:
-            # Pony CacheIndexError when slug is not unique
+        except CacheIndexError as err:
             errors.append(err)
             continue
         created_instances.append(instance)

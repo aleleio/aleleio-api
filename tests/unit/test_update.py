@@ -35,17 +35,17 @@ def test_update_game(db, populate):
     assert gl1 in game.game_lengths
 
     request = {"game_types": []}
-    result = update_game(game, request)
+    result, _ = update_game(game, request)
     assert gt1 not in result.game_types
     assert len(result.game_types) == 0
 
     request = {"game_types": ["song"]}
-    result = update_game(game, request)
+    result, _ = update_game(game, request)
     assert gt2 in result.game_types
     assert len(result.game_types) == 1
 
     request = {"game_types": ["race", "ice"]}
-    result = update_game(game, request)
+    result, _ = update_game(game, request)
     assert gt1 in result.game_types
     assert gt3 in result.game_types
     assert len(result.game_types) == 2

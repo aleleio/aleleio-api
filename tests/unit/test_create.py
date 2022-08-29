@@ -1,6 +1,6 @@
 from pony.orm import db_session
 
-from src.services.create import slugify, add_game_bools, add_game_categories
+from src.services.create import slugify, set_game_bools, set_game_categories, set_game_group_needs
 
 
 def test_slugify_basic():
@@ -18,7 +18,7 @@ def test_slugify_utf():
 def test_create_game_bools(db):
     game = db.Game(license=db.License())
     request = {'exhausting': True, 'touching': False, 'scalable': True, 'digital': False}
-    add_game_bools(game, request)
+    set_game_bools(game, request)
     assert game.exhausting is True
     assert game.touching is False
     assert game.scalable is True
@@ -32,7 +32,7 @@ def test_create_game_relationships(db):
     request = {'game_types': ['ice', 'ener', 'trust', 'prob', 'name', 'brain', 'song'],
                'game_lengths': ['short', 'medium', 'long'],
                'group_sizes': ['small', 'large', 'multiple', 'event']}
-    add_game_categories(game, request)
+    set_game_categories(game, request)
     gt1 = db.GameType.get(slug='brain')
     gl1 = db.GameLength.get(slug='long')
     gs1 = db.GroupSize.get(slug='small')
@@ -44,11 +44,8 @@ def test_create_game_relationships(db):
 @db_session
 def test_create_game_relationships_with_group_needs(db):
     game = db.Game(license=db.License())
-    request = {"game_types": ["trust"],
-               "game_lengths": ["long"],
-               "group_sizes": ["small"],
-               "group_needs": [{"slug": "first", "score": 5}, {"slug": "honesty", "score": 0}]}
-    add_game_categories(game, request)
+    request = {"group_needs": [{"slug": "first", "score": 5}, {"slug": "honesty", "score": 0}]}
+    set_game_group_needs(game, request)
     gn1 = db.GroupNeed.get(slug="honesty")
     gns1 = db.GroupNeedScore.get(lambda gns: gns.game is game and gns.group_need is gn1)
     assert gns1.value == 0

@@ -39,7 +39,9 @@ def update_single(game_id, patch):
     game = db.Game.get(id=game_id)
     if game is None:
         abort(404)
-    game = update_game(game, patch)
+    game, errors = update_game(game, patch)
+    if errors:
+        return {"errors": [e.__str__() for e in errors]}, 409
     return game.to_schema_out()
 
 

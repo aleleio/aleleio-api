@@ -33,7 +33,7 @@ def test_create_games_with_duplicate(client):
     payload = [MIN_GAME]
     response = client.post('/games', json=payload)
     assert response.status_code == 409
-    assert response.json == {"errors": ["A game with the name 'bananas' exists already."]}
+    assert response.json == {"errors": ["Cannot create Name: value 'bananas' for key slug already exists"]}
 
 
 def test_create_games_empty_json(client):
@@ -65,6 +65,44 @@ def test_get_single_game(client):
 def test_get_single_game_wrong_id(client):
     response = client.get('/games/99')
     assert response.status_code == 404
+
+
+def test_update_games_name(client):
+    payload = {"names": []}
+    response = client.patch('/games/1', json=payload)
+    assert response.status_code == 400
+    assert '[] is too short - \'names\'' in response.text
+    payload = {"names": ["kiwis"]}
+    response = client.patch('/games/1', json=payload)
+    assert response.status_code == 200
+    assert response.json["names"][0]["slug"] == "kiwis"
+    payload = {"names": ["bananas"]}
+    response = client.patch('/games/1', json=payload)
+    assert response.json["names"][0]["slug"] == "bananas"
+
+
+def test_update_game_descriptions(client):
+    payload = {"descriptions": []}
+    response = client.patch('/games/2', json=payload)
+    assert response.status_code == 400
+    assert '[] is too short - \'descriptions\'' in response.text
+    payload = {"descriptions": ["This game has two descriptions.", "Second one"]}
+    response = client.patch('/games/2', json=payload)
+    assert len(response.json["descriptions"]) == 2
+
+
+def test_update_games_group_needs(client):
+    payload = {"group_needs": []}
+    response = client.patch('/games/2', json=payload)
+    assert response.status_code == 200
+    assert len(response.json["group_needs"]) == 0
+    payload = {"group_needs": [{"slug": "groupid", "score": 4}, {"slug": "why", "score": 4}]}
+    response = client.patch('/games/2', json=payload)
+    assert len(response.json["group_needs"]) == 2
+    assert {"slug": "groupid", "value": 4} in response.json["group_needs"]
+    payload = {"group_needs": [{"slug": "why", "score": 4}]}
+    response = client.patch('/games/2', json=payload)
+    assert response.json["group_needs"][0]["slug"] == "why"
 
 
 def test_update_games_with_empty_game_types(client):

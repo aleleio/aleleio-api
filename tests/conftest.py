@@ -13,6 +13,8 @@ def reset_db_get():
     importlib.reload(src.services.create)
     import src.services.update
     importlib.reload(src.services.update)
+    import src.views.games
+    importlib.reload(src.views.games)
 
 
 @pytest.fixture(scope='module')

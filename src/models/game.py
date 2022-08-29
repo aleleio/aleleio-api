@@ -41,7 +41,7 @@ def define_entities_game(db):
             result['group_sizes'] = [obj.to_dict() for obj in self.group_sizes]
             result['group_needs'] = [obj.to_dict(exclude='game', related_objects=True) for obj in self.group_need_scores]
             for item in result['group_needs']:
-                item['need'] = item['group_need'].slug
+                item['slug'] = item['group_need'].slug
                 del item['group_need']
             result['materials'] = [obj.to_dict(exclude=['games']) for obj in self.materials]
             result['license'] = self.license.to_dict()

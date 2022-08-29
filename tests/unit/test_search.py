@@ -17,7 +17,7 @@ GAMEC = {'names': ['C'], 'descriptions': ['C'],
          'exhausting': False, 'touching': False, 'scalable': False, 'digital': False}
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def populate_with_abc(db):
     create_games([GAMEA, GAMEB, GAMEC])
 
