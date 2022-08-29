@@ -22,7 +22,7 @@ def slugify(value):
     return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 
-def create_game_bools(game, request):
+def add_game_bools(game, request):
     """Step 1: Create game properties with a simple True/False value.
     """
     game.exhausting = request['exhausting']
@@ -31,7 +31,7 @@ def create_game_bools(game, request):
     game.digital = request['digital']
 
 
-def create_game_categories(game, request):
+def add_game_categories(game, request):
     """Step 2: Create game properties that rely on Enums/Many-to-Many relationships.
     """
     for item in request['game_types']:
@@ -47,7 +47,7 @@ def create_game_categories(game, request):
             db.GroupNeedScore(game=game, group_need=group_need, value=item['score'])
 
 
-def create_game_descriptive(game, request):
+def add_game_descriptive(game, request):
     """Step 3: Create game names and descriptions
     """
     for item in request['names']:
@@ -60,7 +60,7 @@ def create_game_descriptive(game, request):
         game.descriptions.create(text=item)
 
 
-def create_game_materials(game, request):
+def add_game_materials(game, request):
     """Step 4: Create and link materials
     """
     if request.get('materials'):
@@ -73,14 +73,14 @@ def create_game_materials(game, request):
                 game.materials.create(slug=slug, full=item)
 
 
-def create_game_prior_prep(game, request):
+def add_game_prior_prep(game, request):
     """Step 5: Create prior preparation
     """
     if request.get('prior_prep'):
         game.prior_prep = request['prior_prep']
 
 
-def create_game_meta(game: db.Game, request):
+def add_game_meta(game: db.Game, request):
     """Step 6: Create game meta
     """
     db.GameMeta(
@@ -112,12 +112,12 @@ def create_games(games: List[Dict]):
         try:
             game_license = create_game_license(game)
             new_instance = db.Game(license=game_license)
-            create_game_bools(game=new_instance, request=game)
-            create_game_categories(game=new_instance, request=game)
-            create_game_descriptive(game=new_instance, request=game)
-            create_game_materials(game=new_instance, request=game)
-            create_game_prior_prep(game=new_instance, request=game)
-            create_game_meta(game=new_instance, request=game)
+            add_game_bools(game=new_instance, request=game)
+            add_game_categories(game=new_instance, request=game)
+            add_game_descriptive(game=new_instance, request=game)
+            add_game_materials(game=new_instance, request=game)
+            add_game_prior_prep(game=new_instance, request=game)
+            add_game_meta(game=new_instance, request=game)
         except ValueError as err:
             errors.append(err)
             new_instance.delete()
@@ -165,24 +165,15 @@ def create_collections(collections):
             description = collection.get('description')
             author_id = 1  # Todo: Real Author ID
 
-            if is_collection_in_database(slug):
-                raise ValueError(f"A collection with the name \"{slug}\" exists already.")
             instance = db.Collection(slug=slug, full=collection['full'], description=description, author_id=author_id)
             for game in collection.games:
                 instance.games.add(game)
             created_instances.append(instance)
 
-        except ValueError as err:
+        except (ValueError, CacheIndexError) as err:
+            # Pony CacheIndexError when slug is not unique
             errors.append(err)
             continue
-        created_instances.append(instance.slug)
+        created_instances.append(instance)
 
     return created_instances, errors
-
-
-def is_collection_in_database(slug):
-    if db.Collection.get(slug=slug):
-        return True
-    return False
-
-

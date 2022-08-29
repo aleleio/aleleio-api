@@ -31,7 +31,7 @@ def define_entities_meta(db):
         games = Set(lambda: db.Game)
 
         author_id = Required(int)
-        slug = Required(str)
+        slug = Required(str, unique=True)
         full = Required(str)
         description = Optional(LongStr)
 

@@ -76,3 +76,21 @@ def test_update_games_with_empty_game_types(client):
     assert '[] is too short - \'game_types\'' in response.text
 
 
+def test_delete_single_game(client):
+    response = client.get('/games')
+    assert len(response.json) == 2
+    response = client.delete('/games/1')
+    assert response.status_code == 200
+    response = client.get('/games')
+    assert len(response.json) == 1
+    response = client.delete('/games/2')
+    assert response.status_code == 200
+    response = client.get('/games')
+    assert len(response.json) == 0
+
+
+def test_delete_single_game_wrong_id(client):
+    response = client.delete('/games/1')
+    assert response.status_code == 404
+
+
