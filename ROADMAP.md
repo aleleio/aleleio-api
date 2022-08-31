@@ -39,13 +39,8 @@
 - [x] 0.6.1 move from gitlab to github
 - [x] 0.6.2 move to connexion
 - [x] 0.6.3 ORM working
-- [ ] 0.6.4 Core Logic working
-  - [x] filtering games with queries
-  - [x] READ game working
-  - [x] CREATE game working
-  - [x] DELETE game working
-  - [ ] UPDATE game working
-   
+- [x] 0.6.4 Core Logic working (filtering, CRUD)
+ 
 - [ ] 0.6.5 Testing from the start
   - [x] basic setup with pytest working
   - [x] testing with orm working

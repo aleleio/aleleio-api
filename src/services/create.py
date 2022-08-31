@@ -110,11 +110,13 @@ def create_game_license(request):
     """Check if the license exists already. Return defaults (from model definition) otherwise.
     """
     if request.get('license'):
-        license_url = request['license'].get('url')
-        license_owner = request['license'].get('owner')
-        license_owner_url = request['license'].get('owner_url')
-        if existing := db.License.get(lambda l: l.url == license_url and l.owner == license_owner and l.owner_url == license_owner_url):
+        name = request['license'].get('name')
+        url = request['license'].get('url', '')
+        owner = request['license'].get('owner', 'alele.io')
+        owner_url = request['license'].get('owner_url', 'https://alele.io')
+        if existing := db.License.get(lambda l: l.url == url and l.owner == owner and l.owner_url == owner_url):
             return existing
+        return db.License(name=name, url=url, owner=owner, owner_url=owner_url)
     return db.License()
 
 

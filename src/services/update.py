@@ -16,6 +16,7 @@ def update_game(game, request):
         update_game_descriptions(game, request)
         update_game_materials(game, request)
         update_game_prior_prep(game, request)
+        update_game_license(game, request)
     except CacheIndexError as err:
         errors.append(err)
     return game, errors

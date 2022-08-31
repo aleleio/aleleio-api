@@ -67,7 +67,7 @@ def test_get_single_game_wrong_id(client):
     assert response.status_code == 404
 
 
-def test_update_games_name(client):
+def test_update_game_name(client):
     payload = {"names": []}
     response = client.patch('/games/1', json=payload)
     assert response.status_code == 400
@@ -91,7 +91,7 @@ def test_update_game_descriptions(client):
     assert len(response.json["descriptions"]) == 2
 
 
-def test_update_games_group_needs(client):
+def test_update_game_group_needs(client):
     payload = {"group_needs": []}
     response = client.patch('/games/2', json=payload)
     assert response.status_code == 200
@@ -105,13 +105,24 @@ def test_update_games_group_needs(client):
     assert response.json["group_needs"][0]["slug"] == "why"
 
 
-def test_update_games_with_empty_game_types(client):
+def test_update_game_with_empty_game_types(client):
     """Games need at least one game_type
     """
     payload = {"game_types": []}
     response = client.patch('/games/1', json=payload)
     assert response.status_code == 400
     assert '[] is too short - \'game_types\'' in response.text
+
+
+def test_update_game_with_minimal_license(client):
+    payload = {"license": {"name": "MIT"}}
+    response = client.patch('/games/2', json=payload)
+    for item in (('name', 'MIT'), ('url', ''), ('owner', 'alele.io'), ('owner_url', 'https://alele.io')):
+        assert item in response.json['license'].items()
+
+
+def test_update_game_with_multiple_patches(client):
+    payload = {}
 
 
 def test_delete_single_game(client):
@@ -125,6 +136,7 @@ def test_delete_single_game(client):
     assert response.status_code == 200
     response = client.get('/games')
     assert len(response.json) == 0
+    client.post('/games', json=[MIN_GAME, MAX_GAME])
 
 
 def test_delete_single_game_wrong_id(client):

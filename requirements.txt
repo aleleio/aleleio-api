@@ -12,6 +12,7 @@ mistune
 requests
 
 # testing
+coverage
 pytest
 
 # error logging
