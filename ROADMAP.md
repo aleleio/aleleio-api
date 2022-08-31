@@ -40,13 +40,7 @@
 - [x] 0.6.2 move to connexion
 - [x] 0.6.3 ORM working
 - [x] 0.6.4 Core Logic working (filtering, CRUD)
-
-- [ ] 0.6.5 Testing from the start
-  - [x] basic setup with pytest working
-  - [x] testing with orm working
-  - [x] github actions set up
-  - [ ] testing api endpoints
-  - [ ] getting to 100% coverage
+- [x] 0.6.5 Testing from the start (github actions, coverage)
 
 - [ ] 0.6.6 Import/Export Tools
   - [x] make import work again with connexion

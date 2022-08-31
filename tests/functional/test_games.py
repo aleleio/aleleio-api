@@ -136,10 +136,6 @@ def test_update_game_with_name_duplicate(client):
     assert response.json == {"errors": ["Cannot create Name: value 'dog-show' for key slug already exists"]}
 
 
-def test_update_game_with_multiple_patches(client):
-    payload = {}
-
-
 def test_delete_single_game(client):
     response = client.get('/games')
     assert len(response.json) == 2
@@ -157,5 +153,3 @@ def test_delete_single_game(client):
 def test_delete_single_game_wrong_id(client):
     response = client.delete('/games/1')
     assert response.status_code == 404
-
-

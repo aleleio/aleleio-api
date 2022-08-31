@@ -4,7 +4,7 @@ import connexion
 from flask import abort
 from pony.orm import db_session
 
-from src.services import search
+from src.services import search, github
 from src.services.create import create_games
 from src.services.update import update_game
 from src.start import get_db
@@ -21,6 +21,7 @@ def create(games: List[Dict]):
     new_instances, errors = create_games(games)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
+    github.push_multiple_games(new_instances)
     return [game.to_schema_out() for game in new_instances], 201
 
 
@@ -34,14 +35,13 @@ def get_single(game_id):
 
 @db_session
 def update_single(game_id, patch):
-    # Update in Github Games Repo
-    # https://stackoverflow.com/a/61533333
     game = db.Game.get(id=game_id)
     if game is None:
         abort(404)
     game, errors = update_game(game, patch)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
+    github.push_single_game(game)
     return game.to_schema_out()
 
 

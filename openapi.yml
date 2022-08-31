@@ -3,7 +3,7 @@ x-stoplight:
   id: cdaa90c0aba36
 info:
   title: alele.io
-  version: 0.6.4
+  version: 0.6.5
   description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
   license:
     name: European Union Public License (EUPL) 1.2
