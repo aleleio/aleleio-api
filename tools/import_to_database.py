@@ -24,13 +24,17 @@ def get_games_from_github():
     """
     project_root = Path(__file__).parent.parent
     load_dotenv(project_root.joinpath('.env'))
-    token = os.getenv('GITHUB_TOKEN')
+    if not (token := os.getenv('GITHUB_TOKEN')):
+        raise ValueError('GITHUB_TOKEN not set in .env')
+    # token = os.getenv('GITHUB_TOKEN')
     tmp_path = project_root.joinpath('tools', 'tmp')
 
     # Download zip file from github
     url = 'https://api.github.com/repos/aleleio/teambuilding-games/zipball'
     headers = {'Authorization': f'token {token}'}
     r = requests.get(url, headers=headers, allow_redirects=True)
+    if r.status_code != 200:
+        raise ConnectionError(r.text)
     parts = r.headers.get('content-disposition').split(' ')
     download_name = parts[1][9:-4]
     zip_path = tmp_path.joinpath(f'{download_name}.zip')
@@ -57,48 +61,63 @@ def get_files_from_local(path):
 
 
 def convert_md_to_game(md):
-    """Convert Markdown to GameIn object
+    """Convert Markdown to game dictionary
     """
     md = frontmatter.load(md)
 
     if md.get('alias'):
         return None
-    else:
-        game = md.to_dict()
-        game['names'] = list()
-        game['descriptions'] = list()
-        markdown = mistune.create_markdown(renderer='ast')
-        tokens = markdown(game.get('content'))
-        is_description = 0
-        for token in tokens:
-            if token['type'] == 'heading' and token['level'] == 1:
-                game['names'].append(token['children'][0]['text'])
-                is_description = 0
-                continue
-            elif token['type'] == 'heading' and token['children'][0]['text'] == 'Description':
-                is_description = 1
-                continue
-            elif is_description > 0:
-                if not token['type'] == 'list':
-                    if is_description == 1:
-                        game['descriptions'].append(token['children'][0]['text'])
-                    elif is_description > 1:
-                        previous_description = game['descriptions'].pop()
-                        description = f"{previous_description}\n\n{token['children'][0]['text']}"
-                        game['descriptions'].append(description)
-                else:
-                    # Todo: Make this better. This happens, when the token/paragraph starts with a '1.'
-                    if is_description == 1:
-                        game['descriptions'].append(token['children'][0]['children'][0]['children'][0]['text'])
-                    elif is_description > 1:
-                        previous_description = game['descriptions'].pop()
-                        description = f"{previous_description}\n\n{token['children'][0]['children'][0]['children'][0]['text']}"
-                        game['descriptions'].append(description)
-                is_description += 1
 
-        del game['content']
+    game = md.to_dict()
+    game['names'] = list()
+    game['descriptions'] = list()
 
-        return game
+    markdown = mistune.create_markdown(renderer='ast')
+    tokens = markdown(game.get('content'))
+    for token in tokens:
+        md_token_to_game(game, token)
+
+    del game['content']
+
+    return game
+
+
+def md_token_to_game(game, token):
+    if is_name(token):
+        game['names'].append(token['children'][0]['text'])
+    elif is_description(token):
+        game['descriptions'].append('')
+    elif is_list(token):
+        game['descriptions'][-1] += list_to_string(token)
+    else:  # is description paragraph
+        game['descriptions'][-1] += f"{token['children'][0]['text']}\n\n"
+
+
+def is_name(token):
+    if token['type'] == 'heading' and token['level'] == 1:
+        return True
+    return False
+
+
+def is_description(token):
+    if token['type'] == 'heading' and token['children'][0]['text'] in ['Description', 'description', 'descr']:
+        return True
+    return False
+
+
+def is_list(token):
+    """This happens when a paragraph starts with a '1'.
+    """
+    if token['type'] == 'list':
+        return True
+    return False
+
+
+def list_to_string(token):
+    result = ''
+    for list_item in token['children']:
+        result += f"{list_item['children'][0]['children'][0]['text']}\n"
+    return f'{result}\n'
 
 
 def write_games_to_database(games):
@@ -118,7 +137,6 @@ def convert_yml_to_ref(ref_yml):
     with open(ref_yml, 'r') as fin:
         ymls = yaml.safe_load_all(fin)
         for ref in ymls:
-            ref['game_slug'] = ref.pop('refers_to')
             references.append(ref)
     return references
 
@@ -156,16 +174,16 @@ def run_github():
 
 
 if __name__ == '__main__':
-    game_paths, ref_paths = run_local()
-    # game_paths, ref_paths = run_github()
+    # game_paths, ref_paths = run_local()
+    game_files, ref_files = run_github()
 
     run_startup_tasks(get_db())
 
     game_list = []
     alias_list = []
-    for md in game_paths:
+    for md in game_files:
         game = convert_md_to_game(md)
-        if game is not None:
+        if game:
             game_list.append(game)
         else:
             alias_list.append(md)
@@ -176,7 +194,7 @@ if __name__ == '__main__':
 
     print()
     print('Writing references to database')
-    for yml in ref_paths:
+    for yml in ref_files:
         print(f"Reading from: {str(yml).split('/').pop()}")
         refs = convert_yml_to_ref(yml)
         write_references_to_database(refs)
