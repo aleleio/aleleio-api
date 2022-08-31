@@ -15,6 +15,7 @@ MAX_GAME = {'names': ['Monkey Circus', 'Dog Show'], 'descriptions': ['This game 
 def test_get_games(client):
     response = client.get('/games')
     assert response.status_code == 200
+    assert response.json == []
 
 
 def test_create_games_with_complete_request(client):
@@ -105,6 +106,13 @@ def test_update_game_group_needs(client):
     assert response.json["group_needs"][0]["slug"] == "why"
 
 
+def test_update_game_with_minimal_license(client):
+    payload = {"license": {"name": "MIT"}}
+    response = client.patch('/games/2', json=payload)
+    for item in (('name', 'MIT'), ('url', ''), ('owner', 'alele.io'), ('owner_url', 'https://alele.io')):
+        assert item in response.json['license'].items()
+
+
 def test_update_game_with_empty_game_types(client):
     """Games need at least one game_type
     """
@@ -114,11 +122,18 @@ def test_update_game_with_empty_game_types(client):
     assert '[] is too short - \'game_types\'' in response.text
 
 
-def test_update_game_with_minimal_license(client):
-    payload = {"license": {"name": "MIT"}}
-    response = client.patch('/games/2', json=payload)
-    for item in (('name', 'MIT'), ('url', ''), ('owner', 'alele.io'), ('owner_url', 'https://alele.io')):
-        assert item in response.json['license'].items()
+def test_update_game_with_wrong_id(client):
+    payload = {}
+    response = client.patch("/games/5", json=payload)
+    assert response.status_code == 404
+    assert response.json == {'detail': 'The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+
+
+def test_update_game_with_name_duplicate(client):
+    payload = {'names':['Dog Show']}
+    response = client.patch("/games/1", json=payload)
+    assert response.status_code == 409
+    assert response.json == {"errors": ["Cannot create Name: value 'dog-show' for key slug already exists"]}
 
 
 def test_update_game_with_multiple_patches(client):
