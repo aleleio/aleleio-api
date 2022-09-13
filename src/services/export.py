@@ -9,7 +9,7 @@ Helpful:
 """
 
 from github import GithubIntegration, Github
-from pony.orm import db_session
+from pony.orm import db_session, desc, select
 
 from src.start import get_project_root, get_db
 
@@ -35,33 +35,51 @@ def create_multiple_games(games):
 def create_single_game(game):
     repo = connect_to_github()
 
-    slug = get_main_slug(game)
-    path = f"games/{slug}.md"
-    md = convert_to_markdown(game, slug)
+    main_slug = get_main_slug(game)
+    path = f"games/{main_slug}.md"
+    md = convert_to_markdown(game, main_slug)
+    repo.create_file(path, message=f"add game \"{main_slug}\"", content=md, branch="test")
 
-    repo.create_file(path, message=f"add game \"{slug}\"", content=md, branch="test")
+    # Todo: Rewrite to only send one request instead of n => speedup!
+    for name in game.names.select(lambda n: n is not db.Name.get(slug=main_slug)):
+        path = f"games/{name.slug}.md"
+        md = write_alias_to_md(name, main_slug)
+        repo.create_file(path, message=f"add alias \"{name.slug}\"", content=md, branch="test")
 
 
 @db_session
-def update_single_game(game):
-    # export_to_markdown()
-    # connect & push
+def update_single_game(game, request):
     repo = connect_to_github()
 
+    if "names" in request.keys():
+        update_names(game)
     slug = get_main_slug(game)
     path = f"games/{slug}.md"
+    md = convert_to_markdown(game, slug)
+    contents = repo.get_contents(path, ref="test")
+    repo.update_file(contents.path, message=f"update \"{slug}\"", content=md, sha=contents.sha, branch="test")
 
-    contents = repo.get_contents(path)
-    # repo.update_file(contents.path, "more tests", "something stupid", contents.sha, branch="test")
+
+@db_session
+def update_names(game):
+    repo = connect_to_github()
 
 
+
+@db_session
 def delete_game(game):
-    pass
+    repo = connect_to_github()
+
+    # Todo: Rewrite to only send one request instead of n => speedup!
+    for name in game.names.select():
+        path = f"games/{name.slug}.md"
+        contents = repo.get_contents(path, ref="test")
+        repo.delete_file(contents.path, message=f"remove \"{name.slug}\"", sha=contents.sha, branch="test")
 
 
 def get_main_slug(game):
-    name = game.names.select().first()
-    return name.slug
+    min_id = select(n.id for n in db.Name if n.game is game).min()
+    return db.Name[min_id].slug
 
 
 def convert_to_markdown(game, slug):
@@ -82,7 +100,6 @@ def convert_to_markdown(game, slug):
         md.append("## Description")
         md.append(f"{d.text}\n")
     md = str.join('\n', md)
-
     return md
 
 
@@ -135,4 +152,16 @@ def add_license(game, md):
     md.append(f"  url: {game.license.url}")
     md.append(f"  owner: {game.license.owner}")
     md.append(f"  owner_url: {game.license.owner_url}")
+    return md
+
+
+def write_alias_to_md(name, main_slug):
+    """Create a minimal Markdown file with YAML frontmatter, referencing the actual game file/object
+    """
+    md = ["---"]
+    md.append(f"alias: {main_slug}")
+    md.append("---")
+    md.append(f"# {name.slug}\n")
+    md.append(f"Alias for [{main_slug}.md]({main_slug}.md).")
+    md = str.join('\n', md)
     return md

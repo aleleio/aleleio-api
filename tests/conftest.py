@@ -26,6 +26,10 @@ class MockRepo:
     def get_contents(path):
         return 200
 
+    @staticmethod
+    def update_file(path, message, content, sha, branch=None):
+        return 200
+
 
 @pytest.fixture(autouse=True)
 def mock_github(monkeypatch):

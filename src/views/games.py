@@ -41,7 +41,7 @@ def update_single(game_id, patch):
     game, errors = update_game(game, patch)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
-    export.update_single_game(game)
+    export.update_single_game(game, patch)
     return game.to_schema_out()
 
 
@@ -51,5 +51,7 @@ def delete_single(game_id):
     if game is None:
         abort(404)
     export.delete_game(game)
+    for name in game.names:
+        name.delete()
     game.delete()
     return {"success": f"Deleted game#{game_id}."}
