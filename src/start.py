@@ -89,6 +89,7 @@ def get_app():
         validator_map=validator_remap,
     )
     connexion_app.app.config.from_prefixed_env()
+
     return connexion_app
 
 

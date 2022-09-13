@@ -44,7 +44,7 @@
 
 - [ ] 0.6.6 Import/Export Tools
   - [x] make import work again with connexion
-  - [ ] use TB games repository
+  - [x] use TB games repository
   - [ ] make tools regular route (move to views/services) to facilitate automation 
   
 - [ ] 0.6.x User Onboarding

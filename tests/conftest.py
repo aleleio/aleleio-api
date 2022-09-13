@@ -17,6 +17,24 @@ def reset_db_get():
     importlib.reload(src.views.games)
 
 
+class MockRepo:
+    @staticmethod
+    def create_file(path, message, content, branch=None):
+        return 200
+
+    @staticmethod
+    def get_contents(path):
+        return 200
+
+
+@pytest.fixture(autouse=True)
+def mock_github(monkeypatch):
+    def mock_connect():
+        return MockRepo()
+    from src.services import export
+    monkeypatch.setattr(export, "connect_to_github", mock_connect )
+
+
 @pytest.fixture(scope='module')
 def db():
     database = get_db()

@@ -4,7 +4,7 @@ import connexion
 from flask import abort
 from pony.orm import db_session
 
-from src.services import search, github
+from src.services import search, export
 from src.services.create import create_games
 from src.services.update import update_game
 from src.start import get_db
@@ -21,7 +21,7 @@ def create(games: List[Dict]):
     new_instances, errors = create_games(games)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
-    github.push_multiple_games(new_instances)
+    export.create_multiple_games(new_instances)
     return [game.to_schema_out() for game in new_instances], 201
 
 
@@ -41,7 +41,7 @@ def update_single(game_id, patch):
     game, errors = update_game(game, patch)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
-    github.push_single_game(game)
+    export.update_single_game(game)
     return game.to_schema_out()
 
 
@@ -50,5 +50,6 @@ def delete_single(game_id):
     game = db.Game.get(id=game_id)
     if game is None:
         abort(404)
+    export.delete_game(game)
     game.delete()
     return {"success": f"Deleted game#{game_id}."}
