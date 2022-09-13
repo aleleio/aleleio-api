@@ -4,6 +4,8 @@ connexion[swagger-ui]
 python-dotenv
 pony
 pymysql
+pygithub
+cryptography
 
 # tools
 python-frontmatter
