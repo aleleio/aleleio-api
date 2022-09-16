@@ -9,8 +9,10 @@ Helpful:
 """
 
 from github import GithubIntegration, Github
+from github.GithubException import UnknownObjectException
 from pony.orm import db_session, desc, select
 
+from src.services.create import slugify
 from src.start import get_project_root, get_db
 
 db = get_db()
@@ -35,15 +37,14 @@ def create_multiple_games(games):
 def create_single_game(game):
     repo = connect_to_github()
 
-    main_slug = get_main_slug(game)
-    path = f"games/{main_slug}.md"
-    md = convert_to_markdown(game, main_slug)
-    repo.create_file(path, message=f"add game \"{main_slug}\"", content=md, branch="test")
+    cslug, path = get_canonical_slug_and_path(game)
+    md = convert_to_markdown(game, cslug)
+    repo.create_file(path, message=f"add game \"{cslug}\"", content=md, branch="test")
 
     # Todo: Rewrite to only send one request instead of n => speedup!
-    for name in game.names.select(lambda n: n is not db.Name.get(slug=main_slug)):
+    for name in game.names.select(lambda n: n is not db.Name.get(slug=cslug)):
         path = f"games/{name.slug}.md"
-        md = write_alias_to_md(name, main_slug)
+        md = write_alias_to_md(name, cslug)
         repo.create_file(path, message=f"add alias \"{name.slug}\"", content=md, branch="test")
 
 
@@ -52,34 +53,61 @@ def update_single_game(game, request):
     repo = connect_to_github()
 
     if "names" in request.keys():
-        update_names(game)
-    slug = get_main_slug(game)
-    path = f"games/{slug}.md"
-    md = convert_to_markdown(game, slug)
-    contents = repo.get_contents(path, ref="test")
-    repo.update_file(contents.path, message=f"update \"{slug}\"", content=md, sha=contents.sha, branch="test")
+        update_names(game, request, repo)
+
+    # Todo: All the rest of the update :)
 
 
 @db_session
-def update_names(game):
-    repo = connect_to_github()
+def update_names(game, request, repo):
+    """
+    Be aware: request["names"] was changed in update.py:update_game_names() and represents only names_new.
+    To check against the current canonical name (the name with the lowest ID), the IDs of deleted names can be found
+    in request["names_deleted"].
+    """
+    min_id = get_canonical_name_id(game)
 
+    if request.get("names_deleted"):
+        if min_id > min(request["names_deleted"]):
+            # canonical name was removed => locate new min_id and update new main file
+            slug, path = get_canonical_slug_and_path(game)
+            contents = repo.get_contents(path, ref="test")
+            md = convert_to_markdown(game, slug)
+            repo.update_file(contents.path, message=f"update \"{slug}\"", content=md, sha=contents.sha, branch="test")
+        for name in request["names_deleted"]:
+            delete_single_file(repo, slugify(name))
+    else:
+        # only new names => create new aliases
+        for name_new in request["names"]:
+            name = db.Name.get(full=name_new)
+            cname = db.Name[min_id]
+            path = f"games/{name.slug}.md"
+            md = write_alias_to_md(name, cname.slug)
+            repo.create_file(path, message=f"add alias \"{name.slug}\"", content=md, branch="test")
 
 
 @db_session
 def delete_game(game):
     repo = connect_to_github()
-
     # Todo: Rewrite to only send one request instead of n => speedup!
     for name in game.names.select():
-        path = f"games/{name.slug}.md"
-        contents = repo.get_contents(path, ref="test")
-        repo.delete_file(contents.path, message=f"remove \"{name.slug}\"", sha=contents.sha, branch="test")
+        delete_single_file(repo, name.slug)
 
 
-def get_main_slug(game):
-    min_id = select(n.id for n in db.Name if n.game is game).min()
-    return db.Name[min_id].slug
+def delete_single_file(repo, slug):
+    path = f"games/{slug}.md"
+    contents = repo.get_contents(path, ref="test")
+    repo.delete_file(contents.path, message=f"remove \"{slug}\"", sha=contents.sha, branch="test")
+
+
+def get_canonical_name_id(game):
+    return select(n.id for n in db.Name if n.game is game).min()
+
+
+def get_canonical_slug_and_path(game):
+    min_id = get_canonical_name_id(game)
+    name = db.Name[min_id]
+    return name.slug, f"games/{name.slug}.md"
 
 
 def convert_to_markdown(game, slug):
@@ -155,13 +183,13 @@ def add_license(game, md):
     return md
 
 
-def write_alias_to_md(name, main_slug):
+def write_alias_to_md(name, cslug):
     """Create a minimal Markdown file with YAML frontmatter, referencing the actual game file/object
     """
     md = ["---"]
-    md.append(f"alias: {main_slug}")
+    md.append(f"alias: {cslug}")
     md.append("---")
     md.append(f"# {name.slug}\n")
-    md.append(f"Alias for [{main_slug}.md]({main_slug}.md).")
+    md.append(f"Alias for [{cslug}.md]({cslug}.md).")
     md = str.join('\n', md)
     return md

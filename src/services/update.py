@@ -1,6 +1,7 @@
-from pony.orm import CacheIndexError
+from pony.orm import CacheIndexError, select
 
 from src.services import create
+from src.services.create import slugify
 from src.start import get_db
 
 db = get_db()
@@ -41,9 +42,27 @@ def update_game_group_needs(game, request):
 
 
 def update_game_names(game, request):
+    """Update the requested changes for names without changing the db.Name creation IDs.
+    game.names.clear() would delete not only the connection but also the db.Name entries
+    themselves because of the Required() property.
+    """
     if "names" in request.keys():
-        game.names.clear()
-        create.set_game_names(game, request)
+        old_nameset = set(select(n.full for n in game.names)[:])
+        new_nameset = set(request["names"])
+        names_deleted = old_nameset - new_nameset
+        names_new = new_nameset - old_nameset
+
+        if names_deleted:
+            request["names_deleted"] = list()
+            for name in names_deleted:
+                dead_name = db.Name.get(full=name)
+                request["names_deleted"].append(dead_name.id)
+                dead_name.delete()
+
+        if names_new:
+            request["names"] = list(names_new)
+            create.set_game_names(game, request)
+
 
 
 def update_game_descriptions(game, request):
