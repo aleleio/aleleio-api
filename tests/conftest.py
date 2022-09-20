@@ -13,23 +13,32 @@ def reset_db_get():
     importlib.reload(src.services.create)
     import src.services.update
     importlib.reload(src.services.update)
+    import src.services.export
+    importlib.reload(src.services.export)
     import src.views.games
     importlib.reload(src.views.games)
 
 
 class MockRepo:
-    @staticmethod
-    def create_file(path, message, content, branch=None):
-        return 200
+    class Content:
+        def __init__(self, path):
+            self.path = path
+            self.sha = '12345abc'
+
+    def get_contents(self, path, ref=None):
+        return self.Content(path)
 
     @staticmethod
-    def get_contents(path):
+    def create_file(path, message, content, branch=None):
         return 200
 
     @staticmethod
     def update_file(path, message, content, sha, branch=None):
         return 200
 
+    @staticmethod
+    def delete_file(path, message, sha, branch=None):
+        return 200
 
 @pytest.fixture(autouse=True)
 def mock_github(monkeypatch):

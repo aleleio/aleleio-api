@@ -43,7 +43,8 @@ def update_game_group_needs(game, request):
 
 def update_game_names(game, request):
     """Update the requested changes for names without changing the db.Name creation IDs.
-    game.names.clear() would delete not only the connection but also the db.Name entries
+    Store deleted games in request[] for services.export.
+    Note: game.names.clear() would delete not only the connection but also the db.Name entries
     themselves because of the Required() property.
     """
     if "names" in request.keys():
@@ -56,13 +57,13 @@ def update_game_names(game, request):
             request["names_deleted"] = list()
             for name in names_deleted:
                 dead_name = db.Name.get(full=name)
-                request["names_deleted"].append(dead_name.id)
+                request["names_deleted"].append(dict(id=dead_name.id, slug=dead_name.slug))
                 dead_name.delete()
-
         if names_new:
             request["names"] = list(names_new)
             create.set_game_names(game, request)
-
+        if not names_new:
+            del request["names"]
 
 
 def update_game_descriptions(game, request):

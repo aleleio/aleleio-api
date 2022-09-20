@@ -73,13 +73,20 @@ def test_update_game_name(client):
     response = client.patch('/games/1', json=payload)
     assert response.status_code == 400
     assert '[] is too short - \'names\'' in response.text
-    payload = {"names": ["kiwis"]}
+    payload = {"names": ["Kiwis"]}
     response = client.patch('/games/1', json=payload)
     assert response.status_code == 200
-    assert response.json["names"][0]["slug"] == "kiwis"
-    payload = {"names": ["bananas"]}
+    assert len(response.json["names"]) == 1
+    assert {n["slug"] for n in response.json["names"]} == {"kiwis"}
+    payload = {"names": ["Kiwis", "Bananas"]}
     response = client.patch('/games/1', json=payload)
-    assert response.json["names"][0]["slug"] == "bananas"
+    assert response.status_code == 200
+    assert len(response.json["names"]) == 2
+    assert {n["slug"] for n in response.json["names"]} == {"kiwis", "bananas"}
+    payload = {"names": ["Bananas"]}
+    response = client.patch('/games/1', json=payload)
+    assert len(response.json["names"]) == 1
+    assert {n["slug"] for n in response.json["names"]} == {"bananas"}
 
 
 def test_update_game_descriptions(client):

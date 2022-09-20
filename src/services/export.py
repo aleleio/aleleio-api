@@ -68,16 +68,16 @@ def update_names(game, request, repo):
     min_id = get_canonical_name_id(game)
 
     if request.get("names_deleted"):
-        if min_id > min(request["names_deleted"]):
+        if min_id > min(n['id'] for n in request["names_deleted"]):
             # canonical name was removed => locate new min_id and update new main file
             slug, path = get_canonical_slug_and_path(game)
             contents = repo.get_contents(path, ref="test")
             md = convert_to_markdown(game, slug)
             repo.update_file(contents.path, message=f"update \"{slug}\"", content=md, sha=contents.sha, branch="test")
         for name in request["names_deleted"]:
-            delete_single_file(repo, slugify(name))
-    else:
-        # only new names => create new aliases
+            delete_single_file(repo, name['slug'])
+    if request.get("names"):
+        # create new aliases
         for name_new in request["names"]:
             name = db.Name.get(full=name_new)
             cname = db.Name[min_id]
