@@ -43,9 +43,7 @@ def update_game_group_needs(game, request):
 
 def update_game_names(game, request):
     """Update the requested changes for names without changing the db.Name creation IDs.
-    Store deleted games in request[] for services.export.
-    Note: game.names.clear() would delete not only the connection but also the db.Name entries
-    themselves because of the Required() property.
+    Store deleted games in request[] to enable export to teambuilding-games repository.
     """
     if "names" in request.keys():
         old_nameset = set(select(n.full for n in game.names)[:])
@@ -53,17 +51,17 @@ def update_game_names(game, request):
         names_deleted = old_nameset - new_nameset
         names_new = new_nameset - old_nameset
 
-        if names_deleted:
-            request["names_deleted"] = list()
-            for name in names_deleted:
-                dead_name = db.Name.get(full=name)
-                request["names_deleted"].append(dict(id=dead_name.id, slug=dead_name.slug))
-                dead_name.delete()
         if names_new:
             request["names"] = list(names_new)
             create.set_game_names(game, request)
         if not names_new:
             del request["names"]
+        if names_deleted:
+            request["names_deleted"] = list()
+            for name in names_deleted:
+                dead_name = db.Name.get(full=name)
+                request["names_deleted"].append(dict(id=dead_name.id, slug=dead_name.slug))
+                dead_name.delete()  # delete at last moment, else problems with duplicate name exceptions
 
 
 def update_game_descriptions(game, request):

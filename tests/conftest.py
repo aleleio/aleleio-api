@@ -20,32 +20,64 @@ def reset_db_get():
 
 
 class MockRepo:
-    class Content:
-        def __init__(self, path):
-            self.path = path
+    class Blob:
+        def __init__(self):
             self.sha = '12345abc'
 
-    def get_contents(self, path, ref=None):
-        return self.Content(path)
+    def create_git_blob(self, content, encoding):
+        return self.Blob()
+
+    class InputTreeGitElement:
+        def __init__(self, path, mode, type, sha):
+            self.path = path
+            self.mode = mode
+            self.type = type
+            self.sha = sha
+
+    class Commit:
+        def __init__(self):
+            self.sha = '12345abc'
+
+    class Branch:
+        def __init__(self, ref):
+            self.ref = ref
+        @property
+        def commit(self):
+            return MockRepo.Commit()
+
+    def get_branch(self, ref):
+        return self.Branch(ref)
 
     @staticmethod
-    def create_file(path, message, content, branch=None):
-        return 200
+    def get_git_tree(sha):
+        return 'base_tree'
 
     @staticmethod
-    def update_file(path, message, content, sha, branch=None):
-        return 200
+    def create_git_tree(element_list, base_tree):
+        return 'tree'
 
     @staticmethod
-    def delete_file(path, message, sha, branch=None):
-        return 200
+    def get_git_commit(sha):
+        return 'parent'
+
+    def create_git_commit(self, message, tree, parents):
+        return self.Commit()
+
+    class Reference:
+        @staticmethod
+        def edit(sha):
+            return 'branch_refs'
+
+    def get_git_ref(self, path):
+        return self.Reference
+
 
 @pytest.fixture(autouse=True)
 def mock_github(monkeypatch):
     def mock_connect():
         return MockRepo()
     from src.services import export
-    monkeypatch.setattr(export, "connect_to_github", mock_connect )
+    monkeypatch.setattr(export, "connect_to_github", mock_connect)
 
 
 @pytest.fixture(scope='module')

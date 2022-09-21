@@ -1,18 +1,15 @@
 """
-Use GitHub Apps to automatically push changes in the game database to the TB Games repository.
+Export games to teambuilding-games repository on GitHub.
 
-Personal Access Tokens are tied to user accounts and enable full access, while GitHub Apps allows granular permissions.
+Note:   GitHub Apps allows granular permissions, Personal Access Tokens grant full access.
 
-Helpful:
-- https://medium.com/@gilharomri/github-app-bot-with-python-ea38811d7b14
-- https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api
+Helpful: https://medium.com/@gilharomri/github-app-bot-with-python-ea38811d7b14
+         https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api
 """
 
-from github import GithubIntegration, Github
-from github.GithubException import UnknownObjectException
-from pony.orm import db_session, desc, select
+from github import GithubIntegration, Github, InputGitTreeElement, Repository
+from pony.orm import db_session, select
 
-from src.services.create import slugify
 from src.start import get_project_root, get_db
 
 db = get_db()
@@ -28,86 +25,101 @@ def connect_to_github():
     return gh.get_repo("aleleio/teambuilding-games")
 
 
-def create_multiple_games(games):
+@db_session
+def create_multiple_games(games: list[db.Game]):
+    file_list = list()
+    cslug_list = list()
     for game in games:
-        create_single_game(game)
+        cname = get_canonical_name_obj(game)
+        cslug_list.append(cname.slug)
+        md = convert_to_markdown(game, cname.slug)
+        file_list.append(dict(md=md, slug=cname.slug))
+        file_list.extend(create_aliases(game, cname))
+    all_cslugs = ', '.join(f'"{ms}"' for ms in cslug_list)
+    commit_multiple(connect_to_github(), file_list, message=f"create {all_cslugs}")
+
+
+def create_aliases(game: db.Game, cname: db.Name):
+    file_list = list()
+    for name in game.names.select(lambda n: n is not cname):
+        md = write_alias_to_md(name, cname.slug)
+        file_list.append(dict(md=md, slug=name.slug))
+    return file_list
 
 
 @db_session
-def create_single_game(game):
-    repo = connect_to_github()
-
-    cslug, path = get_canonical_slug_and_path(game)
-    md = convert_to_markdown(game, cslug)
-    repo.create_file(path, message=f"add game \"{cslug}\"", content=md, branch="test")
-
-    # Todo: Rewrite to only send one request instead of n => speedup!
-    for name in game.names.select(lambda n: n is not db.Name.get(slug=cslug)):
-        path = f"games/{name.slug}.md"
-        md = write_alias_to_md(name, cslug)
-        repo.create_file(path, message=f"add alias \"{name.slug}\"", content=md, branch="test")
-
-
-@db_session
-def update_single_game(game, request):
-    repo = connect_to_github()
-
-    if "names" in request.keys():
-        update_names(game, request, repo)
-
-    # Todo: All the rest of the update :)
-
-
-@db_session
-def update_names(game, request, repo):
+def update_single_game(game: db.Game, request: dict):
+    """Export updated .md files to teambuilding-games repo.
+    At this point, all patched changes are already committed to the db.Game object.
     """
+    name = get_canonical_name_obj(game)
+
+    if "names" in request.keys() or "names_deleted" in request.keys():
+        file_list = update_names(game, request)
+    else:
+        file_list = [dict(md=convert_to_markdown(game, name.slug), slug=name.slug)]
+
+    commit_multiple(connect_to_github(), file_list, message=f"update \"{name.slug}\"")
+
+
+@db_session
+def update_names(game: db.Game, request: dict):
+    """Update main game file in repo and create or delete alias files.
     Be aware: request["names"] was changed in update.py:update_game_names() and represents only names_new.
     To check against the current canonical name (the name with the lowest ID), the IDs of deleted names can be found
     in request["names_deleted"].
     """
     min_id = get_canonical_name_id(game)
+    cname = get_canonical_name_obj(game)
+    file_list = list()
 
     if request.get("names_deleted"):
         if min_id > min(n['id'] for n in request["names_deleted"]):
             # canonical name was removed => locate new min_id and update new main file
-            slug, path = get_canonical_slug_and_path(game)
-            contents = repo.get_contents(path, ref="test")
-            md = convert_to_markdown(game, slug)
-            repo.update_file(contents.path, message=f"update \"{slug}\"", content=md, sha=contents.sha, branch="test")
+            file_list.append(dict(md=convert_to_markdown(game, cname.slug), slug=cname.slug))
         for name in request["names_deleted"]:
-            delete_single_file(repo, name['slug'])
+            file_list.append(dict(slug=name['slug'], delete=True))
     if request.get("names"):
         # create new aliases
-        for name_new in request["names"]:
-            name = db.Name.get(full=name_new)
-            cname = db.Name[min_id]
-            path = f"games/{name.slug}.md"
-            md = write_alias_to_md(name, cname.slug)
-            repo.create_file(path, message=f"add alias \"{name.slug}\"", content=md, branch="test")
+        file_list.extend(create_aliases(game, cname))
+
+    return file_list
 
 
 @db_session
 def delete_game(game):
-    repo = connect_to_github()
-    # Todo: Rewrite to only send one request instead of n => speedup!
-    for name in game.names.select():
-        delete_single_file(repo, name.slug)
-
-
-def delete_single_file(repo, slug):
-    path = f"games/{slug}.md"
-    contents = repo.get_contents(path, ref="test")
-    repo.delete_file(contents.path, message=f"remove \"{slug}\"", sha=contents.sha, branch="test")
+    name = get_canonical_name_obj(game)
+    payload = [dict(slug=name.slug, delete=True) for name in game.names.select()]
+    commit_multiple(connect_to_github(), payload, message=f"delete \"{name.slug}\"")
 
 
 def get_canonical_name_id(game):
     return select(n.id for n in db.Name if n.game is game).min()
 
 
-def get_canonical_slug_and_path(game):
+def get_canonical_name_obj(game):
     min_id = get_canonical_name_id(game)
-    name = db.Name[min_id]
-    return name.slug, f"games/{name.slug}.md"
+    return db.Name[min_id]
+
+
+def commit_multiple(repo, file_list, message="update games"):
+    element_list = list()
+    for content in file_list:
+        if content.get('delete'):
+            blob_sha = None
+        else:
+            blob = repo.create_git_blob(content['md'], "utf-8")
+            blob_sha = blob.sha
+        el = InputGitTreeElement(path=f"games/{content['slug']}.md", mode="100644", type="blob", sha=blob_sha)
+        element_list.append(el)
+
+    branch_sha = repo.get_branch("test").commit.sha
+    base_tree = repo.get_git_tree(sha=branch_sha)
+    tree = repo.create_git_tree(element_list, base_tree)
+    parent = repo.get_git_commit(sha=branch_sha)
+    commit = repo.create_git_commit(message, tree, [parent])
+    branch_refs = repo.get_git_ref("heads/test")
+    branch_refs.edit(sha=commit.sha)
 
 
 def convert_to_markdown(game, slug):

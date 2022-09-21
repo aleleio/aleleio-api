@@ -83,6 +83,11 @@ def test_update_game_name(client):
     assert response.status_code == 200
     assert len(response.json["names"]) == 2
     assert {n["slug"] for n in response.json["names"]} == {"kiwis", "bananas"}
+    payload = {"names": ["Kiwis", "Bananas"]}
+    response = client.patch('/games/1', json=payload)
+    assert response.status_code == 200
+    assert len(response.json["names"]) == 2
+    assert {n["slug"] for n in response.json["names"]} == {"kiwis", "bananas"}
     payload = {"names": ["Bananas"]}
     response = client.patch('/games/1', json=payload)
     assert len(response.json["names"]) == 1
@@ -137,7 +142,7 @@ def test_update_game_with_wrong_id(client):
 
 
 def test_update_game_with_name_duplicate(client):
-    payload = {'names':['Dog Show']}
+    payload = {'names': ['Dog Show']}
     response = client.patch("/games/1", json=payload)
     assert response.status_code == 409
     assert response.json == {"errors": ["Cannot create Name: value 'dog-show' for key slug already exists"]}
