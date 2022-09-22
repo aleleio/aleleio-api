@@ -1,3 +1,5 @@
+/tmp/*
+.latest-sha
 
 # github
 gamebot-private-key.pem

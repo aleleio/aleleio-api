@@ -6,22 +6,36 @@ Note:   GitHub Apps allows granular permissions, Personal Access Tokens grant fu
 Helpful: https://medium.com/@gilharomri/github-app-bot-with-python-ea38811d7b14
          https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api
 """
-
+import requests
 from github import GithubIntegration, Github, InputGitTreeElement, Repository
 from pony.orm import db_session, select
 
 from src.start import get_project_root, get_db
 
 db = get_db()
+root = get_project_root()
 
 
-def connect_to_github():
-    root = get_project_root()
+def set_latest_sha(sha=None):
+    if not sha:
+        headers = {'Authorization': f'token {get_github_token()}'}
+        url = 'https://api.github.com/repos/aleleio/teambuilding-games/commits?per_page=1'
+        r = requests.get(url, headers=headers, allow_redirects=True)
+        sha = r.json()[0]["sha"][:7]
+    with open(root.joinpath('.latest-sha'), 'w') as file:
+        file.write(sha)
+
+
+def get_github_token():
     with open(root.joinpath('gamebot-private-key.pem')) as cert_file:
         bot_key = cert_file.read()
     bot = GithubIntegration(233902, bot_key)
-    token = bot.get_access_token(bot.get_installation('aleleio', 'teambuilding-games').id).token
-    gh = Github(token)
+    installation = bot.get_installation('aleleio', 'teambuilding-games').id
+    return bot.get_access_token(installation).token
+
+
+def get_repo():
+    gh = Github(get_github_token())
     return gh.get_repo("aleleio/teambuilding-games")
 
 
@@ -36,7 +50,7 @@ def create_multiple_games(games: list[db.Game]):
         file_list.append(dict(md=md, slug=cname.slug))
         file_list.extend(create_aliases(game, cname))
     all_cslugs = ', '.join(f'"{ms}"' for ms in cslug_list)
-    commit_multiple(connect_to_github(), file_list, message=f"create {all_cslugs}")
+    commit_multiple(get_repo(), file_list, message=f"create {all_cslugs}")
 
 
 def create_aliases(game: db.Game, cname: db.Name):
@@ -59,7 +73,7 @@ def update_single_game(game: db.Game, request: dict):
     else:
         file_list = [dict(md=convert_to_markdown(game, name.slug), slug=name.slug)]
 
-    commit_multiple(connect_to_github(), file_list, message=f"update \"{name.slug}\"")
+    commit_multiple(get_repo(), file_list, message=f"update \"{name.slug}\"")
 
 
 @db_session
@@ -90,7 +104,7 @@ def update_names(game: db.Game, request: dict):
 def delete_game(game):
     name = get_canonical_name_obj(game)
     payload = [dict(slug=name.slug, delete=True) for name in game.names.select()]
-    commit_multiple(connect_to_github(), payload, message=f"delete \"{name.slug}\"")
+    commit_multiple(get_repo(), payload, message=f"delete \"{name.slug}\"")
 
 
 def get_canonical_name_id(game):
@@ -120,6 +134,7 @@ def commit_multiple(repo, file_list, message="update games"):
     commit = repo.create_git_commit(message, tree, [parent])
     branch_refs = repo.get_git_ref("heads/test")
     branch_refs.edit(sha=commit.sha)
+    set_latest_sha(commit.sha)
 
 
 def convert_to_markdown(game, slug):

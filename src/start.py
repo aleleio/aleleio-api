@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from pony.orm import Database, set_sql_debug, db_session
 
 from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
-    GroupSizeEnum, GroupNeedEnum
+    GroupSizeEnum, GroupNeedEnum, define_entities_api
 from src.services.enforcedefaults import validator_remap
 
 
@@ -51,6 +51,7 @@ def get_db():
     define_entities_game(database)
     define_entities_meta(database)
     define_entities_user(database)
+    define_entities_api(database)
     database.generate_mapping(create_tables=True)
     set_sql_debug(False)
     return database
@@ -89,6 +90,9 @@ def get_app():
         validator_map=validator_remap,
     )
     connexion_app.app.config.from_prefixed_env()
+
+    from src.views.services import bp
+    connexion_app.app.register_blueprint(bp)
 
     return connexion_app
 

@@ -4,6 +4,7 @@ See docs/update-games-db.md for more detailed information.
 """
 import os
 import shutil
+from functools import cache
 from typing import Union
 from zipfile import ZipFile
 from pathlib import Path
@@ -16,7 +17,8 @@ import mistune
 import requests as requests
 
 from src.services import create
-from src.start import run_startup_tasks, get_db
+from src.start import run_startup_tasks, get_db, get_project_root
+
 
 
 def get_games_from_github():

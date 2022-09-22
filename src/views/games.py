@@ -4,7 +4,7 @@ import connexion
 from flask import abort
 from pony.orm import db_session
 
-from src.services import search, export
+from src.services import search, export_to_repo
 from src.services.create import create_games
 from src.services.update import update_game
 from src.start import get_db

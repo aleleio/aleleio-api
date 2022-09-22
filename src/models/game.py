@@ -20,7 +20,6 @@ def define_entities_game(db):
         license = Required(lambda: db.License)
         references = Set(lambda: db.Reference)
         collections = Set(lambda: db.Collection)
-        versions = Set(lambda: db.Version)
 
         statistic = Optional(lambda: db.GameStatistic, cascade_delete=True)
 

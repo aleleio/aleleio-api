@@ -13,8 +13,8 @@ def reset_db_get():
     importlib.reload(src.services.create)
     import src.services.update
     importlib.reload(src.services.update)
-    import src.services.export
-    importlib.reload(src.services.export)
+    import src.services.export_to_repo
+    importlib.reload(src.services.export_to_repo)
     import src.views.games
     importlib.reload(src.views.games)
 
@@ -76,7 +76,7 @@ class MockRepo:
 def mock_github(monkeypatch):
     def mock_connect():
         return MockRepo()
-    from src.services import export
+    from src.services import export_to_repo
     monkeypatch.setattr(export, "connect_to_github", mock_connect)
 
 
