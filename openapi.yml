@@ -1,15 +1,15 @@
 openapi: 3.0.0
-x-stoplight:
-  id: cdaa90c0aba36
 info:
   title: alele.io
-  version: 0.6.5
+  version: 0.6.6
   description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
   license:
     name: European Union Public License (EUPL) 1.2
     url: 'https://eupl.eu'
   contact: {}
-servers: []
+servers:
+  - url: 'https://alele.io'
+    description: Website
 paths:
   /games:
     post:
@@ -129,6 +129,30 @@ paths:
         - $ref: '#/components/parameters/aux1'
         - $ref: '#/components/parameters/aux2'
       description: Use query parameters to filter out the relevant results.
+  /about:
+    get:
+      summary: Get API version and total number of games.
+      tags:
+        - meta
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  games:
+                    type: integer
+                  version:
+                    type: string
+                x-examples:
+                  example-1:
+                    games: 232
+                    version: 0.6.5
+              examples: {}
+      operationId: api.about
+      description: Information about the API.
 components:
   schemas:
     GameIn:

@@ -91,7 +91,7 @@ def get_app():
     )
     connexion_app.app.config.from_prefixed_env()
 
-    from src.views.services import bp
+    from src.views.api import bp
     connexion_app.app.register_blueprint(bp)
 
     return connexion_app

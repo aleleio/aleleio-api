@@ -41,17 +41,13 @@
 - [x] 0.6.3 ORM working
 - [x] 0.6.4 Core Logic working (filtering, CRUD)
 - [x] 0.6.5 Testing from the start (github actions, coverage)
-
-- [ ] 0.6.6 Import/Export Tools
-  - [x] make import work again with connexion
-  - [x] use TB games repository
-  - [ ] make tools regular route to facilitate automation 
+- [x] 0.6.6 Import/Export Tools (use repo, route for automation)
   
-- [ ] 0.6.x User Onboarding
+- [ ] 0.6.7 User Onboarding
   - [x] add Windows instructions to CONTRIBUTING
   - [ ] easy games import to get started with development immediately
 
-- [ ] 0.6.x Authentication working   
+- [ ] 0.6.8 Authentication working   
   - [ ] auth with github, user accounts necessary?
   - [ ] API keys with oauth2 (maybe overkill)
   - [ ] CORS because of web/mobile?

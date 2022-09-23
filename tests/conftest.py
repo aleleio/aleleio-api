@@ -77,7 +77,7 @@ def mock_github(monkeypatch):
     def mock_connect():
         return MockRepo()
     from src.services import export_to_repo
-    monkeypatch.setattr(export, "connect_to_github", mock_connect)
+    monkeypatch.setattr(export_to_repo, "get_repo", mock_connect)
 
 
 @pytest.fixture(scope='module')

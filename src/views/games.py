@@ -21,7 +21,7 @@ def create(games: List[Dict]):
     new_instances, errors = create_games(games)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
-    export.create_multiple_games(new_instances)
+    export_to_repo.create_multiple_games(new_instances)
     return [game.to_schema_out() for game in new_instances], 201
 
 
@@ -41,7 +41,7 @@ def update_single(game_id, patch):
     game, errors = update_game(game, patch)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
-    export.update_single_game(game, patch)
+    export_to_repo.update_single_game(game, patch)
     return game.to_schema_out()
 
 
@@ -50,7 +50,7 @@ def delete_single(game_id):
     game = db.Game.get(id=game_id)
     if game is None:
         abort(404)
-    export.delete_game(game)
+    export_to_repo.delete_game(game)
     for name in game.names:
         name.delete()
     game.delete()

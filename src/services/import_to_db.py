@@ -17,7 +17,7 @@ root = get_project_root()
 tmp_path = root.joinpath('tmp')
 
 
-def main():
+def run_import():
     game_files, ref_files = download_files()
 
     game_list = list()
@@ -28,11 +28,14 @@ def main():
             game_list.append(game)
         else:
             alias_list.append(md)
-    write_games_to_database(game_list)
+    games_created, games_errors = write_games_to_database(game_list)
 
     for yml in ref_files:
         refs = convert_yml_to_ref(yml)
-        write_references_to_database(refs)
+        refs_created, refs_errors = write_references_to_database(refs)
+
+    return {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": games_errors},
+            "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": refs_errors}}
 
 
 def download_files():
@@ -169,7 +172,8 @@ def write_games_to_database(games):
     """Insert the games into the database
     Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
-    created_games, errors = create.create_games(games)
+    created, errors = create.create_games(games)
+    return created, errors
 
 
 def convert_yml_to_ref(ref_yml):
@@ -184,4 +188,5 @@ def convert_yml_to_ref(ref_yml):
 
 
 def write_references_to_database(references):
-    created_refs, errors = create.create_references(references)
+    created, errors = create.create_references(references)
+    return created, errors
