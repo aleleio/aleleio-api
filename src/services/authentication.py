@@ -9,9 +9,9 @@ from functools import wraps
 from flask import g, abort, request
 from pony.orm import *
 
-from src.start import get_db, get_users_db
+from src.start import get_db
 
-udb = get_users_db()
+udb = get_db(users_db=True)
 
 
 def auth_required(f):

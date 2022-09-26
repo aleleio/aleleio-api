@@ -1,3 +1,4 @@
+import json
 import os
 from functools import cache
 from pathlib import Path
@@ -30,42 +31,30 @@ def get_project_version():
 
 
 @cache
-def get_db():
+def get_db(users_db=False):
     """Bind Pony ORM to database
     This acts like a singleton because of caching.
     """
-    if not os.environ.get('FLASK_DEBUG'):  # production
-        host = os.environ.get('DB_HOST')
-        user = os.environ.get('DB_USER')
-        passwd = os.environ.get('DB_PASSWORD')
-        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_api')
-    elif os.environ.get('FLASK_TESTING'):
-        database = Database(provider='sqlite', filename='db_testing_api.sqlite', create_db=True)
-    else:  # development
-        database = Database(provider='sqlite', filename='db_api.sqlite', create_db=True)
-    define_entities_game(database)
-    define_entities_meta(database)
-    define_entities_api(database)
-    database.generate_mapping(create_tables=True)
-    set_sql_debug(False)
-    return database
 
+    if users_db:
+        credentials = json.loads(os.environ.get("DB_USERS_CONNECT"))
+    else:
+        credentials = json.loads(os.environ.get("DB_CONNECT"))
 
-@cache
-def get_users_db():
-    """Bind Pony ORM to user database
-    This acts like a singleton because of caching.
-    """
-    if not os.environ.get('FLASK_DEBUG'):  # production
-        host = os.environ.get('DB_USERS_HOST')
-        user = os.environ.get('DB_USERS_USER')
-        passwd = os.environ.get('DB_USERS_PASSWORD')
-        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_users')
+    if not os.environ.get("FLASK_DEBUG"):  # production
+        database = Database(provider='mysql', **credentials)
     elif os.environ.get('FLASK_TESTING'):
-        database = Database(provider='sqlite', filename='db_testing_users.sqlite', create_db=True)
+        database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
     else:  # development
-        database = Database(provider='sqlite', filename='db_users.sqlite', create_db=True)
-    define_entities_user(database)
+        database = Database(provider='sqlite', filename=f'{credentials["db"]}.sqlite', create_db=True)
+
+    if users_db:
+        define_entities_user(database)
+    else:
+        define_entities_game(database)
+        define_entities_meta(database)
+        define_entities_api(database)
+
     database.generate_mapping(create_tables=True)
     set_sql_debug(False)
     return database
@@ -115,29 +104,20 @@ def get_app():
 def run_startup_tasks(db):
     """Seed database with category enums if not already present
     """
-    if db.GameType.get(slug="ice"):
-        return
+    if hasattr(db, 'User'):
+        if db.User.get(login="admin"):
+            return
+        for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
+            db.User(**user)
 
-    for item in GameTypeEnum:
-        db.GameType(slug=item.value, full=item.full)
-    for item in GameLengthEnum:
-        db.GameLength(slug=item.value, full=item.full)
-    for item in GroupSizeEnum:
-        db.GroupSize(slug=item.value, full=item.full)
-    for item in GroupNeedEnum:
-        db.GroupNeed(slug=item.value, full=item.full)
-
-
-@db_session
-def run_users_startup_tasks(udb):
-    if udb.User.get(login="admin"):
-        return
-
-    udb.User(login="admin", created_by=1, hashed_password=os.environ.get("ADMIN_HASHED_PASSWORD"),
-             api_key=os.environ.get("ADMIN_KEY"), role=UserRoleEnum.ADMIN.value, status=UserStatusEnum.ACTIVE.value,
-             protected=True)
-    udb.User(login="web", created_by=1, hashed_password=os.environ.get("WEB_HASHED_PASSWORD"),
-             api_key=os.environ.get("WEB_KEY"), role=UserRoleEnum.ADMIN.value, status=UserStatusEnum.ACTIVE.value,
-             protected=True)
-
-
+    else:
+        if db.GameType.get(slug="ice"):
+            return
+        for item in GameTypeEnum:
+            db.GameType(slug=item.value, full=item.full)
+        for item in GameLengthEnum:
+            db.GameLength(slug=item.value, full=item.full)
+        for item in GroupSizeEnum:
+            db.GroupSize(slug=item.value, full=item.full)
+        for item in GroupNeedEnum:
+            db.GroupNeed(slug=item.value, full=item.full)
