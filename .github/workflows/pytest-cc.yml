@@ -3,10 +3,13 @@ on: [push, workflow_dispatch]
 jobs:
   Code-Climate-Coverage:
     runs-on: ubuntu-latest
+    env:
+      FLASK_DEBUG: 1
+      DB_CONNECT: '{"db": "db_api"}'
+      DB_USERS_CONNECT: '{"db": "db_users"}'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: ls -la
       - name: Setup Python
         uses: actions/setup-python@v4.2.0
         with:
@@ -14,8 +17,7 @@ jobs:
           python-version-file: .python-version      
       - run: pip install -r requirements.txt
       - run: pip install pytest coverage
-      - name: Set env
-        run: echo "FLASK_DEBUG=1\nDB_CONNECT=\"{\"db\":\"db_api\"}\"\nDB_USERS_CONNECT=\"{\"db\":\"db_users\"}\"" >> $GITHUB_ENV
+      - run: env
       - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
