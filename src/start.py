@@ -105,19 +105,17 @@ def run_startup_tasks(db):
     """Seed database with category enums if not already present
     """
     if hasattr(db, 'User'):
-        if db.User.get(login="admin"):
-            return
-        for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
-            db.User(**user)
+        if not db.User.get(login="admin"):
+            for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
+                db.User(**user)
 
     else:
-        if db.GameType.get(slug="ice"):
-            return
-        for item in GameTypeEnum:
-            db.GameType(slug=item.value, full=item.full)
-        for item in GameLengthEnum:
-            db.GameLength(slug=item.value, full=item.full)
-        for item in GroupSizeEnum:
-            db.GroupSize(slug=item.value, full=item.full)
-        for item in GroupNeedEnum:
-            db.GroupNeed(slug=item.value, full=item.full)
+        if not db.GameType.get(slug="ice"):
+            for item in GameTypeEnum:
+                db.GameType(slug=item.value, full=item.full)
+            for item in GameLengthEnum:
+                db.GameLength(slug=item.value, full=item.full)
+            for item in GroupSizeEnum:
+                db.GroupSize(slug=item.value, full=item.full)
+            for item in GroupNeedEnum:
+                db.GroupNeed(slug=item.value, full=item.full)
