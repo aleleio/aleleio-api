@@ -10,11 +10,10 @@ from github import GithubIntegration
 
 from src.services import create
 from src.services.export_to_repo import set_latest_sha
-from src.start import get_db, get_project_root
+from src.start import get_db, ROOT
 
 db = get_db()
-root = get_project_root()
-tmp_path = root.joinpath('tmp')
+TMP = ROOT.joinpath('tmp')
 
 
 def run_import():
@@ -50,7 +49,7 @@ def download_files():
 @cache
 def get_latest_sha():
     try:
-        with open(root.joinpath('.latest-sha'), 'r') as file:
+        with open(ROOT.joinpath('.latest-sha'), 'r') as file:
             return file.read().strip()
     except FileNotFoundError:
         set_latest_sha()
@@ -58,7 +57,7 @@ def get_latest_sha():
 
 
 def get_github_token():
-    with open(root.joinpath('gamebot-private-key.pem')) as cert_file:
+    with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
         bot_key = cert_file.read()
     bot = GithubIntegration(233902, bot_key)
     token = bot.get_access_token(bot.get_installation('aleleio', 'teambuilding-games').id).token
@@ -73,7 +72,7 @@ def import_from_github():
     sha = get_latest_sha()
 
     if is_latest_version():
-        return tmp_path.joinpath(f"aleleio-teambuilding-games-{sha}")
+        return TMP.joinpath(f"aleleio-teambuilding-games-{sha}")
 
     url = 'https://api.github.com/repos/aleleio/teambuilding-games/zipball'
     r = requests.get(url, headers=headers, allow_redirects=True)
@@ -82,21 +81,21 @@ def import_from_github():
     parts = r.headers.get('content-disposition').split(' ')
     download_name = parts[1][9:-4]
 
-    zip_path = tmp_path.joinpath(f'{download_name}.zip')
+    zip_path = TMP.joinpath(f'{download_name}.zip')
     with open(zip_path, 'wb') as file:
         file.write(r.content)
 
     # Extract & Clean Up
     with ZipFile(zip_path, 'r') as zip_file:
-        zip_file.extractall(tmp_path)
+        zip_file.extractall(TMP)
     zip_path.unlink()
 
-    return tmp_path.joinpath(download_name)
+    return TMP.joinpath(download_name)
 
 
 def is_latest_version():
     latest_sha = get_latest_sha()
-    sha_list = [file[-7:] for file in os.listdir(tmp_path)]
+    sha_list = [file[-7:] for file in os.listdir(TMP)]
     if latest_sha in sha_list:
         return True
     return False

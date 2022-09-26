@@ -9,17 +9,12 @@ from dotenv import load_dotenv
 from pony.orm import Database, set_sql_debug, db_session
 
 from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
-    GroupSizeEnum, GroupNeedEnum, define_entities_api
+    GroupSizeEnum, GroupNeedEnum, define_entities_api, UserRoleEnum, UserStatusEnum
 from src.services.enforcedefaults import validator_remap
 
-
-@cache
-def get_project_root():
-    return Path(__file__).parent.parent
-
-
-# Load Environment Variables from dotenv file
-dotenv_path = Path(get_project_root(), '.env')
+# Define project root and load constants from dotenv file
+ROOT = Path(__file__).parent.parent
+dotenv_path = ROOT.joinpath('.env')
 load_dotenv(dotenv_path)
 
 
@@ -27,7 +22,7 @@ load_dotenv(dotenv_path)
 def get_project_version():
     """Get the current version from openapi.yml config file.
     """
-    yml_path = Path(get_project_root(), 'openapi.yml')
+    yml_path = ROOT.joinpath('openapi.yml')
     with open(yml_path, 'r') as fin:
         yml = yaml.safe_load(fin)
 
@@ -43,15 +38,34 @@ def get_db():
         host = os.environ.get('DB_HOST')
         user = os.environ.get('DB_USER')
         passwd = os.environ.get('DB_PASSWORD')
-        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_aleleio')
+        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_api')
     elif os.environ.get('FLASK_TESTING'):
-        database = Database(provider='sqlite', filename='db_testing.sqlite', create_db=True)
+        database = Database(provider='sqlite', filename='db_testing_api.sqlite', create_db=True)
     else:  # development
-        database = Database(provider='sqlite', filename='db_aleleio.sqlite', create_db=True)
+        database = Database(provider='sqlite', filename='db_api.sqlite', create_db=True)
     define_entities_game(database)
     define_entities_meta(database)
-    define_entities_user(database)
     define_entities_api(database)
+    database.generate_mapping(create_tables=True)
+    set_sql_debug(False)
+    return database
+
+
+@cache
+def get_users_db():
+    """Bind Pony ORM to user database
+    This acts like a singleton because of caching.
+    """
+    if not os.environ.get('FLASK_DEBUG'):  # production
+        host = os.environ.get('DB_USERS_HOST')
+        user = os.environ.get('DB_USERS_USER')
+        passwd = os.environ.get('DB_USERS_PASSWORD')
+        database = Database(provider='mysql', host=host, user=user, passwd=passwd, db='db_users')
+    elif os.environ.get('FLASK_TESTING'):
+        database = Database(provider='sqlite', filename='db_testing_users.sqlite', create_db=True)
+    else:  # development
+        database = Database(provider='sqlite', filename='db_users.sqlite', create_db=True)
+    define_entities_user(database)
     database.generate_mapping(create_tables=True)
     set_sql_debug(False)
     return database
@@ -82,7 +96,7 @@ def get_app():
             'tagsSorter': 'alpha',
         }
     }
-    connexion_app = FlaskApp(__name__, specification_dir=get_project_root(), options=swagger_options)
+    connexion_app = FlaskApp(__name__, specification_dir=ROOT, options=swagger_options)
     connexion_app.add_api(
         'openapi.yml',
         resolver=RelativeResolver('src.views'),
@@ -112,4 +126,18 @@ def run_startup_tasks(db):
         db.GroupSize(slug=item.value, full=item.full)
     for item in GroupNeedEnum:
         db.GroupNeed(slug=item.value, full=item.full)
+
+
+@db_session
+def run_users_startup_tasks(udb):
+    if udb.User.get(login="admin"):
+        return
+
+    udb.User(login="admin", created_by=1, hashed_password=os.environ.get("ADMIN_HASHED_PASSWORD"),
+             api_key=os.environ.get("ADMIN_KEY"), role=UserRoleEnum.ADMIN.value, status=UserStatusEnum.ACTIVE.value,
+             protected=True)
+    udb.User(login="web", created_by=1, hashed_password=os.environ.get("WEB_HASHED_PASSWORD"),
+             api_key=os.environ.get("WEB_KEY"), role=UserRoleEnum.ADMIN.value, status=UserStatusEnum.ACTIVE.value,
+             protected=True)
+
 

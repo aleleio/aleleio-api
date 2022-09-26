@@ -2,13 +2,13 @@ import importlib
 import os
 import pytest
 
-from src.start import get_app, get_db, get_project_root, run_startup_tasks
+from src.start import get_app, get_db, run_startup_tasks, ROOT
 
 os.environ['FLASK_TESTING'] = '1'
 connexion_app = get_app()
 
 
-def reset_db_get():
+def reset_get_db():
     import src.services.create
     importlib.reload(src.services.create)
     import src.services.update
@@ -83,14 +83,14 @@ def mock_github(monkeypatch):
 @pytest.fixture(scope='module')
 def db():
     database = get_db()
-    reset_db_get()
+    reset_get_db()
     run_startup_tasks(database)
     yield database
     get_db.cache_clear()
     database.drop_all_tables(with_all_data=True)
     database.disconnect()
 
-    # database_path = get_project_root().joinpath('src', 'db_testing.sqlite')
+    # database_path = ROOT.joinpath('src', 'db_api_testing.sqlite')
     # database_path.unlink()
 
 

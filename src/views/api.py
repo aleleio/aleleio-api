@@ -1,6 +1,7 @@
 from flask import Blueprint
 from pony.orm import *
 
+from src.services.authentication import auth_required
 from src.services.import_to_db import run_import
 from src.start import get_project_version, get_db
 
@@ -15,6 +16,7 @@ def about():
 
 
 @bp.route('/import')
+@auth_required
 def start_import():
     result = run_import()
     return result

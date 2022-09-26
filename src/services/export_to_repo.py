@@ -7,13 +7,12 @@ Helpful: https://medium.com/@gilharomri/github-app-bot-with-python-ea38811d7b14
          https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api
 """
 import requests
-from github import GithubIntegration, Github, InputGitTreeElement, Repository
+from github import GithubIntegration, Github, InputGitTreeElement
 from pony.orm import db_session, select
 
-from src.start import get_project_root, get_db
+from src.start import get_db, ROOT
 
 db = get_db()
-root = get_project_root()
 
 
 def set_latest_sha(sha=None):
@@ -22,12 +21,12 @@ def set_latest_sha(sha=None):
         url = 'https://api.github.com/repos/aleleio/teambuilding-games/commits?per_page=1'
         r = requests.get(url, headers=headers, allow_redirects=True)
         sha = r.json()[0]["sha"][:7]
-    with open(root.joinpath('.latest-sha'), 'w') as file:
+    with open(ROOT.joinpath('.latest-sha'), 'w') as file:
         file.write(sha)
 
 
 def get_github_token():
-    with open(root.joinpath('gamebot-private-key.pem')) as cert_file:
+    with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
         bot_key = cert_file.read()
     bot = GithubIntegration(233902, bot_key)
     installation = bot.get_installation('aleleio', 'teambuilding-games').id

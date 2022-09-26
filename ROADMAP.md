@@ -42,15 +42,15 @@
 - [x] 0.6.4 Core Logic working (filtering, CRUD)
 - [x] 0.6.5 Testing from the start (github actions, coverage)
 - [x] 0.6.6 Import/Export Tools (use repo, route for automation)
-  
-- [ ] 0.6.7 User Onboarding
+
+- [ ] 0.6.7 Authentication working   
+  - [x] api-key authentication
+  - [ ] enable testing with auth
+  - [ ] CORS because of web/mobile?
+
+- [ ] 0.6.8 User Onboarding
   - [x] add Windows instructions to CONTRIBUTING
   - [ ] easy games import to get started with development immediately
-
-- [ ] 0.6.8 Authentication working   
-  - [ ] auth with github, user accounts necessary?
-  - [ ] API keys with oauth2 (maybe overkill)
-  - [ ] CORS because of web/mobile?
 
 - [ ] 0.6.9 Statistics working
   - [ ] add stats (private, independent) and create tools to import 
