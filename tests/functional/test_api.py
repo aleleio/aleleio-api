@@ -48,14 +48,9 @@ def test_import_from_github(client, monkeypatch):
 @pytest.mark.no_mock_set_sha
 @pytest.mark.no_mock_get_sha
 def test_latest_sha(client, monkeypatch):
-    test_root = Path(__file__).parent.parent  # /tests
     from src.services import import_to_db, export_to_repo
-    monkeypatch.setattr(import_to_db, "ROOT", test_root)
+    test_root = Path(__file__).parent.parent  # /tests
     monkeypatch.setattr(export_to_repo, "ROOT", test_root)
-    monkeypatch.setattr(import_to_db, "TMP", test_root.joinpath("resources"))
-
-    def mock_get_github_token():
-        return "gh1234"
 
     def mock_is_latest_version():
         return True
@@ -69,8 +64,6 @@ def test_latest_sha(client, monkeypatch):
             def json(self):
                 return [{"sha": "1234567"}]
 
-    monkeypatch.setattr(import_to_db, "get_github_token", mock_get_github_token)
-    monkeypatch.setattr(export_to_repo, "get_github_token", mock_get_github_token)
     monkeypatch.setattr(import_to_db, "is_latest_version", mock_is_latest_version)
     monkeypatch.setattr(export_to_repo, "requests", MockRequests)
     response = client.get("/import")

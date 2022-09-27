@@ -8,7 +8,7 @@ from flask import testing
 from pony.orm import *
 from werkzeug.datastructures import Headers
 
-from src.start import get_app, get_db, run_startup_tasks, ROOT
+from src.start import get_app, get_db, run_startup_tasks
 
 os.environ['FLASK_TESTING'] = '1'
 connexion_app = get_app()
@@ -86,7 +86,18 @@ def mock_github(monkeypatch):
 @pytest.fixture(autouse=True)
 def mock_import_root(monkeypatch):
     from src.services import import_to_db
-    monkeypatch.setattr(import_to_db, "TMP", ROOT.joinpath("tests", "resources"))
+    test_root = Path(__file__).parent  # /tests
+    monkeypatch.setattr(import_to_db, "ROOT", test_root)
+    monkeypatch.setattr(import_to_db, "TMP", test_root.joinpath("resources"))
+
+
+@pytest.fixture(autouse=True)
+def mock_github_token(monkeypatch):
+    def mock_get_github_token():
+        return "gh1234"
+    from src.services import import_to_db, export_to_repo
+    monkeypatch.setattr(import_to_db, "get_github_token", mock_get_github_token)
+    monkeypatch.setattr(export_to_repo, "get_github_token", mock_get_github_token)
 
 
 @pytest.fixture(autouse=True)

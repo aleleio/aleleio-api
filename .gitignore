@@ -3,7 +3,7 @@
 .latest-sha
 
 # github
-gamebot-private-key.pem
+/gamebot-private-key.pem
 
 # PyCharm
 .idea/
