@@ -18,6 +18,8 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install pytest coverage
       - run: env
+      - run: echo '-----BEGIN RSA PRIVATE KEY-----\n1234567\n-----END RSA PRIVATE KEY-----' >> gamebot-private-key.pem
+      - run: ls -la
       - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
