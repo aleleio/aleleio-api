@@ -102,6 +102,9 @@ def test_update_game_descriptions(client):
     payload = {"descriptions": ["This game has two descriptions.", "Second one"]}
     response = client.patch('/games/2', json=payload)
     assert len(response.json["descriptions"]) == 2
+    payload = {"descriptions": ["This game has two descriptions.", "Yet another one."]}
+    response = client.patch('/games/2', json=payload)
+    assert len(response.json["descriptions"]) == 2
 
 
 def test_update_game_group_needs(client):

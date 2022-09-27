@@ -18,5 +18,8 @@ def about():
 @bp.route('/import')
 @auth_required
 def start_import():
-    result = run_import()
-    return result
+    try:
+        run_import()
+    except CacheIndexError as err:
+        return {"error": err}
+    return {"result": 200}

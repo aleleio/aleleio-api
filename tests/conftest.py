@@ -1,6 +1,12 @@
 import importlib
 import os
+from pathlib import Path
+
 import pytest
+from flask import testing
+
+from pony.orm import *
+from werkzeug.datastructures import Headers
 
 from src.start import get_app, get_db, run_startup_tasks, ROOT
 
@@ -28,11 +34,7 @@ class MockRepo:
         return self.Blob()
 
     class InputTreeGitElement:
-        def __init__(self, path, mode, type, sha):
-            self.path = path
-            self.mode = mode
-            self.type = type
-            self.sha = sha
+        pass
 
     class Commit:
         def __init__(self):
@@ -41,6 +43,7 @@ class MockRepo:
     class Branch:
         def __init__(self, ref):
             self.ref = ref
+
         @property
         def commit(self):
             return MockRepo.Commit()
@@ -80,22 +83,77 @@ def mock_github(monkeypatch):
     monkeypatch.setattr(export_to_repo, "get_repo", mock_connect)
 
 
+@pytest.fixture(autouse=True)
+def mock_import_root(monkeypatch):
+    from src.services import import_to_db
+    monkeypatch.setattr(import_to_db, "TMP", ROOT.joinpath("tests", "resources"))
+
+
+@pytest.fixture(autouse=True)
+def mock_get_sha(monkeypatch, request):
+    if "no_mock_get_sha" in request.keywords:
+        return
+    def mock_get_latest_sha():
+        return "1234567"
+    from src.services import import_to_db
+    monkeypatch.setattr(import_to_db, "get_latest_sha", mock_get_latest_sha)
+
+
+@pytest.fixture(autouse=True)
+def mock_set_sha(monkeypatch, request):
+    if "no_mock_set_sha" in request.keywords:
+        return
+    def mock_set_latest_sha(sha):
+        pass
+    from src.services import export_to_repo
+    monkeypatch.setattr(export_to_repo, "set_latest_sha", mock_set_latest_sha)
+
+
 @pytest.fixture(scope='module')
 def db():
-    database = get_db()
+    db = get_db()
+    udb = get_db(users_db=True)
     reset_get_db()
-    run_startup_tasks(database)
-    yield database
+    run_startup_tasks(db)
+    add_test_users(udb)
+    yield db
     get_db.cache_clear()
-    database.drop_all_tables(with_all_data=True)
-    database.disconnect()
+    db.drop_all_tables(with_all_data=True)
+    db.disconnect()
+    udb.drop_all_tables(with_all_data=True)
+    udb.disconnect()
 
     # database_path = ROOT.joinpath('src', 'db_api_testing.sqlite')
     # database_path.unlink()
 
 
+@db_session
+def add_test_users(udb):
+    udb.User(**{"login": "test_user", "created_by": 1, "api_key": "abc-123", "hashed_password": "test", "role": "editor", "status": "active"})
+
+
+class CustomTestClient(testing.FlaskClient):
+    def open(self, *args, **kwargs):
+        api_key = Headers({"Authorization": "Basic abc-123"})
+        headers = kwargs.pop("headers", Headers())
+        headers.extend(api_key)
+        kwargs["headers"] = headers
+        return super().open(*args, **kwargs)
+
+
 @pytest.fixture(scope='module')
-def client(db):
+def no_auth_client(db):
+    connexion_app.app.test_client_class = testing.FlaskClient
     with connexion_app.app.test_client() as client:
         yield client
     get_app.cache_clear()
+
+
+@pytest.fixture(scope='module')
+def client(db):
+    connexion_app.app.test_client_class = CustomTestClient
+    with connexion_app.app.test_client() as client:
+        yield client
+    get_app.cache_clear()
+
+

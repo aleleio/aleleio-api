@@ -18,10 +18,10 @@ def auth_required(f):
     @db_session
     @wraps(f)
     def wrapper(*args, **kwargs):
-        headers = request.headers.get("Authorization").split()  # Basic key-123-abc
+        headers = request.headers.get("Authorization")  # 'Basic key-123-abc'
         if not headers:
             abort(403)
-        api_key = headers[1]
+        api_key = headers.split()[1]
         user = udb.User.get(api_key=api_key)
         if not user:
             abort(403)

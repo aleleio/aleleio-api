@@ -1,5 +1,6 @@
 # main application
 flask
+flask-cors
 connexion[swagger-ui]
 python-dotenv
 pony

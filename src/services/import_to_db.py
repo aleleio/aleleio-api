@@ -50,10 +50,11 @@ def download_files():
 def get_latest_sha():
     try:
         with open(ROOT.joinpath('.latest-sha'), 'r') as file:
-            return file.read().strip()
+            sha = file.read().strip()
+            return sha
     except FileNotFoundError:
         set_latest_sha()
-        get_latest_sha()
+        return get_latest_sha()
 
 
 def get_github_token():
@@ -153,7 +154,7 @@ def is_description(token):
 
 
 def is_list(token):
-    """This happens when a paragraph starts with a '1'.
+    """This happens when a paragraph starts with a '1.'
     """
     if token['type'] == 'list':
         return True

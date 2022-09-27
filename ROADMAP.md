@@ -42,11 +42,7 @@
 - [x] 0.6.4 Core Logic working (filtering, CRUD)
 - [x] 0.6.5 Testing from the start (github actions, coverage)
 - [x] 0.6.6 Import/Export Tools (use repo, route for automation)
-
-- [ ] 0.6.7 Authentication working   
-  - [x] api-key authentication
-  - [ ] enable testing with auth
-  - [ ] CORS because of web/mobile?
+- [x] 0.6.7 Authentication working, CORS added  
 
 - [ ] 0.6.8 User Onboarding
   - [x] add Windows instructions to CONTRIBUTING
@@ -57,6 +53,9 @@
   - [ ] add api/about
 
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
+
+- [ ] 0.6.11 Ideas:
+  - [ ] import with UPDATE instead of GET
 
 
 ### 0.7 Document and Deploy

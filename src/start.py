@@ -7,6 +7,7 @@ import yaml
 from connexion import FlaskApp
 from connexion.resolver import RelativeResolver
 from dotenv import load_dotenv
+from flask_cors import CORS
 from pony.orm import Database, set_sql_debug, db_session
 
 from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
@@ -86,6 +87,7 @@ def get_app():
         }
     }
     connexion_app = FlaskApp(__name__, specification_dir=ROOT, options=swagger_options)
+    CORS(connexion_app.app)
     connexion_app.add_api(
         'openapi.yml',
         resolver=RelativeResolver('src.views'),
@@ -105,17 +107,26 @@ def run_startup_tasks(db):
     """Seed database with category enums if not already present
     """
     if hasattr(db, 'User'):
-        if not db.User.get(login="admin"):
-            for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
-                db.User(**user)
-
+        if db.User.get(login="admin"):
+            return
+        startup_users_db(db)
     else:
-        if not db.GameType.get(slug="ice"):
-            for item in GameTypeEnum:
-                db.GameType(slug=item.value, full=item.full)
-            for item in GameLengthEnum:
-                db.GameLength(slug=item.value, full=item.full)
-            for item in GroupSizeEnum:
-                db.GroupSize(slug=item.value, full=item.full)
-            for item in GroupNeedEnum:
-                db.GroupNeed(slug=item.value, full=item.full)
+        if db.GameType.get(slug="ice"):
+            return
+        startup_games_db(db)
+
+
+def startup_users_db(udb):
+    for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
+        udb.User(**user)
+
+
+def startup_games_db(db):
+    for item in GameTypeEnum:
+        db.GameType(slug=item.value, full=item.full)
+    for item in GameLengthEnum:
+        db.GameLength(slug=item.value, full=item.full)
+    for item in GroupSizeEnum:
+        db.GroupSize(slug=item.value, full=item.full)
+    for item in GroupNeedEnum:
+        db.GroupNeed(slug=item.value, full=item.full)
