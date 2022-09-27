@@ -19,6 +19,7 @@ jobs:
       - run: pip install pytest coverage
       - run: env
       - run: echo 'testme' >> gamebot-private-key.pem
+      - run: ls -la
       - run: coverage run -m pytest tests/
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
