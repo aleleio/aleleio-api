@@ -53,9 +53,8 @@
   - [ ] add api/about
 
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
-
-- [ ] 0.6.11 Ideas:
-  - [ ] import with UPDATE instead of GET
+  - [ ] ideas: import with UPDATE instead of GET
+  - [ ] todo: validate with actual user
 
 
 ### 0.7 Document and Deploy
