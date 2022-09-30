@@ -4,9 +4,8 @@ The user database is shared between api and web component. Users can only be add
 background: http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/
             https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
 """
-from functools import wraps
 
-from flask import g, abort, request
+from flask import abort
 from pony.orm import *
 
 from src.start import get_db
@@ -14,17 +13,9 @@ from src.start import get_db
 udb = get_db(users_db=True)
 
 
-def auth_required(f):
-    @db_session
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        headers = request.headers.get("Authorization")  # 'Basic key-123-abc'
-        if not headers:
-            abort(403)
-        api_key = headers.split()[1]
-        user = udb.User.get(api_key=api_key)
-        if not user:
-            abort(403)
-        g.user = user
-        return f(*args, **kwargs)
-    return wrapper
+@db_session
+def api_key_auth(token, required_scopes):
+    user = udb.User.get(api_key=token)
+    if not user:
+        abort(403)
+    return {"uid": user.id}

@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/component-diagram
+skinparam defaultTextAlignment center
+!theme vibrant
+
+frame "API" {
+    [REST API]
+    database games
+    database users
+}
+
+frame "Web" {
+    [flask]
+}
+[flask] <-up-> [REST API]: "CRUD"
+
+frame "Mobile" {
+    [flutter] -up-> [REST API]: "Read-only"
+}
+
+cloud "TB Games\n(GitHub Repo)" as Repo {
+}
+
+Repo <-- [REST API] : "export"
+Repo --> games : "import"
+
+
+@enduml

@@ -19,7 +19,7 @@ the requirements. Either with bash on a Unix system:
     (venv) $ pip install -r requirements.txt
     (venv) $
 
-Or with the Command Prompt/PowerShell:
+Or with the Command Prompt/PowerShell on Windows:
 
     cd code\aleleio-api
     python -m venv venv
@@ -33,9 +33,11 @@ Deactivate the virtual environment at any time with `deactivate`.
 Copy the provided [.env_template](.env_template) and rename it to `.env`, to set up the neccessary environment variables
 (envars) for development.
 
+You should now be able to run the development server by starting `wsgi.py` and adding `X-Auth:"dev"` to your request headers.
+
 **Step 4: Games (optional)**
 To load the most recent collection of games into your database, add a [github token](https://github.com/settings/tokens)
-to your [.env](.env_template) file and run the [import script](tools/import_to_database.py) in [tools/](tools).
+to your [.env](.env_template) file on the `GITHUB=` line and open http://localhost:5000/import to run the import script.
 
 
 ## Workflow

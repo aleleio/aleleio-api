@@ -43,10 +43,7 @@
 - [x] 0.6.5 Testing from the start (github actions, coverage)
 - [x] 0.6.6 Import/Export Tools (use repo, route for automation)
 - [x] 0.6.7 Authentication working, CORS added  
-
-- [ ] 0.6.8 User Onboarding
-  - [x] add Windows instructions to CONTRIBUTING
-  - [ ] easy games import to get started with development immediately
+- [x] 0.6.8 Easier Setup for contributor onboarding
 
 - [ ] 0.6.9 Statistics working
   - [ ] add stats (private, independent) and create tools to import 
@@ -55,6 +52,7 @@
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
   - [ ] ideas: import with UPDATE instead of GET
   - [ ] todo: validate with actual user
+  - [ ] idea: monkeypatch out apikey auth for development
 
 
 ### 0.7 Document and Deploy

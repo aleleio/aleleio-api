@@ -5,7 +5,6 @@ from flask import abort
 from pony.orm import db_session
 
 from src.services import search, export_to_repo
-from src.services.authentication import auth_required
 from src.services.create import create_games
 from src.services.update import update_game
 from src.start import get_db
@@ -13,13 +12,11 @@ from src.start import get_db
 db = get_db()
 
 
-@auth_required
 def get_all():
     query = connexion.request.values
     return search.all_games(query)
 
 
-@auth_required
 def create(games: List[Dict]):
     new_instances, errors = create_games(games)
     if errors:
@@ -28,7 +25,6 @@ def create(games: List[Dict]):
     return [game.to_schema_out() for game in new_instances], 201
 
 
-@auth_required
 @db_session
 def get_single(game_id):
     game = db.Game.get(id=game_id)
@@ -37,7 +33,6 @@ def get_single(game_id):
     return game.to_schema_out()
 
 
-@auth_required
 @db_session
 def update_single(game_id, patch):
     game = db.Game.get(id=game_id)
@@ -50,7 +45,6 @@ def update_single(game_id, patch):
     return game.to_schema_out()
 
 
-@auth_required
 @db_session
 def delete_single(game_id):
     game = db.Game.get(id=game_id)

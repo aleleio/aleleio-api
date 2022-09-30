@@ -58,10 +58,15 @@ def get_latest_sha():
 
 
 def get_github_token():
-    with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
-        bot_key = cert_file.read()
-    bot = GithubIntegration(233902, bot_key)
-    token = bot.get_access_token(bot.get_installation('aleleio', 'teambuilding-games').id).token
+    try:
+        with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
+            bot_key = cert_file.read()
+        bot = GithubIntegration(233902, bot_key)
+        token = bot.get_access_token(bot.get_installation('aleleio', 'teambuilding-games').id).token
+    except FileNotFoundError as err:
+        token = os.environ.get('GITHUB')
+        if not token:
+            raise FileNotFoundError("Have you added a GitHub Personal Access Token to .env?")
     return token
 
 

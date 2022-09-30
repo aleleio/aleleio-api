@@ -1,3 +1,4 @@
+import functools
 import importlib
 import os
 from pathlib import Path
@@ -9,6 +10,22 @@ from pony.orm import *
 from werkzeug.datastructures import Headers
 
 from src.start import get_app, get_db, run_startup_tasks
+
+
+# ToDo: Disable Auth in connexion by patching security.AbstractSecurityHandler
+#       Note: monkeypatch only in function-scoped fixture / client is module-scoped
+#       Workaround: Use a custom flask.TestClient
+# @pytest.fixture(autouse=True)
+# def disable_auth(monkeypatch):
+#     def mock_verify(cls, auth_funcs, function):
+#         @functools.wraps(function)
+#         def wrapper(request):
+#             return function(request)
+#         return wrapper
+#
+#     from connexion.security.security_handler_factory import AbstractSecurityHandlerFactory
+#     monkeypatch.setattr(AbstractSecurityHandlerFactory, "verify_security", mock_verify)
+
 
 os.environ['FLASK_TESTING'] = '1'
 connexion_app = get_app()
@@ -145,7 +162,7 @@ def add_test_users(udb):
 
 class CustomTestClient(testing.FlaskClient):
     def open(self, *args, **kwargs):
-        api_key = Headers({"Authorization": "Basic abc-123"})
+        api_key = Headers({"X-Auth": "abc-123"})
         headers = kwargs.pop("headers", Headers())
         headers.extend(api_key)
         kwargs["headers"] = headers
@@ -166,5 +183,3 @@ def client(db):
     with connexion_app.app.test_client() as client:
         yield client
     get_app.cache_clear()
-
-

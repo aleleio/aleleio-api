@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+!theme vibrant
+|local|
+start
+:CREATE request;
+:create() view;
+:create_games() service;
+|export to repo|
+:commit_multiple() service;
+|local|
+stop
+
+@enduml

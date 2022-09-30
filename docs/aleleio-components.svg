@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="403px" preserveAspectRatio="none" style="width:337px;height:403px;background:#FFFFFF;" version="1.1" viewBox="0 0 337 403" width="337px" zoomAndPan="magnify"><defs/><g><!--MD5=[fac864e77539af95038f0151207ed802]
+cluster API--><g id="cluster_API"><rect fill="none" height="103" rx="3.5" ry="3.5" style="stroke:#696969;stroke-width:1.0;" width="324" x="7" y="140.4585"/><path d="M41,140.4585 L41,152.5265 L31,162.5265 L7,162.5265 " fill="none" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="24" x="10" y="156.4245">API</text></g><!--MD5=[a31f8263c76436e142375e2c24f5cc81]
+cluster Web--><g id="cluster_Web"><rect fill="none" height="103" rx="3.5" ry="3.5" style="stroke:#696969;stroke-width:1.0;" width="104" x="52" y="294.4585"/><path d="M93,294.4585 L93,306.5265 L83,316.5265 L52,316.5265 " fill="none" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="31" x="55" y="310.4245">Web</text></g><!--MD5=[e6f2b24b0e8c3b21a1e7339bde7a142f]
+cluster Mobile--><g id="cluster_Mobile"><rect fill="none" height="103" rx="3.5" ry="3.5" style="stroke:#696969;stroke-width:1.0;" width="114" x="180" y="294.4585"/><path d="M237,294.4585 L237,306.5265 L227,316.5265 L180,316.5265 " fill="none" style="stroke:#696969;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="47" x="183" y="310.4245">Mobile</text></g><!--MD5=[3e16c5ebf4b4daacbb417a5459fd30c0]
+entity REST API--><g id="elem_REST API"><rect fill="#F1F1F1" height="49.0679" rx="3.5" ry="3.5" style="stroke:#181818;stroke-width:0.5;" width="99" x="115.5" y="178.4585"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="194.5" y="183.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="192.5" y="185.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="192.5" y="189.4585"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59" x="130.5" y="213.4245">REST API</text></g><!--MD5=[bd279dc15ec8cc25864051982acdc86f]
+entity games--><g id="elem_games"><path d="M249.5,188.9585 C249.5,178.9585 282,178.9585 282,178.9585 C282,178.9585 314.5,178.9585 314.5,188.9585 L314.5,217.0265 C314.5,227.0265 282,227.0265 282,227.0265 C282,227.0265 249.5,227.0265 249.5,217.0265 L249.5,188.9585 " fill="#00FFFF" style="stroke:#454645;stroke-width:0.5;"/><path d="M249.5,188.9585 C249.5,198.9585 282,198.9585 282,198.9585 C282,198.9585 314.5,198.9585 314.5,188.9585 " fill="none" style="stroke:#454645;stroke-width:0.5;"/><text fill="#454645" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="45" x="259.5" y="217.9245">games</text></g><!--MD5=[5f2f9dbbee692058d60489180693f774]
+entity users--><g id="elem_users"><path d="M23.5,188.9585 C23.5,178.9585 52,178.9585 52,178.9585 C52,178.9585 80.5,178.9585 80.5,188.9585 L80.5,217.0265 C80.5,227.0265 52,227.0265 52,227.0265 C52,227.0265 23.5,227.0265 23.5,217.0265 L23.5,188.9585 " fill="#00FFFF" style="stroke:#454645;stroke-width:0.5;"/><path d="M23.5,188.9585 C23.5,198.9585 52,198.9585 52,198.9585 C52,198.9585 80.5,198.9585 80.5,188.9585 " fill="none" style="stroke:#454645;stroke-width:0.5;"/><text fill="#454645" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="37" x="33.5" y="217.9245">users</text></g><!--MD5=[ddfbe58de4e7a3b3ef8b78145eab9157]
+entity flask--><g id="elem_flask"><rect fill="#F1F1F1" height="49.0679" rx="3.5" ry="3.5" style="stroke:#181818;stroke-width:0.5;" width="71" x="68.5" y="332.4585"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="119.5" y="337.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="117.5" y="339.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="117.5" y="343.4585"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="31" x="83.5" y="367.4245">flask</text></g><!--MD5=[8204dae4e221b3d1a0bfeeb54dce7525]
+entity flutter--><g id="elem_flutter"><rect fill="#F1F1F1" height="49.0679" rx="3.5" ry="3.5" style="stroke:#181818;stroke-width:0.5;" width="82" x="196" y="332.4585"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="258" y="337.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="256" y="339.4585"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="256" y="343.4585"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="42" x="211" y="367.4245">flutter</text></g><!--MD5=[b9043c2a9c0284b5105a937d12c4195f]
+entity Repo--><g id="elem_Repo"><path d="M169.8831,17.631 C173.4308,8.6864 178.6695,8.7591 184.9038,14.968 C187.9183,9.6481 193.2978,8.9881 196.9437,14.2495 C200.913,7.4866 207.108,7.8253 211.307,13.9944 C214.5522,6.9028 220.9879,6.1272 225.1979,13.0371 C229.7623,6 234.3213,6.3077 238.3683,13.5153 C242.4452,8.1451 246.2268,8.3245 249.7898,14.0446 C255.6083,8.5059 260.7915,7.5103 264.9833,15.8283 C268.7714,8.9106 274.3872,8.4555 278.5281,15.4858 C284.6475,19.6682 285.8258,25.6155 278.6549,29.9148 C286.9862,32.7824 287.1648,37.1347 281.858,43.2726 C287.5373,48.2227 284.8,53.6699 278.7288,55.6489 C285.1068,59.8857 284.4091,65.056 277.7464,68.2784 C275.602,75.2354 270.0221,76.5637 264.8177,71.596 C261.4314,78.3884 254.6204,79.2318 249.8782,73.1721 C246.6534,79.2815 242.955,80.626 237.4904,75.6823 C235.0905,82.4692 229.0815,82.0869 224.9844,77.5579 C220.1179,82.3267 214.6819,81.7003 211.7116,75.3039 C206.4708,82.3565 200.3314,79.9852 197.3999,72.9568 C191.6247,79.9841 187.3411,78.0406 183.171,71.2982 C177.7138,76.1168 172.9527,76.7636 169.7224,68.9308 C163.7236,64.4511 161.9249,60.2091 168.9967,55.0462 C162.5478,52.3228 161.3994,46.1614 166.9043,41.5805 C161.4047,38.1165 162.438,32.7193 168.2385,30.6324 C162.7646,26.2895 163.3334,20.453 169.8831,17.631 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="67" x="189.5" y="37.4245">TB Games</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="93" x="176.5" y="56.4924">(GitHub Repo)</text></g><!--MD5=[8ec958a34553b1d202ced0ac95d87209]
+link REST API to flask--><g id="link_REST API_flask"><path d="M139.54,231.4985 C132.92,239.9385 126.42,249.6185 122,259.4585 C112.33,281.0085 107.85,307.5185 105.78,327.2885 " fill="none" id="REST API-flask" style="stroke:#454645;stroke-width:1.0;"/><polygon fill="#454645" points="105.28,332.4185,110.1362,323.8501,105.7662,327.4422,102.1741,323.0722,105.28,332.4185" style="stroke:#454645;stroke-width:1.0;"/><polygon fill="#454645" points="142.79,227.4585,134.0282,231.9564,139.6526,231.3517,140.2573,236.9762,142.79,227.4585" style="stroke:#454645;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="35" x="123" y="274.3556">CRUD</text></g><!--MD5=[6e0f906b9963e981eceea0506727ef05]
+reverse link REST API to flutter--><g id="link_REST API_flutter"><path d="M178.55,232.5585 C192.22,261.4185 213.08,305.4485 225.83,332.3785 " fill="none" id="REST API-backto-flutter" style="stroke:#454645;stroke-width:1.0;"/><polygon fill="#454645" points="176.25,227.7085,176.4959,237.5543,178.3941,232.2255,183.723,234.1237,176.25,227.7085" style="stroke:#454645;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="60" x="200" y="274.3556">Read-only</text></g><!--MD5=[bcc9faa7f96a658d40c4cb59274409be]
+reverse link Repo to REST API--><g id="link_Repo_REST API"><path d="M199.91,80.1085 C195.52,88.2685 191.29,96.9985 188,105.4585 C178.65,129.5385 172.36,158.5285 168.75,178.4085 " fill="none" id="Repo-backto-REST API" style="stroke:#454645;stroke-width:1.0;"/><polygon fill="#454645" points="202.35,75.6385,194.5356,81.6331,199.9608,80.0307,201.5631,85.4559,202.35,75.6385" style="stroke:#454645;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="40" x="189" y="120.3556">export</text></g><!--MD5=[c6002641019816d4cdde057b8350d163]
+link Repo to games--><g id="link_Repo_games"><path d="M235.22,75.5085 C245.96,104.5385 261.42,146.3285 271.58,173.7985 " fill="none" id="Repo-to-games" style="stroke:#454645;stroke-width:1.0;"/><polygon fill="#454645" points="273.42,178.7585,274.0315,168.9287,271.6769,174.0722,266.5334,171.7176,273.42,178.7585" style="stroke:#454645;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="41" x="253" y="120.3556">import</text></g><!--MD5=[03c80c504f12d568808490db3d70126c]
+@startuml
+'https://plantuml.com/component-diagram
+skinparam defaultTextAlignment center
+!theme vibrant
+
+frame "API" {
+    [REST API]
+    database games
+    database users
+}
+
+frame "Web" {
+    [flask]
+}
+[flask] <-up-> [REST API]: "CRUD"
+
+frame "Mobile" {
+    [flutter] -up-> [REST API]: "Read-only"
+}
+
+cloud "TB Games\n(GitHub Repo)" as Repo {
+}
+
+Repo <- - [REST API] : "export"
+Repo - -> games : "import"
+
+
+@enduml
+
+@startuml
+skinparam defaultTextAlignment center
+skinparam BackgroundColor FFFFFF
+skinparam shadowing false
+skinparam RoundCorner 7
+skinparam ArrowColor 454645
+skinparam FontColor 454645
+skinparam SequenceLifeLineBorderColor 696969
+skinparam SequenceGroupHeaderFontColor 454645
+skinparam SequenceGroupFontColor 696969
+skinparam SequenceGroupBorderColor 696969
+skinparam SequenceGroupBorderThickness 1
+
+skinparam sequenceDivider {
+    BorderColor 454645
+    BorderThickness 1
+    FontColor 454645
+}
+
+skinparam participant {
+    BackgroundColor FF6347
+    BorderColor 454645
+    FontColor FFFFFF
+    BorderThickness 1.5
+}
+
+skinparam database {
+    BackgroundColor 00FFFF
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam entity {
+    BackgroundColor FFE552
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam note {
+    BackgroundColor 7FFFD4
+    BorderColor 454645
+    FontColor 454645
+    BorderThickness 1.5
+}
+
+skinparam actor {
+    BackgroundColor 454645
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam boundary {
+    BackgroundColor FFE552
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam control {
+    BackgroundColor FFE552
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam collections {
+    BackgroundColor FF5F42
+    BorderColor 454645
+    FontColor 454645
+}
+
+skinparam queue {
+    BackgroundColor FF6347
+    BorderColor 454645
+    FontColor FFF
+    BorderThickness 1.5
+}
+
+frame "API" {
+    [REST API]
+    database games
+    database users
+}
+
+frame "Web" {
+    [flask]
+}
+[flask] <-up-> [REST API]: "CRUD"
+
+frame "Mobile" {
+    [flutter] -up-> [REST API]: "Read-only"
+}
+
+cloud "TB Games\n(GitHub Repo)" as Repo {
+}
+
+Repo <- - [REST API] : "export"
+Repo - -> games : "import"
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

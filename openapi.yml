@@ -1,737 +1,1107 @@
-openapi: 3.0.0
-info:
-  title: alele.io
-  version: 0.6.7
-  description: alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.
-  license:
-    name: European Union Public License (EUPL) 1.2
-    url: 'https://eupl.eu'
-  contact: {}
-servers:
-  - url: 'https://alele.io'
-    description: Website
-paths:
-  /games:
-    post:
-      summary: Create one or several new games.
-      operationId: games.create
-      description: Create one or several games.
-      responses:
-        '201':
-          $ref: '#/components/responses/GamesOut'
-      requestBody:
-        $ref: '#/components/requestBodies/GamesIn'
-      tags:
-        - update & create
-    get:
-      summary: Get all games in the database.
-      tags:
-        - games
-      responses:
-        '200':
-          $ref: '#/components/responses/GamesOut'
-      operationId: games.get_all
-      description: Get a list of all existing games and their contents. Use query parameters to filter out the relevant results.
-      parameters:
-        - $ref: '#/components/parameters/game_length'
-        - $ref: '#/components/parameters/game_type'
-        - $ref: '#/components/parameters/group_size'
-        - $ref: '#/components/parameters/main'
-        - $ref: '#/components/parameters/aux1'
-        - $ref: '#/components/parameters/aux2'
-  '/games/{game_id}':
-    parameters:
-      - schema:
-          type: string
-        name: game_id
-        in: path
-        required: true
-    get:
-      summary: Get a single game by its ID.
-      tags:
-        - games
-      responses:
-        '200':
-          $ref: '#/components/responses/GameOut'
-      operationId: games.get_single
-      description: Get information about one game by its unique ID.
-    patch:
-      summary: Update one or several properties of a single game.
-      operationId: games.update_single
-      responses:
-        '200':
-          $ref: '#/components/responses/GameOut'
-      tags:
-        - update & create
-      requestBody:
-        $ref: '#/components/requestBodies/PatchIn'
-    delete:
-      summary: Delete a game by its ID.
-      responses:
-        '200':
-          description: OK
-      operationId: games.delete_single
-      tags:
-        - warning
-  /references:
-    get:
-      summary: Get all references (linked sources) for games.
-      responses:
-        '201':
-          $ref: '#/components/responses/ReferencesOut'
-      operationId: references.get_all
-      tags:
-        - meta
-    post:
-      summary: Create one or several new references (linked sources).
-      responses:
-        '200':
-          $ref: '#/components/responses/ReferencesOut'
-      operationId: references.create
-      requestBody:
-        $ref: '#/components/requestBodies/ReferencesIn'
-      tags:
-        - update & create
-  /collections:
-    get:
-      summary: Get all game collections.
-      tags:
-        - meta
-      responses:
-        '201':
-          $ref: '#/components/responses/ReferencesOut'
-      operationId: collections.get_all
-    post:
-      summary: Create one or several new game collections.
-      responses:
-        '200':
-          $ref: '#/components/responses/ReferencesOut'
-      operationId: collections.create
-      requestBody:
-        $ref: '#/components/requestBodies/ReferencesIn'
-      tags:
-        - update & create
-    parameters: []
-  /names:
-    get:
-      summary: Get all game names in the database.
-      tags:
-        - games
-      responses:
-        '200':
-          $ref: '#/components/responses/NamesOut'
-      operationId: names.get_all
-      parameters:
-        - $ref: '#/components/parameters/game_type'
-        - $ref: '#/components/parameters/game_length'
-        - $ref: '#/components/parameters/group_size'
-        - $ref: '#/components/parameters/main'
-        - $ref: '#/components/parameters/aux1'
-        - $ref: '#/components/parameters/aux2'
-      description: Use query parameters to filter out the relevant results.
-  /about:
-    get:
-      summary: Get API version and total number of games.
-      tags:
-        - meta
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  games:
-                    type: integer
-                  version:
-                    type: string
-                x-examples:
-                  example-1:
-                    games: 232
-                    version: 0.6.5
-              examples: {}
-      operationId: api.about
-      description: Information about the API.
-components:
-  schemas:
-    GameIn:
-      type: object
-      title: ''
-      x-stoplight:
-        id: 5umoytctch9rc
-      additionalProperties: false
-      description: Creating games with POST-requests to /games requires a json body with the following properties.
-      properties:
-        names:
-          type: array
-          description: A game can have more than one name.
-          minItems: 1
-          items:
-            type: string
-        descriptions:
-          type: array
-          minItems: 1
-          items:
-            type: string
-        game_types:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GameTypeEnum'
-        game_lengths:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GameLengthEnum'
-        group_sizes:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GroupSizeEnum'
-        group_needs:
-          type: array
-          items:
-            type: object
-            properties:
-              slug:
-                $ref: '#/components/schemas/GroupNeedsEnum'
-              score:
-                type: integer
-        materials:
-          type: array
-          items:
-            type: string
-        prior_prep:
-          type: string
-        exhausting:
-          type: boolean
-          default: false
-        touching:
-          type: boolean
-          default: false
-        scalable:
-          type: boolean
-          default: false
-        digital:
-          type: boolean
-          default: false
-        license:
-          $ref: '#/components/schemas/License'
-        references:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              url:
-                type: string
-      required:
-        - names
-        - descriptions
-        - game_types
-        - game_lengths
-        - group_sizes
-    GameOut:
-      type: object
-      title: ''
-      x-stoplight:
-        id: 5umoytctch9rc
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-        names:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              slug:
-                type: string
-              full:
-                type: string
-        descriptions:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              text:
-                type: string
-        game_types:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              slug:
-                $ref: '#/components/schemas/GameTypeEnum'
-              full:
-                type: string
-        game_lengths:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              slug:
-                $ref: '#/components/schemas/GameLengthEnum'
-              full:
-                type: string
-        group_sizes:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              slug:
-                $ref: '#/components/schemas/GroupSizeEnum'
-              full:
-                type: string
-        group_needs:
-          type: array
-          items:
-            type: object
-            properties:
-              need:
-                $ref: '#/components/schemas/GroupNeedsEnum'
-              score:
-                type: integer
-        materials:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              full:
-                type: string
-              slug:
-                type: string
-        prior_prep:
-          type: string
-        touching:
-          type: boolean
-        scalable:
-          type: boolean
-        exhausting:
-          type: boolean
-        digital:
-          type: boolean
-        meta:
-          type: object
-          properties:
-            author_id:
-              type: integer
-            timestamp:
-              type: string
-              format: date-time
-        license:
-          type: object
-          properties:
-            name:
-              type: string
-            url:
-              type: string
-            owner:
-              type: string
-            owner-url:
-              type: string
-        references:
-          type: array
-          items:
-            type: object
-            properties:
-              slug:
-                type: string
-              full:
-                type: string
-              url:
-                type: string
-        weight:
-          type: number
-    License:
-      title: ''
-      x-stoplight:
-        id: xpdtjfbm4hh1a
-      type: object
-      description: License description.
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        owner:
-          type: string
-        owner-url:
-          type: string
-      required:
-        - name
-    PatchIn:
-      type: object
-      title: PatchIn
-      x-stoplight:
-        id: 5umoytctch9rc
-      additionalProperties: false
-      description: Creating games with POST-requests to /games requires a json body with the following properties.
-      properties:
-        names:
-          type: array
-          description: A game can have more than one name.
-          minItems: 1
-          items:
-            type: string
-        descriptions:
-          type: array
-          minItems: 1
-          items:
-            type: string
-        game_types:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GameTypeEnum'
-        game_lengths:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GameLengthEnum'
-        group_sizes:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/GroupSizeEnum'
-        group_needs:
-          type: array
-          items:
-            type: object
-            properties:
-              slug:
-                $ref: '#/components/schemas/GroupNeedsEnum'
-              score:
-                type: integer
-        materials:
-          type: array
-          items:
-            type: string
-        prior_prep:
-          type: string
-        exhausting:
-          type: boolean
-          default: false
-        touching:
-          type: boolean
-          default: false
-        scalable:
-          type: boolean
-          default: false
-        digital:
-          type: boolean
-          default: false
-        license:
-          $ref: '#/components/schemas/License'
-        references:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              url:
-                type: string
-    ReferenceIn:
-      type: object
-      title: ''
-      x-stoplight:
-        id: b0i9u6cq03vk3
-      additionalProperties: false
-      properties:
-        full:
-          type: string
-        url:
-          type: string
-          format: uri
-        refers_to:
-          type: string
-          minLength: 1
-      required:
-        - full
-        - refers_to
-    ReferenceOut:
-      type: object
-      title: ''
-      x-stoplight:
-        id: b0i9u6cq03vk3
-      additionalProperties: false
-      description: ''
-      properties:
-        id:
-          type: integer
-        full:
-          type: string
-        slug:
-          type: string
-        url:
-          type: string
-          format: uri
-        game:
-          type: integer
-    GameTypeEnum:
-      type: string
-      enum:
-        - ice
-        - ener
-        - trust
-        - prob
-        - name
-        - brain
-        - song
-        - race
-        - gtk
-      description: List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
-      x-examples:
-        example-1: ice
-    GameLengthEnum:
-      type: string
-      enum:
-        - short
-        - medium
-        - long
-      x-examples: {}
-    GroupSizeEnum:
-      type: string
-      enum:
-        - small
-        - large
-        - multiple
-        - event
-    GroupNeedsEnum:
-      type: string
-      enum:
-        - first
-        - energy
-        - honesty
-        - strategy
-        - inspiration
-        - why
-        - groupid
-    NameOut:
-      type: object
-      title: ''
-      x-stoplight:
-        id: 8dkrsyt9h0xb3
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-        game_id:
-          type: integer
-        full:
-          type: string
-        slug:
-          type: string
-        weight:
-          type: number
-        vals:
-          type: array
-          items:
-            type: string
-    CollectionIn:
-      title: ''
-      x-stoplight:
-        id: zv90lpdsx1zlb
-      type: object
-      properties:
-        full:
-          type: string
-        game_ids:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-        description:
-          type: string
-      required:
-        - full
-        - game_ids
-    CollectionOut:
-      title: ''
-      x-stoplight:
-        id: zv90lpdsx1zlb
-      type: object
-      properties:
-        full:
-          type: string
-        game_ids:
-          type: array
-          minItems: 1
-          items:
-            type: integer
-        description:
-          type: string
-        slug:
-          type: string
-      required:
-        - full
-        - game_ids
-  requestBodies:
-    GamesIn:
-      x-body-name: games
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/GameIn'
-    ReferencesIn:
-      x-body-name: references
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ReferenceIn'
-    PatchIn:
-      x-body-name: patch
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PatchIn'
-  responses:
-    GameOut:
-      description: Example response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GameOut'
-    GamesOut:
-      description: Example response
-      content:
-        application/json:
-          schema:
-            type: array
-            x-examples:
-              example-1:
-                name:
-                  - string
-                description:
-                  - string
-                material:
-                  - {}
-                prior_prep: string
-                game_type:
-                  - string
-                game_length:
-                  - string
-                group_needs:
-                  ener: 0
-                  strat: 0
-                group_size:
-                  - string
-                touching: string
-            items:
-              $ref: '#/components/schemas/GameOut'
-    ReferencesOut:
-      description: Example response
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/ReferenceOut'
-    NamesOut:
-      description: Example response
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/NameOut'
-  parameters:
-    game_type:
-      name: game_type
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - ice
-          - ener
-          - trust
-          - prob
-          - name
-          - brain
-          - song
-          - race
-          - gtk
-      description: Request a specific game type.
-    game_length:
-      name: game_length
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - short
-          - medium
-          - long
-    group_size:
-      name: group_size
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - small
-          - large
-          - multiple
-          - event
-    main:
-      name: main
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - first
-          - energy
-          - honesty
-          - strategy
-          - inspiration
-          - why
-          - groupid
-    aux1:
-      name: aux1
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - first
-          - energy
-          - honesty
-          - strategy
-          - inspiration
-          - why
-          - groupid
-    aux2:
-      name: aux2
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - first
-          - energy
-          - honesty
-          - strategy
-          - inspiration
-          - why
-          - groupid
+{
+  "openapi": "3.0.0",
+  "x-stoplight": {
+    "id": "xxs2ljjr3r0vq"
+  },
+  "info": {
+    "title": "alele.io",
+    "version": "0.6.8",
+    "description": "alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.",
+    "license": {
+      "name": "European Union Public License (EUPL) 1.2",
+      "url": "https://eupl.eu"
+    },
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "https://alele.io",
+      "description": "Website"
+    }
+  ],
+  "paths": {
+    "/games": {
+      "post": {
+        "summary": "Create one or several new games.",
+        "operationId": "games.create",
+        "description": "Create one or several games.",
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/GamesOut"
+          }
+        },
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GamesIn"
+        },
+        "tags": [
+          "update & create"
+        ]
+      },
+      "get": {
+        "summary": "Get all games in the database.",
+        "tags": [
+          "games"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GamesOut"
+          }
+        },
+        "operationId": "games.get_all",
+        "description": "Get a list of all existing games and their contents. Use query parameters to filter out the relevant results.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/game_length"
+          },
+          {
+            "$ref": "#/components/parameters/game_type"
+          },
+          {
+            "$ref": "#/components/parameters/group_size"
+          },
+          {
+            "$ref": "#/components/parameters/main"
+          },
+          {
+            "$ref": "#/components/parameters/aux1"
+          },
+          {
+            "$ref": "#/components/parameters/aux2"
+          }
+        ]
+      }
+    },
+    "/games/{game_id}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "game_id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Get a single game by its ID.",
+        "tags": [
+          "games"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GameOut"
+          }
+        },
+        "operationId": "games.get_single",
+        "description": "Get information about one game by its unique ID."
+      },
+      "patch": {
+        "summary": "Update one or several properties of a single game.",
+        "operationId": "games.update_single",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GameOut"
+          }
+        },
+        "tags": [
+          "update & create"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PatchIn"
+        }
+      },
+      "delete": {
+        "summary": "Delete a game by its ID.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "operationId": "games.delete_single",
+        "tags": [
+          "warning"
+        ]
+      }
+    },
+    "/references": {
+      "get": {
+        "summary": "Get all references (linked sources) for games.",
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ReferencesOut"
+          }
+        },
+        "operationId": "references.get_all",
+        "tags": [
+          "meta"
+        ]
+      },
+      "post": {
+        "summary": "Create one or several new references (linked sources).",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReferencesOut"
+          }
+        },
+        "operationId": "references.create",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ReferencesIn"
+        },
+        "tags": [
+          "update & create"
+        ]
+      }
+    },
+    "/collections": {
+      "get": {
+        "summary": "Get all game collections.",
+        "tags": [
+          "meta"
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ReferencesOut"
+          }
+        },
+        "operationId": "collections.get_all"
+      },
+      "post": {
+        "summary": "Create one or several new game collections.",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReferencesOut"
+          }
+        },
+        "operationId": "collections.create",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ReferencesIn"
+        },
+        "tags": [
+          "update & create"
+        ]
+      },
+      "parameters": []
+    },
+    "/names": {
+      "get": {
+        "summary": "Get all game names in the database.",
+        "tags": [
+          "games"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/NamesOut"
+          }
+        },
+        "operationId": "names.get_all",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/game_type"
+          },
+          {
+            "$ref": "#/components/parameters/game_length"
+          },
+          {
+            "$ref": "#/components/parameters/group_size"
+          },
+          {
+            "$ref": "#/components/parameters/main"
+          },
+          {
+            "$ref": "#/components/parameters/aux1"
+          },
+          {
+            "$ref": "#/components/parameters/aux2"
+          }
+        ],
+        "description": "Use query parameters to filter out the relevant results."
+      }
+    },
+    "/about": {
+      "get": {
+        "summary": "Get API version and total number of games.",
+        "tags": [
+          "meta"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "integer"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  },
+                  "x-examples": {
+                    "example-1": {
+                      "games": 232,
+                      "version": "0.6.5"
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "operationId": "api.about",
+        "description": "Information about the API."
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GameIn": {
+        "type": "object",
+        "title": "",
+        "x-stoplight": {
+          "id": "5umoytctch9rc"
+        },
+        "additionalProperties": false,
+        "description": "Creating games with POST-requests to /games requires a json body with the following properties.",
+        "properties": {
+          "names": {
+            "type": "array",
+            "description": "A game can have more than one name.",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "descriptions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "game_types": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GameTypeEnum"
+            }
+          },
+          "game_lengths": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GameLengthEnum"
+            }
+          },
+          "group_sizes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GroupSizeEnum"
+            }
+          },
+          "group_needs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "$ref": "#/components/schemas/GroupNeedsEnum"
+                },
+                "score": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prior_prep": {
+            "type": "string"
+          },
+          "exhausting": {
+            "type": "boolean",
+            "default": false
+          },
+          "touching": {
+            "type": "boolean",
+            "default": false
+          },
+          "scalable": {
+            "type": "boolean",
+            "default": false
+          },
+          "digital": {
+            "type": "boolean",
+            "default": false
+          },
+          "license": {
+            "$ref": "#/components/schemas/License"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "names",
+          "descriptions",
+          "game_types",
+          "game_lengths",
+          "group_sizes"
+        ]
+      },
+      "GameOut": {
+        "type": "object",
+        "title": "",
+        "x-stoplight": {
+          "id": "5umoytctch9rc"
+        },
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "full": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "descriptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "game_types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "slug": {
+                  "$ref": "#/components/schemas/GameTypeEnum"
+                },
+                "full": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "game_lengths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "slug": {
+                  "$ref": "#/components/schemas/GameLengthEnum"
+                },
+                "full": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "group_sizes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "slug": {
+                  "$ref": "#/components/schemas/GroupSizeEnum"
+                },
+                "full": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "group_needs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "need": {
+                  "$ref": "#/components/schemas/GroupNeedsEnum"
+                },
+                "score": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "full": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "prior_prep": {
+            "type": "string"
+          },
+          "touching": {
+            "type": "boolean"
+          },
+          "scalable": {
+            "type": "boolean"
+          },
+          "exhausting": {
+            "type": "boolean"
+          },
+          "digital": {
+            "type": "boolean"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "author_id": {
+                "type": "integer"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "license": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "owner-url": {
+                "type": "string"
+              }
+            }
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string"
+                },
+                "full": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "weight": {
+            "type": "number"
+          }
+        }
+      },
+      "License": {
+        "title": "",
+        "x-stoplight": {
+          "id": "xpdtjfbm4hh1a"
+        },
+        "type": "object",
+        "description": "License description.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "owner-url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "PatchIn": {
+        "type": "object",
+        "title": "PatchIn",
+        "x-stoplight": {
+          "id": "5umoytctch9rc"
+        },
+        "additionalProperties": false,
+        "description": "Creating games with POST-requests to /games requires a json body with the following properties.",
+        "properties": {
+          "names": {
+            "type": "array",
+            "description": "A game can have more than one name.",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "descriptions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "game_types": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GameTypeEnum"
+            }
+          },
+          "game_lengths": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GameLengthEnum"
+            }
+          },
+          "group_sizes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/GroupSizeEnum"
+            }
+          },
+          "group_needs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "$ref": "#/components/schemas/GroupNeedsEnum"
+                },
+                "score": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prior_prep": {
+            "type": "string"
+          },
+          "exhausting": {
+            "type": "boolean",
+            "default": false
+          },
+          "touching": {
+            "type": "boolean",
+            "default": false
+          },
+          "scalable": {
+            "type": "boolean",
+            "default": false
+          },
+          "digital": {
+            "type": "boolean",
+            "default": false
+          },
+          "license": {
+            "$ref": "#/components/schemas/License"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReferenceIn": {
+        "type": "object",
+        "title": "",
+        "x-stoplight": {
+          "id": "b0i9u6cq03vk3"
+        },
+        "additionalProperties": false,
+        "properties": {
+          "full": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "refers_to": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "full",
+          "refers_to"
+        ]
+      },
+      "ReferenceOut": {
+        "type": "object",
+        "title": "",
+        "x-stoplight": {
+          "id": "b0i9u6cq03vk3"
+        },
+        "additionalProperties": false,
+        "description": "",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "full": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "game": {
+            "type": "integer"
+          }
+        }
+      },
+      "GameTypeEnum": {
+        "type": "string",
+        "enum": [
+          "ice",
+          "ener",
+          "trust",
+          "prob",
+          "name",
+          "brain",
+          "song",
+          "race",
+          "gtk"
+        ],
+        "description": "List of values for GameType. Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.",
+        "x-examples": {
+          "example-1": "ice"
+        }
+      },
+      "GameLengthEnum": {
+        "type": "string",
+        "enum": [
+          "short",
+          "medium",
+          "long"
+        ],
+        "x-examples": {}
+      },
+      "GroupSizeEnum": {
+        "type": "string",
+        "enum": [
+          "small",
+          "large",
+          "multiple",
+          "event"
+        ]
+      },
+      "GroupNeedsEnum": {
+        "type": "string",
+        "enum": [
+          "first",
+          "energy",
+          "honesty",
+          "strategy",
+          "inspiration",
+          "why",
+          "groupid"
+        ]
+      },
+      "NameOut": {
+        "type": "object",
+        "title": "",
+        "x-stoplight": {
+          "id": "8dkrsyt9h0xb3"
+        },
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "game_id": {
+            "type": "integer"
+          },
+          "full": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "vals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CollectionIn": {
+        "title": "",
+        "x-stoplight": {
+          "id": "zv90lpdsx1zlb"
+        },
+        "type": "object",
+        "properties": {
+          "full": {
+            "type": "string"
+          },
+          "game_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "integer"
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "full",
+          "game_ids"
+        ]
+      },
+      "CollectionOut": {
+        "title": "",
+        "x-stoplight": {
+          "id": "zv90lpdsx1zlb"
+        },
+        "type": "object",
+        "properties": {
+          "full": {
+            "type": "string"
+          },
+          "game_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "integer"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "full",
+          "game_ids"
+        ]
+      }
+    },
+    "requestBodies": {
+      "GamesIn": {
+        "x-body-name": "games",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/GameIn"
+              }
+            }
+          }
+        }
+      },
+      "ReferencesIn": {
+        "x-body-name": "references",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ReferenceIn"
+              }
+            }
+          }
+        }
+      },
+      "PatchIn": {
+        "x-body-name": "patch",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PatchIn"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "GameOut": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GameOut"
+            }
+          }
+        }
+      },
+      "GamesOut": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "x-examples": {
+                "example-1": {
+                  "name": [
+                    "string"
+                  ],
+                  "description": [
+                    "string"
+                  ],
+                  "material": [
+                    {}
+                  ],
+                  "prior_prep": "string",
+                  "game_type": [
+                    "string"
+                  ],
+                  "game_length": [
+                    "string"
+                  ],
+                  "group_needs": {
+                    "ener": 0,
+                    "strat": 0
+                  },
+                  "group_size": [
+                    "string"
+                  ],
+                  "touching": "string"
+                }
+              },
+              "items": {
+                "$ref": "#/components/schemas/GameOut"
+              }
+            }
+          }
+        }
+      },
+      "ReferencesOut": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ReferenceOut"
+              }
+            }
+          }
+        }
+      },
+      "NamesOut": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/NameOut"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "game_type": {
+        "name": "game_type",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "ice",
+            "ener",
+            "trust",
+            "prob",
+            "name",
+            "brain",
+            "song",
+            "race",
+            "gtk"
+          ]
+        },
+        "description": "Request a specific game type."
+      },
+      "game_length": {
+        "name": "game_length",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "short",
+            "medium",
+            "long"
+          ]
+        }
+      },
+      "group_size": {
+        "name": "group_size",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "small",
+            "large",
+            "multiple",
+            "event"
+          ]
+        }
+      },
+      "main": {
+        "name": "main",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "first",
+            "energy",
+            "honesty",
+            "strategy",
+            "inspiration",
+            "why",
+            "groupid"
+          ]
+        }
+      },
+      "aux1": {
+        "name": "aux1",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "first",
+            "energy",
+            "honesty",
+            "strategy",
+            "inspiration",
+            "why",
+            "groupid"
+          ]
+        }
+      },
+      "aux2": {
+        "name": "aux2",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "first",
+            "energy",
+            "honesty",
+            "strategy",
+            "inspiration",
+            "why",
+            "groupid"
+          ]
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "name": "X-Auth",
+        "type": "apiKey",
+        "in": "header",
+        "description": "Access the API with an API key after registering at alele.io",
+        "x-apikeyInfoFunc": "src.services.authentication.api_key_auth"
+      }
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ]
+}
