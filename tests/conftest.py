@@ -181,5 +181,6 @@ def no_auth_client(db):
 def client(db):
     connexion_app.app.test_client_class = CustomTestClient
     with connexion_app.app.test_client() as client:
-        yield client
+        with connexion_app.app.app_context():
+            yield client
     get_app.cache_clear()

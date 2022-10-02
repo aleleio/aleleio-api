@@ -25,7 +25,7 @@ def set_latest_sha(sha=None):
         file.write(sha)
 
 
-def get_github_token():
+def get_github_token():  # pragma: no cover
     with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
         bot_key = cert_file.read()
     bot = GithubIntegration(233902, bot_key)
@@ -33,7 +33,7 @@ def get_github_token():
     return bot.get_access_token(installation).token
 
 
-def get_repo():
+def get_repo():  # pragma: no cover
     gh = Github(get_github_token())
     return gh.get_repo("aleleio/teambuilding-games")
 

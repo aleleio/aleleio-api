@@ -47,12 +47,13 @@
 
 - [ ] 0.6.9 Statistics working
   - [ ] add stats (private, independent) and create tools to import 
-  - [ ] add api/about
+  - [x] add api/about
 
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
   - [ ] ideas: import with UPDATE instead of GET
-  - [ ] todo: validate with actual user
+  - [x] todo: validate with actual user
   - [ ] idea: monkeypatch out apikey auth for development
+  - [x] todo: add # pragma: no cover for coverage
 
 
 ### 0.7 Document and Deploy

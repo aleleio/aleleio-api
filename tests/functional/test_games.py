@@ -1,4 +1,3 @@
-import os
 from copy import deepcopy
 
 MIN_GAME = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],

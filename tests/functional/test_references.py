@@ -1,7 +1,5 @@
 import pytest
 
-from src.services.create import create_games
-
 MIN_GAME = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],
             'game_lengths': ['short'], 'group_sizes': ['event'],
             'exhausting': False, 'touching': False, 'scalable': False, 'digital': False}
@@ -9,8 +7,8 @@ REF_A = {"full": "Bananas Video", "url": "youtube.com/v=12345", "refers_to": "ba
 
 
 @pytest.fixture(autouse=True)
-def populate_with_abc(db):
-    create_games([MIN_GAME])
+def populate_with_abc(client):
+    client.post("/games", json=[MIN_GAME])
 
 
 def test_create_references(client):

@@ -42,11 +42,11 @@ def get_db(users_db=False):
     else:
         credentials = json.loads(os.environ.get("DB_CONNECT"))
 
-    if not os.environ.get("FLASK_DEBUG"):  # production
+    if not os.environ.get("FLASK_DEBUG"):  # pragma: no cover / production
         database = Database(provider='mysql', **credentials)
     elif os.environ.get('FLASK_TESTING'):
         database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
-    else:  # development
+    else:  # pragma: no cover / development
         database = Database(provider='sqlite', filename=f'{credentials["db"]}.sqlite', create_db=True)
 
     if users_db:
@@ -103,7 +103,7 @@ def get_app():
 
 
 @db_session
-def run_startup_tasks(db):
+def run_startup_tasks(db):  # pragma: no cover
     """Seed database with category enums if not already present
     """
     if hasattr(db, 'User'):
@@ -116,7 +116,7 @@ def run_startup_tasks(db):
         startup_games_db(db)
 
 
-def startup_users_db(udb):
+def startup_users_db(udb):  # pragma: no cover
     for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
         udb.User(**user)
 

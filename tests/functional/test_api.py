@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
-from pony.orm import CacheIndexError, commit
+from flask import g
 
-from src.start import get_project_version, run_startup_tasks
+from src.start import get_project_version
 
 
 def test_about(client):
@@ -12,8 +12,10 @@ def test_about(client):
 
 
 def test_import(client):
+    print(f"{g.get('uid')=}")
     response = client.get("/import")
     assert response.status_code == 200
+    # Todo: Test response
     # assert response.json == {}
 
 

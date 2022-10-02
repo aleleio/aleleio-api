@@ -2,7 +2,7 @@ import re
 import unicodedata
 from typing import List, Dict
 
-from flask import abort
+from flask import abort, g
 from pony.orm import db_session
 # Pony CacheIndexError when new instance is duplicate/not unique
 from pony.orm.core import CacheIndexError
@@ -24,7 +24,7 @@ def slugify(value):
 
 
 @db_session
-def create_games(games: List[Dict]):
+def create_games(games: list[dict]):
     """Create one or several new games from the given list and save them in the database.
     """
     created_instances = []
@@ -41,7 +41,7 @@ def create_games(games: List[Dict]):
             set_game_descriptions(game=new_instance, request=game)
             set_game_materials(game=new_instance, request=game)
             set_game_prior_prep(game=new_instance, request=game)
-            set_game_meta(game=new_instance, request=game)
+            set_game_meta(game=new_instance)
         except CacheIndexError as err:
             errors.append(err)
             new_instance.delete()
@@ -99,10 +99,10 @@ def set_game_prior_prep(game, request):
         game.prior_prep = request['prior_prep']
 
 
-def set_game_meta(game: db.Game, request):
+def set_game_meta(game: db.Game):
     db.GameMeta(
         game=game,
-        author_id=1,  # Todo: Validation with actual User!
+        author_id=g.uid
     )
 
 
@@ -145,7 +145,7 @@ def create_references(references):
 
 
 @db_session
-def create_collections(collections):
+def create_collections(collections: list[dict]):
     """Create or attach to one or several collections from the given list.
     """
     created_instances = []
@@ -155,7 +155,7 @@ def create_collections(collections):
         try:
             slug = slugify(collection['full'])
             description = collection.get('description')
-            author_id = 1  # Todo: Real Author ID
+            author_id = g.uid
 
             instance = db.Collection(slug=slug, full=collection['full'], description=description, author_id=author_id)
             for game in collection.games:

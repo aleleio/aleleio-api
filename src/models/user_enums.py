@@ -16,7 +16,7 @@ class UserRoleEnum(Enum):
     IOS = "ios"
 
     @property
-    def full(self):
+    def full(self):  # pragma: no cover
         lookup = {
             "admin": "Administrator",
             "editor": "Editor",
@@ -33,7 +33,7 @@ class UserStatusEnum(Enum):
     PENDING = "pending"
 
     @property
-    def full(self):
+    def full(self):  # pragma: no cover
         lookup = {
             "active": "Active",
             "pending": "Pending",

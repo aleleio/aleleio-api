@@ -2,8 +2,6 @@ import pytest
 
 from pony.orm import db_session
 
-from src.services.search import all_games
-from src.services.create import create_games
 from src.services.update import update_game
 
 GAMEA = {'names': ['A'], 'descriptions': ['A'],
@@ -17,13 +15,13 @@ GAMEC = {'names': ['C'], 'descriptions': ['C'],
          'exhausting': False, 'touching': False, 'scalable': False, 'digital': False}
 
 
-@pytest.fixture()
-def populate(db):
-    create_games([GAMEA, GAMEB, GAMEC])
+@pytest.fixture(autouse=True)
+def populate_with_games(client):
+    client.post('/games', json=[GAMEA, GAMEB, GAMEC])
 
 
 @db_session
-def test_update_game(db, populate):
+def test_update_game(db):
     game = db.Game.get(id=1)
     n1 = db.Name.get(slug='a')
     gt1 = db.GameType.get(slug='ice')

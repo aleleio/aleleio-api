@@ -7,6 +7,7 @@ import mistune
 import requests
 import yaml
 from github import GithubIntegration
+from flask import g
 
 from src.services import create
 from src.services.export_to_repo import set_latest_sha

@@ -1,7 +1,6 @@
 import pytest
 
 from src.services.search import all_games, all_names
-from src.services.create import create_games
 
 GAMEA = {'names': ['A'], 'descriptions': ['A'],
          'game_types': ['ice'], 'game_lengths': ['short'], 'group_sizes': ['small'],
@@ -17,9 +16,9 @@ GAMEC = {'names': ['C'], 'descriptions': ['C'],
          'exhausting': False, 'touching': False, 'scalable': False, 'digital': False}
 
 
-@pytest.fixture(scope='module', autouse=True)
-def populate_with_abc(db):
-    create_games([GAMEA, GAMEB, GAMEC])
+@pytest.fixture(autouse=True)
+def populate_with_games(client):
+    client.post('/games', json=[GAMEA, GAMEB, GAMEC])
 
 
 def test_all_games_gt(db):

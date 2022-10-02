@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 import connexion
-from flask import abort
+from flask import abort, g
 from pony.orm import db_session
 
 from src.services import search, export_to_repo
@@ -17,7 +17,7 @@ def get_all():
     return search.all_games(query)
 
 
-def create(games: List[Dict]):
+def create(games: list[dict]):
     new_instances, errors = create_games(games)
     if errors:
         return {"errors": [e.__str__() for e in errors]}, 409
