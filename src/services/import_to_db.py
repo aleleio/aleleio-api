@@ -7,7 +7,6 @@ import mistune
 import requests
 import yaml
 from github import GithubIntegration
-from flask import g
 
 from src.services import create
 from src.services.export_to_repo import set_latest_sha
@@ -34,8 +33,12 @@ def run_import():
         refs = convert_yml_to_ref(yml)
         refs_created, refs_errors = write_references_to_database(refs)
 
-    return {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": games_errors},
-            "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": refs_errors}}
+    result = {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": [err.__str__() for err in games_errors]},
+              "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": [err.__str__() for err in refs_errors]}}
+
+    print(f"{result=}")
+
+    return result
 
 
 def download_files():

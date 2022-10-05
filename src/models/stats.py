@@ -5,7 +5,7 @@ from pony.orm import *
 
 def define_entities_stats(db):
     class Session(db.Entity):
-        queries = Set(lambda: Query)
+        requests = Set(lambda: Request)
 
         user_id = Required(int)
         origin = Optional(str)  # web, android, ios
@@ -14,22 +14,23 @@ def define_entities_stats(db):
         user_agent = Required(str)
         remote_addr = Required(str)
 
-    class Query(db.Entity):
+    class Request(db.Entity):
         """API query statistics
         """
         session = Required(Session)
-        params = Set(lambda: QueryParam)
+        query_params = Set(lambda: QueryParam)
 
+        query_type = Optional(str)  # basic / group_needs
         timestamp = Required(datetime, default=datetime.utcnow)
         path = Required(str)
-        query_type = Required(str)  # basic / group_needs
+        method = Required(str)
         game_id = Optional(int)
         result_length = Optional(int)
 
     class QueryParam(db.Entity):
         """API query parameters
         """
-        query = Required(Query)
+        request = Required(Request)
         slug = Required(str)
 
     class GameStatistic(db.Entity):

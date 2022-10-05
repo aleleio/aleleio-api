@@ -9,8 +9,7 @@ db = get_db()
 udb = get_db(users_db=True)
 
 
-@db_session
-def track_session(request):
+def get_session(request):
     """Track user session for 5 minutes
     Requests to the API may come in from web interface, mobile apps or direct api calls and are identified by api-key.
     Apps will send api-keys of logged-in users, otherwise use their own.
@@ -24,36 +23,49 @@ def track_session(request):
             remote_addr=request.headers.get("X-Remote-Addr"),
             user_agent=request.headers.get("X-User-Agent"),
         )
-        session = track_anon_session(session_params)
+        session = anon_session(session_params)
     else:
         session_params.update(
             origin=request.headers.get("X-Origin", "api"),
             remote_addr=request.remote_addr,
             user_agent=request.headers.get("User-Agent"),
         )
-        session = track_logged_in_session(session_params)
+        session = logged_in_session(session_params)
 
     return session
 
 
-def track_anon_session(session_params):
-    user_requests = db.Session.select(lambda s: s.remote_addr == session_params["remote_addr"])
-    return get_active_session(user_requests, session_params)
+def anon_session(session_params):
+    user_sessions = db.Session.select(lambda s: s.remote_addr == session_params["remote_addr"])
+    return get_active_session(user_sessions, session_params)
 
 
-def track_logged_in_session(session_params):
-    user_requests = db.Session.select(lambda s: s.user_id == session_params["user_id"])
-    return get_active_session(user_requests, session_params)
+def logged_in_session(session_params):
+    user_sessions = db.Session.select(lambda s: s.user_id == session_params["user_id"])
+    return get_active_session(user_sessions, session_params)
 
 
-def get_active_session(user_requests, session_params):
-    if user_requests:
-        last_request = user_requests.sort_by(desc(db.Session.starttime))[:1][0]
-        timedelta = datetime.utcnow() - last_request.starttime
+def get_active_session(user_sessions, session_params):
+    if user_sessions:
+        last_session = user_sessions.sort_by(desc(db.Session.starttime))[:1][0]
+        timedelta = datetime.utcnow() - last_session.starttime
         if timedelta.seconds < 300:
-            last_request.endtime = datetime.utcnow()
-            return last_request
+            last_session.endtime = datetime.utcnow()
+            return last_session
     return db.Session(**session_params)
+
+
+def add_request(session, request):
+    # query_params Set(QueryParam)
+    # query_type Optional(str)
+    # game_id Optional(int)
+    # result_length Optional(int)
+    this = db.Request(
+        session=session,
+        path=request.path,
+        method=request.method
+    )
+
 
 
 @db_session

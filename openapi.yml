@@ -1,8 +1,5 @@
 {
   "openapi": "3.0.0",
-  "x-stoplight": {
-    "id": "xxs2ljjr3r0vq"
-  },
   "info": {
     "title": "alele.io",
     "version": "0.6.8",
@@ -252,6 +249,68 @@
         },
         "operationId": "api.about",
         "description": "Information about the API."
+      }
+    },
+    "/import": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "games": {
+                      "type": "object",
+                      "properties": {
+                        "len": {
+                          "type": "integer"
+                        },
+                        "created": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "refs": {
+                      "type": "object",
+                      "properties": {
+                        "len": {
+                          "type": "integer"
+                        },
+                        "created": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "errors": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "api.start_import",
+        "description": "Import games from Teambuilding Games repository at github.com/aleleio/teambuilding_games."
       }
     }
   },

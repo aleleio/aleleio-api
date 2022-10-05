@@ -98,15 +98,14 @@ def get_app():
     connexion_app.app.config.from_prefixed_env()
 
     @connexion_app.app.after_request
+    @db_session
     def after_request(response):
-        from src.services.tracking import track_session
+        from src.services import tracking
         if response.status_code in [200, 201]:
-            tracked = track_session(request)
+            session = tracking.get_session(request)
+            tracking.add_request(session, request)
 
         return response
-
-    from src.views.api import bp
-    connexion_app.app.register_blueprint(bp)
 
     return connexion_app
 
