@@ -69,7 +69,7 @@ def test_latest_sha(client, monkeypatch):
     monkeypatch.setattr(import_to_db, "is_latest_version", mock_is_latest_version)
     monkeypatch.setattr(export_to_repo, "requests", MockRequests)
     response = client.get("/import")
-    assert response.json == {"result": 200}
+    assert response.status_code == 200
     latest_sha_file = test_root.joinpath('.latest-sha')
     assert latest_sha_file.exists()
     latest_sha_file.unlink()
