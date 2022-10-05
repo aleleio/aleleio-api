@@ -12,7 +12,8 @@ frame "API" {
 frame "Web" {
     [flask]
 }
-[flask] <-up-> [REST API]: "CRUD"
+[flask] -up-> [REST API]: "CRUD"
+[flask] .up. [users]
 
 frame "Mobile" {
     [flutter] -up-> [REST API]: "Read-only"
