@@ -46,8 +46,7 @@
 - [x] 0.6.8 Easier Setup for contributor onboarding
 
 - [ ] 0.6.9 Statistics working
-  - [ ] add stats (private, independent) and create tools to import 
-  - [x] add api/about
+  - [ ] add stats (private, independent)
 
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
   - [ ] ideas: import with UPDATE instead of GET

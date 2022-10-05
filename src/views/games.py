@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 import connexion
-from flask import abort, g
+from flask import abort
 from pony.orm import db_session
 
 from src.services import search, export_to_repo

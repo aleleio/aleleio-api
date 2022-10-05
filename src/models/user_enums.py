@@ -11,9 +11,9 @@ class UserRoleEnum(Enum):
     ADMIN = "admin"
     EDITOR = "editor"
     USER = "user"
-    WEB = "web"
-    ANDROID = "android"
-    IOS = "ios"
+    # WEB = "web"
+    # ANDROID = "android"
+    # IOS = "ios"
 
     @property
     def full(self):  # pragma: no cover
@@ -21,9 +21,9 @@ class UserRoleEnum(Enum):
             "admin": "Administrator",
             "editor": "Editor",
             "user": "User",
-            "web": "Web Application",
-            "android": "Android Application",
-            "ios": "iOS Application",
+            # "web": "Web Application",
+            # "android": "Android Application",
+            # "ios": "iOS Application",
         }
         return lookup[self.value]
 

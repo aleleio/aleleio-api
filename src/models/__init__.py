@@ -7,4 +7,4 @@ from .meta import *
 from .user import *
 from .game_enums import *
 from .user_enums import *
-from .api import *
+from .stats import *

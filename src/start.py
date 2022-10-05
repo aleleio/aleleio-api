@@ -7,11 +7,12 @@ import yaml
 from connexion import FlaskApp
 from connexion.resolver import RelativeResolver
 from dotenv import load_dotenv
+from flask import request, g
 from flask_cors import CORS
 from pony.orm import Database, set_sql_debug, db_session
 
 from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
-    GroupSizeEnum, GroupNeedEnum, define_entities_api, UserRoleEnum, UserStatusEnum
+    GroupSizeEnum, GroupNeedEnum, define_entities_stats
 from src.services.enforcedefaults import validator_remap
 
 # Define project root and load constants from dotenv file
@@ -54,7 +55,7 @@ def get_db(users_db=False):
     else:
         define_entities_game(database)
         define_entities_meta(database)
-        define_entities_api(database)
+        define_entities_stats(database)
 
     database.generate_mapping(create_tables=True)
     set_sql_debug(False)
@@ -96,6 +97,14 @@ def get_app():
     )
     connexion_app.app.config.from_prefixed_env()
 
+    @connexion_app.app.after_request
+    def after_request(response):
+        from src.services.tracking import track_session
+        if response.status_code in [200, 201]:
+            tracked = track_session(request)
+
+        return response
+
     from src.views.api import bp
     connexion_app.app.register_blueprint(bp)
 
@@ -117,8 +126,8 @@ def run_startup_tasks(db):  # pragma: no cover
 
 
 def startup_users_db(udb):  # pragma: no cover
-    for user in [json.loads(os.environ.get("USER_ADMIN")), json.loads(os.environ.get("USER_WEB"))]:
-        udb.User(**user)
+    for user in [os.environ.get("USER_ADMIN"), os.environ.get("USER_WEB"), os.environ.get("USER_ANDROID"), os.environ.get("USER_IOS")]:
+        udb.User(**json.loads(user))
 
 
 def startup_games_db(db):
