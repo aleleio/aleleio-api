@@ -21,8 +21,6 @@ def define_entities_game(db):
         references = Set(lambda: db.Reference)
         collections = Set(lambda: db.Collection)
 
-        statistic = Optional(lambda: db.GameStatistic, cascade_delete=True)
-
         prior_prep = Optional(LongStr)
         exhausting = Optional(bool, default=False)
         touching = Optional(bool, default=False)

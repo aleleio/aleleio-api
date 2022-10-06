@@ -44,15 +44,15 @@
 - [x] 0.6.6 Import/Export Tools (use repo, route for automation)
 - [x] 0.6.7 Authentication working, CORS added  
 - [x] 0.6.8 Easier Setup for contributor onboarding
-
-- [ ] 0.6.9 Statistics working
-  - [ ] add stats (private, independent)
+- [x] 0.6.9 Statistics working
 
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
-  - [ ] ideas: import with UPDATE instead of GET
   - [x] todo: validate with actual user
-  - [ ] idea: monkeypatch out apikey auth for development
   - [x] todo: add # pragma: no cover for coverage
+  - [ ] todo: aliases are not being imported? (one name per game: e.g. pipe-->atomic bomb)
+  - [ ] idea: fix ids for games? every import might screw up external links
+  - [ ] idea: search by name
+  - [ ] todo: about page shows last commit datetime, links to gh repo
 
 
 ### 0.7 Document and Deploy

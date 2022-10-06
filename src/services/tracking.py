@@ -10,14 +10,14 @@ udb = get_db(users_db=True)
 
 
 def get_session(request):
-    """Track user session for 5 minutes
+    """Track user session, renew by activity within 5min window
     Requests to the API may come in from web interface, mobile apps or direct api calls and are identified by api-key.
     Apps will send api-keys of logged-in users, otherwise use their own.
     """
     user = udb.User[g.uid]
     session_params = dict(user_id=g.uid)
 
-    if user.login in ["web", "android", "ios"]:
+    if user.login in ["web", "android", "ios"]:  # pragma: no cover
         session_params.update(
             origin=user.login,
             remote_addr=request.headers.get("X-Remote-Addr"),
@@ -35,7 +35,7 @@ def get_session(request):
     return session
 
 
-def anon_session(session_params):
+def anon_session(session_params):  # pragma: no cover
     user_sessions = db.Session.select(lambda s: s.remote_addr == session_params["remote_addr"])
     return get_active_session(user_sessions, session_params)
 
@@ -48,286 +48,51 @@ def logged_in_session(session_params):
 def get_active_session(user_sessions, session_params):
     if user_sessions:
         last_session = user_sessions.sort_by(desc(db.Session.starttime))[:1][0]
-        timedelta = datetime.utcnow() - last_session.starttime
+        timedelta = datetime.utcnow() - last_session.endtime
         if timedelta.seconds < 300:
             last_session.endtime = datetime.utcnow()
             return last_session
     return db.Session(**session_params)
 
 
-def add_request(session, request):
-    # game_id Optional(int)
-    # result_length Optional(int)
-
-    r = db.Request(
+def add_request(session, request, response):
+    r_object = db.Request(
         session=session,
         path=request.path,
         method=request.method
     )
 
+    add_request_is_query(r_object, request, response)
+    add_request_is_names(request, response)
+    add_request_is_single_game(r_object, request)
+
+
+def add_request_is_query(r_object, request, response):
     query = request.values
     if query:
-        r.query_type = "group_needs" if "main" in query.keys() else "basic"
+        r_object.query_type = "group_needs" if "main" in query.keys() else "basic"
         for param, value in query.items():
             if param == "limit":
-                r.result_limit = value
+                r_object.result_limit = value
             else:
-                r.query_params.add(db.QueryParam.get(slug=value))
+                r_object.query_params.add(db.QueryParam.get(slug=value))
+
+    if type(response.json) is list:
+        r_object.result_length = len(response.json)
 
 
-@db_session
-def get_all_names(user, filters, result):
-    """
-    Save entry to API Statistics and create/update entry in Game Statistics.
-    get_all_names is relevant because it is used for list-view in web component.
-    Todo: add group_needs filter
-    :param user:
-    :param filters:
-    :param result:
-    :return:
-    """
-
-    # Names need to be reduced to unique games
-    games_result = set()
-
-    for name in result:
-        game_id = name.get('game', '')
-        games_result.add(game_id)
-
-    # API Statistics
-    api_stat_object = db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="names",
-        request_type="GET",
-        request_result=len(games_result)
-    )
-
-    params_object = db.QueryStatisticParam(stat_entry=api_stat_object)
-    if 'game_type' in filters:
-        params_object.game_type = filters['game_type']
-    if 'game_length' in filters:
-        params_object.game_length = filters['game_length']
-    if 'group_size' in filters:
-        params_object.group_size = filters['group_size']
-    if 'limit' in filters:
-        params_object.limit = filters['limit']
-
-    # Game Statistics
-    for game_id in games_result:
-        game_stat_object = db.GameStatistic.select(lambda s: s.game.id == game_id).get()
-        if not game_stat_object:
-            game_stat_object = db.GameStatistic(game=db.Game[game_id])
-            game_stat_object.search_impressions = 1
-        elif not game_stat_object.search_impressions:
-            game_stat_object.search_impressions = 1
-        else:
-            game_stat_object.search_impressions += 1
+def add_request_is_names(request, response):
+    if request.path == "/names":
+        for item in response.json:
+            game_stat = db.GameStatistic.get(game_id=item["game_id"])
+            game_stat.search_impressions += 1
 
 
-@db_session
-def get_all_games(user, filters, result):
-    """
-    Save entry to API Statistics only.
-    get_all_games is not used to display games in web component, therefore not relevant for impressions.
-    Todo: add group_needs filter
-    :param user:
-    :param filters:
-    :param result:
-    :return:
-    """
-
-    # API Statistics
-    api_stat_object = db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="games",
-        request_type="GET",
-        request_result=len(result)
-    )
-
-    params_object = db.QueryStatisticParam(stat_entry=api_stat_object)
-    if 'game_type' in filters:
-        params_object.game_type = filters['game_type']
-    if 'game_length' in filters:
-        params_object.game_length = filters['game_length']
-    if 'group_size' in filters:
-        params_object.group_size = filters['group_size']
-    if 'limit' in filters:
-        params_object.limit = filters['limit']
-
-
-@db_session
-def get_single_game(user, game_id):
-    """
-    Save entry to API Statistics and create/update entry in Game Statistics when a single game is requested.
-    :param user_id:
-    :param game_id:
-    :return:
-    """
-
-    # API Statistics
-    db.AAPIPIStatistics(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="games/id",
-        request_type="GET",
-        request_game_id=game_id
-    )
-
-    # Game Statistics
-    game_stat_object = db.GameStatistic.select(lambda s: s.game.id == game_id).get()
-
-    if not game_stat_object:
-        game_stat_object = db.GameStatistic(game=db.Game[game_id])
-        game_stat_object.detail_impressions = 1
-    elif not game_stat_object.detail_impressions:
-        game_stat_object.detail_impressions = 1
-    else:
-        game_stat_object.detail_impressions += 1
-
-    game_stat_object.last_impression = datetime.datetime.utcnow()
-
-
-@db_session
-def post_games(user, result):
-    """
-    Save entries to API Statistics when new games are created.
-    :param user:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="games",
-        request_type="POST",
-        request_result=len(result)
-    )
-
-
-@db_session
-def patch_game(user, game_id):
-    """
-    Save entry to API Statistics when a game is changed.
-    :param user:
-    :param game_id:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="games/id",
-        request_type="PATCH",
-        request_game_id=game_id
-    )
-
-
-@db_session
-def delete_game(user, game_id):
-    """
-    Save entry to API Statistics when a game is deleted.
-    :param user:
-    :param game_id:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="games/id",
-        request_type="DELETE",
-        request_game_id=game_id
-    )
-
-
-@db_session
-def get_all_enums(user, result):
-    """
-    Save entry to API Statistics when enums are requested.
-    :param user_id:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="enums",
-        request_type="GET",
-        request_result=len(result)
-    )
-
-
-@db_session
-def get_all_game_types(user, result):
-    """
-    Save entry to API Statistics when game_types are requested.
-    :param user:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="game_types",
-        request_type="GET",
-        request_result=len(result)
-    )
-
-
-@db_session
-def get_all_game_lengths(user, result):
-    """
-    Save entry to API Statistics when game_lengths are requested.
-    :param user:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="game_lengths",
-        request_type="GET",
-        request_result=len(result)
-    )
-
-
-@db_session
-def get_all_group_sizes(user, result):
-    """
-    Save entry to API Statistics when group_sizes are requested.
-    :param user:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="group_sizes",
-        request_type="GET",
-        request_result=len(result)
-    )
-
-
-@db_session
-def get_all_group_needs(user, result):
-    """
-    Save entry to API Statistics when group_needs are requested.
-    :param user:
-    :param result:
-    :return:
-    """
-
-    db.QueryStatistic(
-        user_id=user.id,
-        request_origin=user.request_origin,
-        request_uri="group_needs",
-        request_type="GET",
-        request_result=len(result)
-    )
+def add_request_is_single_game(r_object, request):
+    if request.path[:7] == "/games/":
+        game_id = int(request.path[7:])
+        r_object.game_id = game_id
+        if request.method == "GET":
+            game_stat = db.GameStatistic.get(game_id=game_id)
+            game_stat.detail_impressions += 1
+            game_stat.last_impression = datetime.utcnow()

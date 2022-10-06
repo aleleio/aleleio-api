@@ -37,8 +37,7 @@ def define_entities_stats(db):
     class GameStatistic(db.Entity):
         """Search statistics for each individual game.
         """
-        game = Required(lambda: db.Game)
-
-        search_impressions = Optional(int)
-        detail_impressions = Optional(int)
+        game_id = Required(int)
+        search_impressions = Required(int, default=0)
+        detail_impressions = Required(int, default=0)
         last_impression = Optional(datetime)

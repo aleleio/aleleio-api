@@ -47,6 +47,7 @@ def create_games(games: list[dict]):
             new_instance.delete()
             continue
         created_instances.append(new_instance)
+        db.GameStatistic(game_id=new_instance.id)
 
     return created_instances, errors
 

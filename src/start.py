@@ -104,7 +104,7 @@ def get_app():
         from src.services import tracking
         if response.status_code in [200, 201]:
             session = tracking.get_session(request)
-            tracking.add_request(session, request)
+            tracking.add_request(session, request, response)
 
         return response
 
