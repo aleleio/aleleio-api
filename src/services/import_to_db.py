@@ -33,12 +33,8 @@ def run_import():
         refs = convert_yml_to_ref(yml)
         refs_created, refs_errors = write_references_to_database(refs)
 
-    result = {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": [err.__str__() for err in games_errors]},
-              "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": [err.__str__() for err in refs_errors]}}
-
-    print(f"{result=}")
-
-    return result
+    return {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": [err.__str__() for err in games_errors]},
+            "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": [err.__str__() for err in refs_errors]}}
 
 
 def download_files():

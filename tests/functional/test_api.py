@@ -12,7 +12,6 @@ def test_about(client):
 
 
 def test_import(client):
-    print(f"{g.get('uid')=}")
     response = client.get("/import")
     assert response.status_code == 200
     # Todo: Test response

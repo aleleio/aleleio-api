@@ -1,7 +1,4 @@
-from typing import List, Dict
-
-import connexion
-from flask import abort
+from flask import abort, request
 from pony.orm import db_session
 
 from src.services import search, export_to_repo
@@ -13,7 +10,7 @@ db = get_db()
 
 
 def get_all():
-    query = connexion.request.values
+    query = request.values
     return search.all_games(query)
 
 

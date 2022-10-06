@@ -56,16 +56,20 @@ def get_active_session(user_sessions, session_params):
 
 
 def add_request(session, request):
-    # query_params Set(QueryParam)
-    # query_type Optional(str)
     # game_id Optional(int)
     # result_length Optional(int)
+
     this = db.Request(
         session=session,
         path=request.path,
         method=request.method
     )
 
+    query = request.values
+    if query:
+        this.query_type = "group_needs" if "main" in query.keys() else "basic"
+        for param in query:
+            db.QueryParam(request=this, slug=param)
 
 
 @db_session
