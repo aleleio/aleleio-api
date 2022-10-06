@@ -71,14 +71,18 @@ def add_request_is_query(r_object, request, response):
     query = request.values
     if query:
         r_object.query_type = "group_needs" if "main" in query.keys() else "basic"
-        for param, value in query.items():
-            if param == "limit":
-                r_object.result_limit = value
-            else:
-                r_object.query_params.add(db.QueryParam.get(slug=value))
+        add_request_query_params(r_object, query)
 
     if type(response.json) is list:
         r_object.result_length = len(response.json)
+
+
+def add_request_query_params(r_object, query):
+    for param, value in query.items():
+        if param == "limit":
+            r_object.result_limit = value
+        else:
+            r_object.query_params.add(db.QueryParam.get(slug=value))
 
 
 def add_request_is_names(request, response):
