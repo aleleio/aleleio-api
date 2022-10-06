@@ -19,7 +19,7 @@ def test_import(client):
 
 
 def test_import_from_github(client, monkeypatch):
-    def mock_is_latest_version():
+    def mock_is_latest_version(sha):
         return False
     class MockRequests:
         @staticmethod
@@ -53,7 +53,7 @@ def test_latest_sha(client, monkeypatch):
     test_root = Path(__file__).parent.parent  # /tests
     monkeypatch.setattr(export_to_repo, "ROOT", test_root)
 
-    def mock_is_latest_version():
+    def mock_is_latest_version(sha):
         return True
 
     class MockRequests:
