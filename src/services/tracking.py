@@ -59,7 +59,7 @@ def add_request(session, request):
     # game_id Optional(int)
     # result_length Optional(int)
 
-    this = db.Request(
+    r = db.Request(
         session=session,
         path=request.path,
         method=request.method
@@ -67,9 +67,12 @@ def add_request(session, request):
 
     query = request.values
     if query:
-        this.query_type = "group_needs" if "main" in query.keys() else "basic"
-        for param in query:
-            db.QueryParam(request=this, slug=param)
+        r.query_type = "group_needs" if "main" in query.keys() else "basic"
+        for param, value in query.items():
+            if param == "limit":
+                r.result_limit = value
+            else:
+                r.query_params.add(db.QueryParam.get(slug=value))
 
 
 @db_session

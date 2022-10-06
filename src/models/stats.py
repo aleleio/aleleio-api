@@ -25,12 +25,13 @@ def define_entities_stats(db):
         path = Required(str)
         method = Required(str)
         game_id = Optional(int)
+        result_limit = Optional(int)
         result_length = Optional(int)
 
     class QueryParam(db.Entity):
-        """API query parameters
+        """Shorten full key/value parameter `game_type:ice` to only `ice`.
         """
-        request = Required(Request)
+        request = Set(Request)
         slug = Required(str)
 
     class GameStatistic(db.Entity):

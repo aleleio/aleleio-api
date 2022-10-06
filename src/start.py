@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 from functools import cache
@@ -112,8 +113,6 @@ def get_app():
 
 @db_session
 def run_startup_tasks(db):  # pragma: no cover
-    """Seed database with category enums if not already present
-    """
     if hasattr(db, 'User'):
         if db.User.get(login="admin"):
             return
@@ -130,6 +129,8 @@ def startup_users_db(udb):  # pragma: no cover
 
 
 def startup_games_db(db):
+    """Seed database with category enums if not already present
+    """
     for item in GameTypeEnum:
         db.GameType(slug=item.value, full=item.full)
     for item in GameLengthEnum:
@@ -138,3 +139,7 @@ def startup_games_db(db):
         db.GroupSize(slug=item.value, full=item.full)
     for item in GroupNeedEnum:
         db.GroupNeed(slug=item.value, full=item.full)
+
+    for item in itertools.chain(GameTypeEnum, GameLengthEnum, GroupSizeEnum, GroupNeedEnum):
+        db.QueryParam(slug=item.value)
+
