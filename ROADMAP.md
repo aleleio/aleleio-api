@@ -55,6 +55,7 @@
   - [ ] todo: about page shows last commit datetime, links to gh repo
   - [ ] todo: Import: Make sure to update and not touch statistics, metadata etc. in the existing database
   - [ ] todo: What happens with updates (delete&change) in the tb database? -> wipe everything and import fresh
+  - [ ] todo: how to check for/set .latest_sha when TB repo is updated on Github
 
 
 ### 0.7 Document and Deploy

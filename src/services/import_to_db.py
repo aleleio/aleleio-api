@@ -80,7 +80,7 @@ def import_from_github():
     headers = {'Authorization': f'token {token}'}
     sha = get_latest_sha()
 
-    if is_latest_version():
+    if is_latest_version(sha):
         return TMP.joinpath(f"aleleio-teambuilding-games-{sha}")
 
     url = 'https://api.github.com/repos/aleleio/teambuilding-games/zipball'
@@ -102,10 +102,9 @@ def import_from_github():
     return TMP.joinpath(download_name)
 
 
-def is_latest_version():
-    latest_sha = get_latest_sha()
+def is_latest_version(sha):
     sha_list = [file[-7:] for file in os.listdir(TMP)]
-    if latest_sha in sha_list:
+    if sha in sha_list:
         return True
     return False
 
