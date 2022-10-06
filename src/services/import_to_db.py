@@ -21,23 +21,31 @@ TMP = ROOT.joinpath('tmp')
 def run_import():
     game_files, ref_files = download_files()
 
-    game_list = list()
-    alias_list = list()
-    for md in game_files:
-        game = convert_md_to_game(md)
-        if game:
-            game_list.append(game)
-        else:
-            alias_list.append(md)
-    games_created, games_errors = write_games_to_database(game_list)
-    games_errors += write_aliases_to_database(alias_list)
+    games, games_with_id, aliases = sort_and_convert_game_files(game_files)
+    created, errors = write_games_to_database(games_with_id, games)
+    errors += write_aliases_to_database(aliases)
 
     for yml in ref_files:
         refs = convert_yml_to_ref(yml)
         refs_created, refs_errors = write_references_to_database(refs)
 
-    return {"games": {"len": len(games_created), "created": [g.id for g in games_created], "errors": [err.__str__() for err in games_errors]},
+    return {"games": {"len": len(created), "created": [g.id for g in created], "errors": [err.__str__() for err in errors]},
             "refs": {"len": len(refs_created), "created": [r.slug for r in refs_created], "errors": [err.__str__() for err in refs_errors]}}
+
+
+def sort_and_convert_game_files(game_files):
+    games, games_with_id, aliases = [], [], []
+    for md in game_files:
+        md = frontmatter.load(md)
+        if md.get('alias'):
+            aliases.append(md)
+        else:
+            game = convert_md_to_game(md)
+            if md.get('id'):
+                games_with_id.append(game)
+            else:
+                games.append(game)
+    return games, games_with_id, aliases
 
 
 def download_files():
@@ -118,11 +126,6 @@ def get_filepaths(folder_path):
 def convert_md_to_game(md):
     """Convert Markdown to game dictionary
     """
-    md = frontmatter.load(md)
-
-    if md.get('alias'):
-        return None
-
     game = md.to_dict()
     game['names'] = list()
     game['descriptions'] = list()
@@ -138,10 +141,10 @@ def convert_md_to_game(md):
 
 
 def convert_md_to_game_alias(md):
-    md = frontmatter.load(md)
     slug = md.get('alias')
     name = re.search("# (.+?)\n\n", md.content).group(1)
     return slug, name
+
 
 def md_token_to_game(game, token):
     if is_name(token):
@@ -181,12 +184,16 @@ def list_to_string(token):
     return f'{result}\n'
 
 
-def write_games_to_database(games):
+def write_games_to_database(*args):
     """Insert the games into the database
     Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
-    created, errors = create.create_games(games)
-    return created, errors
+    created_total, errors_total = [], []
+    for game_list in args:
+        created, errors = create.create_games(game_list)
+        created_total.extend(created)
+        errors_total.extend(errors)
+    return created_total, errors_total
 
 
 @db_session

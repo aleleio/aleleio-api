@@ -31,8 +31,7 @@ def create_games(games: list[dict]):
     errors = []
 
     for game in games:
-        game_license = create_game_license(game)
-        new_instance = db.Game(license=game_license)
+        new_instance = create_game_instance(game)
         try:
             set_game_bools(game=new_instance, request=game)
             set_game_categories(game=new_instance, request=game)
@@ -50,6 +49,13 @@ def create_games(games: list[dict]):
         db.GameStatistic(game_id=new_instance.id)
 
     return created_instances, errors
+
+
+def create_game_instance(game):
+    game_license = create_game_license(game)
+    if game.get("id"):
+        return db.Game(id=game["id"], license=game_license)
+    return db.Game(license=game_license)
 
 
 def set_game_bools(game, request, keys=('exhausting', 'touching', 'scalable', 'digital')):

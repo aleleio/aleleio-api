@@ -2,8 +2,6 @@
 Game Enums
 
 Using the enums defined here is a clear and consistent way to use the same abbreviations and full names everywhere.
-Enums have the added benefit (vs @dataclass or namedtuple) that pydantic automatically provides them as context in
-error responses, showing all possible options to the API user.
 
 Enums are also stored in the database (e.g. GameTypeEnum -> GameType.slug, GameType.full) but a central definition is
 useful, when they are not linked or to initialize the database.

@@ -29,50 +29,35 @@
 - add /api/about
 
 ### 0.6 Rewrite with Connexion & Flask
-- OpenAPI spec-first approach with Connexion framework in August 2022
+- OpenAPI spec-first approach with Connexion framework between Aug-Oct 2022
 - new license: European Union Public License
-- new workflow: aleleio/teambuilding-games on github
+- new workflow: aleleio/teambuilding-games on github, import/export tools
+- add tests: 97% coverage
+- complete API documentation
+- easier to get started for new contributors
 
 # The Road Ahead
 
-### 0.6 Rewrite with Connexion & Flask
-- [x] 0.6.1 move from gitlab to github
-- [x] 0.6.2 move to connexion
-- [x] 0.6.3 ORM working
-- [x] 0.6.4 Core Logic working (filtering, CRUD)
-- [x] 0.6.5 Testing from the start (github actions, coverage)
-- [x] 0.6.6 Import/Export Tools (use repo, route for automation)
-- [x] 0.6.7 Authentication working, CORS added  
-- [x] 0.6.8 Easier Setup for contributor onboarding
-- [x] 0.6.9 Statistics working
-
-- [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
-  - [x] todo: validate with actual user
-  - [x] todo: add # pragma: no cover for coverage
-  - [x] todo: aliases are not being imported? (one name per game: e.g. pipe-->atomic bomb)
-  - [ ] idea: fix ids for games? every import might screw up external links
-  - [ ] idea: search by name
-  - [ ] todo: about page shows last commit datetime, links to gh repo
-  - [ ] todo: Import: Make sure to update and not touch statistics, metadata etc. in the existing database
-  - [ ] todo: What happens with updates (delete&change) in the tb database? -> wipe everything and import fresh
-  - [ ] todo: how to check for/set .latest_sha when TB repo is updated on Github
-
-
 ### 0.7 Document and Deploy
-- docstrings complete
-- implement Todos
-- good enough test coverage
-- logging and sentry.io
-- fine-tune the readme with OpenAPI 
-- shut down legacy-api v0.5
+- [ ] 0.7.1 Import & export with fix game ids
+  - [ ] Set game ids in export_to_repo
+  - [ ] what happens with updates (delete&change) in the tb database? -> wipe everything and import fresh
+  - [ ] Import: Make sure to not touch statistics, metadata in the existing database
+- [ ] 0.7.2 Github Interaction
+  - [ ] about page shows last commit datetime, links to gh repo
+  - [ ] check for/set .latest_sha when TB repo is updated on Github (how?)
+- [ ] 0.7.2 sentry.io
+- [ ] 0.7.3 Finalize API documentation with OpenAPI 
+- [ ] 0.7.4 Shut down legacy-api v0.5
 
 ### 0.8 Improve and Speedup
-- versions working again
 - caching speed up
+- idea: search by name
   
 ### 0.9 New Toys
 - collections of games
-- revise auth / oauth / github
+- revise auth / oauth / github (not necessary?)
+- automate import/export
 
 
 
