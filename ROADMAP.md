@@ -49,10 +49,12 @@
 - [ ] 0.6.10 Improve/Finalize API documentation with OpenAPI
   - [x] todo: validate with actual user
   - [x] todo: add # pragma: no cover for coverage
-  - [ ] todo: aliases are not being imported? (one name per game: e.g. pipe-->atomic bomb)
+  - [x] todo: aliases are not being imported? (one name per game: e.g. pipe-->atomic bomb)
   - [ ] idea: fix ids for games? every import might screw up external links
   - [ ] idea: search by name
   - [ ] todo: about page shows last commit datetime, links to gh repo
+  - [ ] todo: Import: Make sure to update and not touch statistics, metadata etc. in the existing database
+  - [ ] todo: What happens with updates (delete&change) in the tb database? -> wipe everything and import fresh
 
 
 ### 0.7 Document and Deploy

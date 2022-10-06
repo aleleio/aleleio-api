@@ -1,4 +1,5 @@
 import os
+import re
 from functools import cache
 from zipfile import ZipFile
 
@@ -7,6 +8,7 @@ import mistune
 import requests
 import yaml
 from github import GithubIntegration
+from pony.orm import CacheIndexError, db_session
 
 from src.services import create
 from src.services.export_to_repo import set_latest_sha
@@ -28,6 +30,7 @@ def run_import():
         else:
             alias_list.append(md)
     games_created, games_errors = write_games_to_database(game_list)
+    games_errors += write_aliases_to_database(alias_list)
 
     for yml in ref_files:
         refs = convert_yml_to_ref(yml)
@@ -135,6 +138,12 @@ def convert_md_to_game(md):
     return game
 
 
+def convert_md_to_game_alias(md):
+    md = frontmatter.load(md)
+    slug = md.get('alias')
+    name = re.search("# (.+?)\n\n", md.content).group(1)
+    return slug, name
+
 def md_token_to_game(game, token):
     if is_name(token):
         game['names'].append(token['children'][0]['text'])
@@ -179,6 +188,20 @@ def write_games_to_database(games):
     """
     created, errors = create.create_games(games)
     return created, errors
+
+
+@db_session
+def write_aliases_to_database(aliases):
+    errors = list()
+    for md in aliases:
+        slug, name = convert_md_to_game_alias(md)
+        try:
+            game = db.Name.get(slug=slug).game
+            create.set_game_names(game, {"names": [name]})
+        except CacheIndexError as err:
+            errors.append(err)
+
+    return errors
 
 
 def convert_yml_to_ref(ref_yml):

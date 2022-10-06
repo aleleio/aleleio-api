@@ -1,5 +1,5 @@
 ---
-alias: people-to-people
+alias: 3-noses
 ---
 # 3 noses variant
 
