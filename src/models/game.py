@@ -16,16 +16,14 @@ def define_entities_game(db):
         group_sizes = Set(lambda: GroupSize)
         group_need_scores = Set(lambda: GroupNeedScore)
 
-        meta = Optional(lambda: db.GameMeta, cascade_delete=True)
-        license = Required(lambda: db.License)
-        references = Set(lambda: db.Reference)
-        collections = Set(lambda: db.Collection)
-
         prior_prep = Optional(LongStr)
         exhausting = Optional(bool, default=False)
         touching = Optional(bool, default=False)
         scalable = Optional(bool, default=False)
         digital = Optional(bool, default=False)
+
+        license = Required(lambda: db.License)
+        collections = Set(lambda: db.Collection)
 
         def to_schema_out(self):
             """Build a JSON-serialisable dict that is validated as GameOut
@@ -42,7 +40,7 @@ def define_entities_game(db):
                 del item['group_need']
             result['materials'] = [obj.to_dict(exclude=['games']) for obj in self.materials]
             result['license'] = self.license.to_dict()
-            result['meta'] = self.meta.to_dict(exclude=['id', 'game'])
+            # result['meta'] = self.meta.to_dict(exclude=['id', 'game'])
             try:  # game.weight is dynamically set in services.search:sort_query_by_weighted_group_needs()
                 result['weight'] = self.weight
             except AttributeError:

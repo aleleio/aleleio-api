@@ -1,7 +1,7 @@
 # Changelog
 
 ### 0.1 CRUD working
-- first version, build on [Pyramid Framework](https://trypyramid.com/) in April 2019
+- first version, build on Pyramid framework in April 2019
 - CRUD working: API handles incoming GET/POST/PATCH(!)/DELETE requests
 - using JSON Schema to validate requests
 
@@ -39,13 +39,11 @@
 # The Road Ahead
 
 ### 0.7 Document and Deploy
-- [ ] 0.7.1 Import & export with fix game ids
-  - [ ] Set game ids in export_to_repo
-  - [ ] what happens with updates (delete&change) in the tb database? -> wipe everything and import fresh
-  - [ ] Import: Make sure to not touch statistics, metadata in the existing database
-- [ ] 0.7.2 Github Interaction
+- [x] 0.7.0 Import & export with fix game ids
+- [ ] 0.7.1 Github Interaction
   - [ ] about page shows last commit datetime, links to gh repo
   - [ ] check for/set .latest_sha when TB repo is updated on Github (how?)
+  - [ ] idea: use PATCH route to queue update
 - [ ] 0.7.2 sentry.io
 - [ ] 0.7.3 Finalize API documentation with OpenAPI 
 - [ ] 0.7.4 Shut down legacy-api v0.5

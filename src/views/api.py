@@ -14,4 +14,12 @@ def about():
 
 
 def start_import():
+    delete_all()
     return run_import()
+
+
+@db_session
+def delete_all():
+    """Bulk delete in separate db_session, otherwise remnants remain
+    """
+    db.Game.select().delete(bulk=True)

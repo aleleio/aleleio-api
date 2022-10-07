@@ -142,6 +142,7 @@ def convert_to_markdown(game, slug):
     """
     name = db.Name.get(slug=slug)
     md = ["---"]
+    md.append(f"id: {game.id}")
     md = add_categories(game, md)
     md = add_group_needs(game, md)
     md = add_materials(game, md)

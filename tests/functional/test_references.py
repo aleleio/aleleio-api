@@ -15,7 +15,7 @@ def test_create_references(client):
     response = client.post('references', json=[REF_A])
     assert response.status_code == 201
     assert response.json == [{"full": "Bananas Video",
-                              "game": 1,
+                              "game_id": 1,
                               "id": 1,
                               "slug": "bananas-ref-0",
                               "url": "youtube.com/v=12345"}]
@@ -31,7 +31,7 @@ def test_get_references(client):
     response = client.get('/references')
     assert response.status_code == 200
     assert response.json == [{"full": "Bananas Video",
-                              "game": 1,
+                              "game_id": 1,
                               "id": 1,
                               "slug": "bananas-ref-0",
                               "url": "youtube.com/v=12345"}]
@@ -40,5 +40,5 @@ def test_get_references(client):
 def test_create_references_wrong_game(client):
     payload = [{"full": "A weird page", "url": "https://weird.url", "refers_to": "this-game-does-not-exist"}]
     response = client.post('/references', json=payload)
-    assert response.status_code == 404
-    assert "No game with slug None to refer to." in response.json['detail']
+    assert response.status_code == 409
+    assert "No game with slug None to refer to." in response.json["errors"]

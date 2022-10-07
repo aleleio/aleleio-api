@@ -6,9 +6,8 @@ from pony.orm import *
 def define_entities_meta(db):
 
     class GameMeta(db.Entity):
-        game = Required(lambda: db.Game)
-
         timestamp = Required(datetime, default=datetime.utcnow)
+        game_id = Required(int, unique=True)
         author_id = Required(int)
 
     class License(db.Entity):
@@ -20,12 +19,11 @@ def define_entities_meta(db):
         owner_url = Optional(str, default="https://alele.io")
 
     class Reference(db.Entity):
-        game = Required(lambda: db.Game)
-
         timestamp = Required(datetime, default=datetime.utcnow)
-        slug = Required(str)
+        game_id = Required(int)
+        slug = Required(str, unique=True)
         full = Required(str)
-        url = Optional(str, unique=True)
+        url = Required(str, unique=True)
 
     class Collection(db.Entity):
         games = Set(lambda: db.Game)

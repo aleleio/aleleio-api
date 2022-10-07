@@ -5,7 +5,7 @@ from typing import List, Dict
 from flask import abort, g
 from pony.orm import db_session
 # Pony CacheIndexError when new instance is duplicate/not unique
-from pony.orm.core import CacheIndexError
+from pony.orm.core import CacheIndexError, select, TransactionIntegrityError
 
 from src.start import get_db
 
@@ -107,10 +107,9 @@ def set_game_prior_prep(game, request):
 
 
 def set_game_meta(game: db.Game):
-    db.GameMeta(
-        game=game,
-        author_id=g.uid
-    )
+    if db.GameMeta.get(game_id=game.id):
+        return
+    db.GameMeta(game_id=game.id, author_id=g.uid)
 
 
 def create_game_license(request):
@@ -138,12 +137,13 @@ def create_references(references):
         try:
             name = db.Name.get(slug=ref['refers_to'])
             if not name:
-                abort(404, description=f"No game with slug {name} to refer to.")
-            url = ref.get('url')
+                raise ValueError(f"No game with slug {name} to refer to.")
             game = name.game
-            slug = name.slug + '-ref-' + str(len(game.references))
-            new_instance = db.Reference(game=game, slug=slug, full=ref['full'], url=url)
-        except CacheIndexError as err:
+            game_refs = select(r for r in db.Reference if r.game_id == game.id)
+            slug = name.slug + '-ref-' + str(len(game_refs))
+            db.Reference.get(url=ref['url'])  # Needed to flush PonyORMs db_session
+            new_instance = db.Reference(game_id=game.id, slug=slug, full=ref['full'], url=ref['url'])
+        except (ValueError, CacheIndexError, TransactionIntegrityError) as err:
             errors.append(err)
             continue
         created_instances.append(new_instance)
