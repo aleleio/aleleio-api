@@ -1,4 +1,5 @@
 ---
+id: 2
 game_types:
   - ice
   - ener

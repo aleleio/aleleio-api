@@ -1,17 +1,15 @@
 import os
 import re
-from functools import cache
 from zipfile import ZipFile
 
 import frontmatter
 import mistune
 import requests
 import yaml
-from github import GithubIntegration
 from pony.orm import CacheIndexError, db_session
 
 from src.services import create
-from src.services.export_to_repo import set_latest_sha
+from src.services.connect_github import get_github_token, get_latest_sha, is_latest_version
 from src.start import get_db, ROOT
 
 db = get_db()
@@ -57,30 +55,6 @@ def download_files():
     return games, refs
 
 
-@cache
-def get_latest_sha():
-    try:
-        with open(ROOT.joinpath('.latest-sha'), 'r') as file:
-            sha = file.read().strip()
-            return sha
-    except FileNotFoundError:
-        set_latest_sha()
-        return get_latest_sha()
-
-
-def get_github_token():
-    try:
-        with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
-            bot_key = cert_file.read()
-        bot = GithubIntegration(233902, bot_key)
-        token = bot.get_access_token(bot.get_installation('aleleio', 'teambuilding-games').id).token
-    except FileNotFoundError as err:
-        token = os.environ.get('GITHUB')
-        if not token:
-            raise FileNotFoundError("Have you added a GitHub Personal Access Token to .env?")
-    return token
-
-
 def import_from_github():
     """Download game repository via api.github.com and return filepaths inside.
     """
@@ -108,13 +82,6 @@ def import_from_github():
     zip_path.unlink()
 
     return TMP.joinpath(download_name)
-
-
-def is_latest_version(sha):
-    sha_list = [file[-7:] for file in os.listdir(TMP)]
-    if sha in sha_list:
-        return True
-    return False
 
 
 def get_filepaths(folder_path):
@@ -186,7 +153,6 @@ def list_to_string(token):
 
 def write_games_to_database(*args):
     """Insert the games into the database
-    Todo: Make sure to update and not touch statistics, metadata etc. in the existing database
     """
     created_total, errors_total = [], []
     for game_list in args:

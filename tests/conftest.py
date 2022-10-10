@@ -32,14 +32,15 @@ connexion_app = get_app()
 
 
 def reset_get_db():
-    import src.services.create
-    importlib.reload(src.services.create)
-    import src.services.update
-    importlib.reload(src.services.update)
-    import src.services.export_to_repo
-    importlib.reload(src.services.export_to_repo)
-    import src.views.games
-    importlib.reload(src.views.games)
+    from src.services import create, update, export_to_repo, import_to_db
+    from src.views import games, references, api
+    importlib.reload(create)
+    importlib.reload(update)
+    importlib.reload(export_to_repo)
+    importlib.reload(import_to_db)
+    importlib.reload(games)
+    importlib.reload(references)
+    importlib.reload(api)
 
 
 class MockRepo:
@@ -92,49 +93,58 @@ class MockRepo:
         return self.Reference
 
 
-@pytest.fixture(autouse=True)
-def mock_github(monkeypatch):
+@pytest.fixture(scope="module")
+def monkeymodule():
+    from _pytest.monkeypatch import MonkeyPatch
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+
+@pytest.fixture(scope="module", autouse=True)
+def mock_github(monkeymodule):
     def mock_connect():
         return MockRepo()
-    from src.services import export_to_repo
-    monkeypatch.setattr(export_to_repo, "get_repo", mock_connect)
+    from src.services import connect_github
+    monkeymodule.setattr(connect_github, "get_repo", mock_connect)
 
 
 @pytest.fixture(autouse=True)
-def mock_import_root(monkeypatch):
-    from src.services import import_to_db
+def mock_import_root(monkeymodule):
+    from src.services import import_to_db, connect_github
     test_root = Path(__file__).parent  # /tests
-    monkeypatch.setattr(import_to_db, "ROOT", test_root)
-    monkeypatch.setattr(import_to_db, "TMP", test_root.joinpath("resources"))
+    monkeymodule.setattr(connect_github, "ROOT", test_root)
+    monkeymodule.setattr(connect_github, "TMP", test_root.joinpath("resources"))
+    monkeymodule.setattr(import_to_db, "TMP", test_root.joinpath("resources"))
 
 
-@pytest.fixture(autouse=True)
-def mock_github_token(monkeypatch):
+@pytest.fixture(scope="module", autouse=True)
+def mock_github_token(monkeymodule):
     def mock_get_github_token():
         return "gh1234"
-    from src.services import import_to_db, export_to_repo
-    monkeypatch.setattr(import_to_db, "get_github_token", mock_get_github_token)
-    monkeypatch.setattr(export_to_repo, "get_github_token", mock_get_github_token)
+    from src.services import connect_github, import_to_db
+    monkeymodule.setattr(connect_github, "get_github_token", mock_get_github_token)
+    monkeymodule.setattr(import_to_db, "get_github_token", mock_get_github_token)
 
 
-@pytest.fixture(autouse=True)
-def mock_get_sha(monkeypatch, request):
+@pytest.fixture(scope="module", autouse=True)
+def mock_get_sha(monkeymodule, request):
     if "no_mock_get_sha" in request.keywords:
         return
     def mock_get_latest_sha():
         return "1234567"
-    from src.services import import_to_db
-    monkeypatch.setattr(import_to_db, "get_latest_sha", mock_get_latest_sha)
+    from src.services import connect_github
+    monkeymodule.setattr(connect_github, "get_latest_sha", mock_get_latest_sha)
 
 
-@pytest.fixture(autouse=True)
-def mock_set_sha(monkeypatch, request):
+@pytest.fixture(scope="module", autouse=True)
+def mock_set_sha(monkeymodule, request):
     if "no_mock_set_sha" in request.keywords:
         return
-    def mock_set_latest_sha(sha):
+    def mock_set_latest_sha(sha=None):
         pass
-    from src.services import export_to_repo
-    monkeypatch.setattr(export_to_repo, "set_latest_sha", mock_set_latest_sha)
+    from src.services import connect_github
+    monkeymodule.setattr(connect_github, "set_latest_sha", mock_set_latest_sha)
 
 
 @pytest.fixture(scope='module')

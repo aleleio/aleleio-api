@@ -1,41 +1,14 @@
 """
 Export games to teambuilding-games repository on GitHub.
-
-Note:   GitHub Apps allows granular permissions, Personal Access Tokens grant full access.
-
-Helpful: https://medium.com/@gilharomri/github-app-bot-with-python-ea38811d7b14
-         https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api
 """
-import requests
-from github import GithubIntegration, Github, InputGitTreeElement
+
+from github import InputGitTreeElement
 from pony.orm import db_session, select
 
-from src.start import get_db, ROOT
+from src.services.connect_github import get_repo, set_latest_sha
+from src.start import get_db
 
 db = get_db()
-
-
-def set_latest_sha(sha=None):
-    if not sha:
-        headers = {'Authorization': f'token {get_github_token()}'}
-        url = 'https://api.github.com/repos/aleleio/teambuilding-games/commits?per_page=1'
-        r = requests.get(url, headers=headers, allow_redirects=True)
-        sha = r.json()[0]["sha"][:7]
-    with open(ROOT.joinpath('.latest-sha'), 'w') as file:
-        file.write(sha)
-
-
-def get_github_token():  # pragma: no cover
-    with open(ROOT.joinpath('gamebot-private-key.pem')) as cert_file:
-        bot_key = cert_file.read()
-    bot = GithubIntegration(233902, bot_key)
-    installation = bot.get_installation('aleleio', 'teambuilding-games').id
-    return bot.get_access_token(installation).token
-
-
-def get_repo():  # pragma: no cover
-    gh = Github(get_github_token())
-    return gh.get_repo("aleleio/teambuilding-games")
 
 
 @db_session

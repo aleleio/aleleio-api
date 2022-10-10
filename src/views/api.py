@@ -1,4 +1,3 @@
-from flask import Blueprint
 from pony.orm import *
 
 from src.services.import_to_db import run_import
@@ -9,8 +8,25 @@ db = get_db()
 
 @db_session
 def about():
-    return {"version": get_project_version(),
-            "games": len(db.Game.select())}
+    return {
+        "api": {
+            "version": get_project_version(),
+            "last_commit": "n/a",
+            "last_import": "n/a",
+            "url": "https://github.com/aleleio/aleleio-api",
+        },
+        "web": {
+            "version": "0.5.1 from CHANGES.md",
+            "last_commit": "n/a",
+            "url": "https://github.com/aleleio/aleleio-web",
+        },
+        "tb_repo": {
+            "last_commit": "n/a",
+            "games": len(db.Game.select()),
+            "references": "n/a",
+            "url": "https://github.com/aleleio/teambuilding-games",
+        }
+    }
 
 
 def start_import():

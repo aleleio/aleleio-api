@@ -1,3 +1,5 @@
+import importlib
+
 import pytest
 
 MIN_GAME = {'names': ['Bananas'], 'descriptions': ['This stuff is bananas, BANANAS!'], 'game_types': ['ice', 'song'],
