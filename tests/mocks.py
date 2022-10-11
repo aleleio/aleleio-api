@@ -1,8 +1,8 @@
 from datetime import datetime
-from pathlib import Path
 
-import pytest
 
+def mock_startup_users(db):
+    pass
 
 def mock_get_latest_commit(repo):
     return datetime.utcnow()

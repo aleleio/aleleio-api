@@ -37,9 +37,11 @@ def db(monkeymodule):
     for module in [authentication, tracking, search, create, update, export_to_repo, games, collections, references]:
         reload(module)
 
+    from src import start
     from src.services import connect_github
-    from tests.mocks import mock_get_latest_commit
+    from tests.mocks import mock_get_latest_commit, mock_startup_users
     monkeymodule.setattr(connect_github, "get_latest_commit", mock_get_latest_commit)
+    monkeymodule.setattr(start, "startup_users_db", mock_startup_users)
 
     run_startup_tasks(db)
     run_startup_tasks(udb)
