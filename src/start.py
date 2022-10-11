@@ -1,36 +1,25 @@
+import datetime
 import itertools
 import json
 import os
 from functools import cache
 from pathlib import Path
 
-import yaml
 from connexion import FlaskApp
 from connexion.resolver import RelativeResolver
 from dotenv import load_dotenv
-from flask import request, g
+from flask import request
 from flask_cors import CORS
 from pony.orm import Database, set_sql_debug, db_session
 
 from src.models import define_entities_game, define_entities_meta, define_entities_user, GameTypeEnum, GameLengthEnum, \
-    GroupSizeEnum, GroupNeedEnum, define_entities_stats
+    GroupSizeEnum, GroupNeedEnum, define_entities_stats, define_entities_api
 from src.services.enforcedefaults import validator_remap
 
-# Define project root and load constants from dotenv file
+# Load project root and constants from dotenv file
 ROOT = Path(__file__).parent.parent
 dotenv_path = ROOT.joinpath('.env')
 load_dotenv(dotenv_path)
-
-
-@cache
-def get_project_version():
-    """Get the current version from openapi.yml config file.
-    """
-    yml_path = ROOT.joinpath('openapi.yml')
-    with open(yml_path, 'r') as fin:
-        yml = yaml.safe_load(fin)
-
-    return yml['info']['version']
 
 
 @cache
@@ -38,7 +27,6 @@ def get_db(users_db=False):
     """Bind Pony ORM to database
     This acts like a singleton because of caching.
     """
-
     if users_db:
         credentials = json.loads(os.environ.get("DB_USERS_CONNECT"))
     else:
@@ -47,7 +35,8 @@ def get_db(users_db=False):
     if not os.environ.get("FLASK_DEBUG"):  # pragma: no cover / production
         database = Database(provider='mysql', **credentials)
     elif os.environ.get('FLASK_TESTING'):
-        database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
+        # database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
+        database = Database(provider='sqlite', filename=f':memory:', create_db=True)
     else:  # pragma: no cover / development
         database = Database(provider='sqlite', filename=f'{credentials["db"]}.sqlite', create_db=True)
 
@@ -57,6 +46,7 @@ def get_db(users_db=False):
         define_entities_game(database)
         define_entities_meta(database)
         define_entities_stats(database)
+        define_entities_api(database)
 
     database.generate_mapping(create_tables=True)
     set_sql_debug(False)
@@ -100,12 +90,11 @@ def get_app():
 
     @connexion_app.app.after_request
     @db_session
-    def after_request(response):
+    def activity_tracking(response):
         from src.services import tracking
         if response.status_code in [200, 201]:
             session = tracking.get_session(request)
             tracking.add_request(session, request, response)
-
         return response
 
     return connexion_app
@@ -118,8 +107,9 @@ def run_startup_tasks(db):  # pragma: no cover
             return
         startup_users_db(db)
     else:
-        if db.GameType.get(slug="ice"):
+        if db.APIInfo.get(name="aleleio-api"):
             return
+        startup_api_info(db)
         startup_games_db(db)
 
 
@@ -143,3 +133,25 @@ def startup_games_db(db):
     for item in itertools.chain(GameTypeEnum, GameLengthEnum, GroupSizeEnum, GroupNeedEnum):
         db.QueryParam(slug=item.value)
 
+
+def startup_api_info(db):
+    from src.services.api_info import get_project_version
+    from src.services.connect_github import get_latest_commit
+
+    for project in ["aleleio-api", "teambuilding-games"]:
+        params = dict(
+            name=project,
+            version=get_project_version(project),
+            last_commit=get_latest_commit(project),
+            url=f"https://github.com/aleleio/{project}"
+        )
+        db.APIInfo(**params)
+
+    for project in ["aleleio-web"]:
+        params = dict(
+            name=project,
+            version=get_project_version(project),
+            last_commit=datetime.datetime.utcnow(),
+            url=f"https://github.com/aleleio/{project}"
+        )
+        db.APIInfo(**params)

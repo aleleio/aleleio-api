@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import g
-from pony.orm import db_session, desc
+from pony.orm import desc
 
 from src.start import get_db
 

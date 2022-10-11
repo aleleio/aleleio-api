@@ -41,7 +41,7 @@
 ### 0.7 Document and Deploy
 - [x] 0.7.0 Import & export with persistent game ids
 - [ ] 0.7.1 Github Interaction
-  - [ ] about page shows last commit datetime, links to gh repo
+  - [x] about page shows last commit datetime, links to gh repo
   - [ ] check for/set .latest_sha when TB repo is updated on Github (how?)
   - [ ] idea: use PATCH route to queue update
 - [ ] 0.7.2 sentry.io

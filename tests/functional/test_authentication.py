@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_regular_route(client):
     response = client.get("/games")
     assert response.status_code == 200

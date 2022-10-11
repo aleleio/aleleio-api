@@ -2,8 +2,6 @@ from pathlib import Path
 
 import pytest
 
-from src.start import get_project_version
-
 
 def test_about(client):
     response = client.get("/about")
@@ -12,7 +10,6 @@ def test_about(client):
 
 
 def test_import(client):
-
     response = client.get("/import")
     assert response.status_code == 200
     assert ("errors", []) in response.json["games"].items()
