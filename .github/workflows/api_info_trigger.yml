@@ -8,9 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BOT_AUTH:  ${{ secrets.API_AUTH }}
     steps:
-      - name: Webhook POST Action
-        uses: muinmomin/webhook-action@v1.0.0
-        with:
-          url: https://api.alele.io/import
-          data: '{"name": "aleleio-api"}'
+      - run: >
+        curl -X POST -H "X-Auth: $BOT_AUTH" https://api.alele.io/import
