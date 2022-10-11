@@ -35,8 +35,8 @@ def get_db(users_db=False):
     if not os.environ.get("FLASK_DEBUG"):  # pragma: no cover / production
         database = Database(provider='mysql', **credentials)
     elif os.environ.get('FLASK_TESTING'):
-        # database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
-        database = Database(provider='sqlite', filename=f':memory:', create_db=True)
+        database = Database(provider='sqlite', filename=f'testing_{credentials["db"]}.sqlite', create_db=True)
+        # database = Database(provider='sqlite', filename=f':memory:', create_db=True)
     else:  # pragma: no cover / development
         database = Database(provider='sqlite', filename=f'{credentials["db"]}.sqlite', create_db=True)
 
