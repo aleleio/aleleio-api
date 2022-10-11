@@ -1,8 +1,11 @@
 {
   "openapi": "3.0.0",
+  "x-stoplight": {
+    "id": "epuew85a67mne"
+  },
   "info": {
     "title": "alele.io",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "alele.io is a public database of teambuilding games. The database is wrapped in a REST API (this specification!) which is available at alele.io/api and can be accessed through the web and mobile devices. It's a labour of love and relies on its community (you!) to survive and thrive.",
     "license": {
       "name": "European Union Public License (EUPL) 1.2",
@@ -310,7 +313,22 @@
           }
         },
         "operationId": "api.start_import",
-        "description": "Import games from Teambuilding Games repository at github.com/aleleio/teambuilding_games."
+        "description": "Import games from Teambuilding Games repository at github.com/aleleio/teambuilding_games.",
+        "x-internal": true
+      },
+      "post": {
+        "summary": "",
+        "operationId": "api.check_do_import",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Trigger a check whether aleleio repos were updated and pull in the latest changes.",
+        "x-internal": true,
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ImportIn"
+        }
       }
     }
   },
@@ -964,6 +982,21 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PatchIn"
+            }
+          }
+        }
+      },
+      "ImportIn": {
+        "x-body-name": "repo",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
             }
           }
         }

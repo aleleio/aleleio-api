@@ -21,6 +21,15 @@ def start_import():
 
 
 @db_session
+def check_do_import(repo):
+    """Github Actions hook to start updates.
+    """
+    timestamp = get_latest_commit(repo["name"])
+    entry = db.APIInfo.get(name=repo["name"])
+    entry.last_commit = timestamp
+
+
+@db_session
 def delete_all():
     """Bulk delete in separate db_session, otherwise remnants remain
     """

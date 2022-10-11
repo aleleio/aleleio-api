@@ -38,9 +38,7 @@ def db(monkeymodule):
         reload(module)
 
     from src import start
-    from src.services import connect_github
-    from tests.mocks import mock_get_latest_commit, mock_startup_users
-    monkeymodule.setattr(connect_github, "get_latest_commit", mock_get_latest_commit)
+    from tests.mocks import mock_startup_users
     monkeymodule.setattr(start, "startup_users_db", mock_startup_users)
 
     run_startup_tasks(db)
@@ -91,11 +89,13 @@ def client(db):
 
 @pytest.fixture(autouse=True)
 def mocks(monkeypatch):
+    from src.views import api
     from src.services import import_to_db, export_to_repo
-    from tests.mocks import mock_get_github_token, mock_get_latest_sha, mock_get_repo
+    from tests.mocks import mock_get_github_token, mock_get_latest_sha, mock_get_repo, mock_get_latest_commit
     monkeypatch.setattr(export_to_repo, "get_repo", mock_get_repo)
     monkeypatch.setattr(import_to_db, "get_github_token", mock_get_github_token)
     monkeypatch.setattr(import_to_db, "get_latest_sha", mock_get_latest_sha)
+    monkeypatch.setattr(api, "get_latest_commit", mock_get_latest_commit)
 
 
 @pytest.fixture(autouse=True)

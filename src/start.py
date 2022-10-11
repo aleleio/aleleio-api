@@ -135,18 +135,8 @@ def startup_games_db(db):
 
 def startup_api_info(db):
     from src.services.api_info import get_project_version
-    from src.services.connect_github import get_latest_commit
 
-    for project in ["aleleio-api", "teambuilding-games"]:
-        params = dict(
-            name=project,
-            version=get_project_version(project),
-            last_commit=get_latest_commit(project),
-            url=f"https://github.com/aleleio/{project}"
-        )
-        db.APIInfo(**params)
-
-    for project in ["aleleio-web"]:
+    for project in ["aleleio-api", "aleleio-web", "teambuilding-games"]:
         params = dict(
             name=project,
             version=get_project_version(project),

@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -77,3 +78,9 @@ def test_is_latest_version(client, monkeypatch):
     # assert latest_sha_file.exists()
     # latest_sha_file.unlink()
 
+
+@pytest.mark.parametrize("name", [("api", "aleleio-api"), ("web", "aleleio-web"), ("teambuilding-games", "teambuilding-games")])
+def test_github_action_request_import(client, name):
+    client.post("/import", json={"name": name[1]})
+    r = client.get("/about")
+    assert r.json[name[0]]["last_commit"] == datetime.strftime(datetime(1987, 1, 25, 2, 33, 44), "%Y-%m-%dT%H:%M:%SZ")

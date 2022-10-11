@@ -35,7 +35,7 @@ def get_repo(repo="aleleio/teambuilding-games"):  # pragma: no cover
     return gh.get_repo(repo)
 
 
-def get_github_url(url):
+def get_github_url(url):  # pragma: no cover
     headers = {'Authorization': f'token {get_github_token()}'}
     return requests.get(url, headers=headers, allow_redirects=True)
 
@@ -66,7 +66,7 @@ def is_latest_version(sha):
     return False
 
 
-def get_latest_commit(repo):
+def get_latest_commit(repo):  # pragma: no cover
     request = get_github_url(f"https://api.github.com/repos/aleleio/{repo}/commits?per_page=1")
     github_date = request.json()[0]["commit"]["committer"]["date"]
     return datetime.strptime(github_date, "%Y-%m-%dT%H:%M:%SZ")

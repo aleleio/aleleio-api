@@ -5,7 +5,7 @@ def mock_startup_users(db):
     pass
 
 def mock_get_latest_commit(repo):
-    return datetime.utcnow()
+    return datetime(1987, 1, 25, 2, 33, 44)
 
 def mock_get_repo():
     return MockRepo()

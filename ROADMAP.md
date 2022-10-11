@@ -40,15 +40,16 @@
 
 ### 0.7 Document and Deploy
 - [x] 0.7.0 Import & export with persistent game ids
-- [ ] 0.7.1 Github Interaction
+- [x] 0.7.1 Github Interaction
   - [x] about page shows last commit datetime, links to gh repo
-  - [ ] check for/set .latest_sha when TB repo is updated on Github (how?)
-  - [ ] idea: use PATCH route to queue update
+  - [x] check for/set .latest_sha when TB repo is updated on Github (gh actions web request to trigger update)
+  - [x] idea: use PATCH route to queue update
 - [ ] 0.7.2 sentry.io
 - [ ] 0.7.3 Finalize API documentation with OpenAPI 
 - [ ] 0.7.4 Shut down legacy-api v0.5
 
 ### 0.8 Improve and Speedup
+- profile requests to get an idea of timing
 - caching speed up
 - idea: search by name
   
